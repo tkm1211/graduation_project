@@ -68,34 +68,6 @@ void Agraduation_projectCharacter::SetupPlayerInputComponent(class UInputCompone
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &Agraduation_projectCharacter::LookUpAtRate);
 
-	// handle touch devices
-	PlayerInputComponent->BindTouch(IE_Pressed, this, &Agraduation_projectCharacter::TouchStarted);
-	PlayerInputComponent->BindTouch(IE_Released, this, &Agraduation_projectCharacter::TouchStopped);
-
-	// VR headset functionality
-	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &Agraduation_projectCharacter::OnResetVR);
-}
-
-
-void Agraduation_projectCharacter::OnResetVR()
-{
-	// If graduation_project is added to a project via 'Add Feature' in the Unreal Editor the dependency on HeadMountedDisplay in graduation_project.Build.cs is not automatically propagated
-	// and a linker error will result.
-	// You will need to either:
-	//		Add "HeadMountedDisplay" to [YourProject].Build.cs PublicDependencyModuleNames in order to build successfully (appropriate if supporting VR).
-	// or:
-	//		Comment or delete the call to ResetOrientationAndPosition below (appropriate if not supporting VR)
-	UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition();
-}
-
-void Agraduation_projectCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
-{
-		Jump();
-}
-
-void Agraduation_projectCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVector Location)
-{
-		StopJumping();
 }
 
 void Agraduation_projectCharacter::TurnAtRate(float Rate)
@@ -125,7 +97,7 @@ void Agraduation_projectCharacter::MoveForward(float Value)
 }
 
 void Agraduation_projectCharacter::MoveRight(float Value)
-{
+{	
 	if ( (Controller != nullptr) && (Value != 0.0f) )
 	{
 		// find out which way is right
