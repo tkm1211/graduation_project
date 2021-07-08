@@ -39,7 +39,6 @@ protected:
 
 	void LookUpAtRate(float Rate);
 
-
 protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 

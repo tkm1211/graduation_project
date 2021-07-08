@@ -19,7 +19,7 @@ protected:
 	float shotRangeValue;
 	float shotAttributeValue;
 
-	USkeletalMesh* mesh;
+	USkeletalMeshComponent* mesh;
 	UArrowComponent* fireLocation;
 	UParticleSystem* muzzleFlash;
 

@@ -6,11 +6,32 @@
 #include "GameFramework/Actor.h"
 #include "BasePiece.generated.h"
 
+UENUM()
+enum PieceShape
+{
+	Box,
+	L,
+	I,
+	T
+};
+
+UENUM()
+enum PieceType
+{
+	Power,
+	Range,
+	Attribute
+};
+
 UCLASS()
 class GRADUATION_PROJECT_API ABasePiece : public AActor
 {
 	GENERATED_BODY()
 	
+protected:
+	PieceShape shape;
+	PieceType type;
+
 public:	
 	// Sets default values for this actor's properties
 	ABasePiece();
