@@ -32,6 +32,9 @@ Agraduation_projectCharacter::Agraduation_projectCharacter()
 	GetCharacterMovement()->JumpZVelocity = 600.f;
 	GetCharacterMovement()->AirControl = 0.2f;
 
+	JumpMaxCount = 2;
+	GetCharacterMovement()->GravityScale = 2.0;
+
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
