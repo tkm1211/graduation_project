@@ -8,6 +8,7 @@
 
 class UArrowComponent;
 class UParticleSystem;
+class UCapsuleComponent;
 
 UCLASS()
 class GRADUATION_PROJECT_API ABaseWepon : public AActor
@@ -19,9 +20,14 @@ protected:
 	float shotRangeValue;
 	float shotAttributeValue;
 
-	USkeletalMeshComponent* mesh;
-	UArrowComponent* fireLocation;
-	UParticleSystem* muzzleFlash;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+		UCapsuleComponent* capsuleComp;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+		UStaticMeshComponent* mesh;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+		UArrowComponent* fireLocation;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+		UParticleSystem* muzzleFlash;
 
 public:	
 	// Sets default values for this actor's properties

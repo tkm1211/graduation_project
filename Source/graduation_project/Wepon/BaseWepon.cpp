@@ -2,6 +2,7 @@
 
 
 #include "BaseWepon.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Particles/ParticleSystem.h"
 
@@ -11,8 +12,15 @@ ABaseWepon::ABaseWepon()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
-	RootComponent = mesh;
+	capsuleComp = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleCollider"));
+	capsuleComp->SetupAttachment(RootComponent);
+
+	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	mesh->SetupAttachment(capsuleComp);
+
+	fireLocation = CreateDefaultSubobject<UArrowComponent>(TEXT("FireLocation"));
+	fireLocation->SetupAttachment(mesh);
+
 }
 
 // Called when the game starts or when spawned
