@@ -35,4 +35,3 @@ void ABaseWepon::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-
