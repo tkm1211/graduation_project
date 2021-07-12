@@ -6,6 +6,7 @@
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
+#include "Kismet/GameplayStatics.h"
 
 //////////////////////////////////////////////////////////////////////////
 // Agraduation_projectCharacter
@@ -46,6 +47,12 @@ void Agraduation_projectCharacter::SetupPlayerInputComponent(class UInputCompone
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
+	PlayerInputComponent->BindAction("Aim", IE_Pressed, this, &Agraduation_projectCharacter::AimWepon);
+	PlayerInputComponent->BindAction("Aim", IE_Released, this, &Agraduation_projectCharacter::StopAimWepon);
+
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &Agraduation_projectCharacter::FireWepon);
+	PlayerInputComponent->BindAction("Fire", IE_Released, this, &Agraduation_projectCharacter::StopFireWepon);
+
 	PlayerInputComponent->BindAxis("MoveForward", this, &Agraduation_projectCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &Agraduation_projectCharacter::MoveRight);
 
@@ -54,6 +61,15 @@ void Agraduation_projectCharacter::SetupPlayerInputComponent(class UInputCompone
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &Agraduation_projectCharacter::LookUpAtRate);
 
+}
+
+void Agraduation_projectCharacter::Tick(float DeltaTime)
+{
+	if (isAim)
+	{
+		FRotator newRotor = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
+		SetActorRotation(newRotor);
+	}
 }
 
 void Agraduation_projectCharacter::TurnAtRate(float Rate)
@@ -80,6 +96,7 @@ void Agraduation_projectCharacter::MoveForward(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		AddMovementInput(Direction, Value);
 	}
+	inputMoveValue.Y = Value;
 }
 
 void Agraduation_projectCharacter::MoveRight(float Value)
@@ -95,6 +112,29 @@ void Agraduation_projectCharacter::MoveRight(float Value)
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
 	}
+	inputMoveValue.X = Value;
+}
+
+void Agraduation_projectCharacter::FireWepon()
+{
+	isFire = true;
+}
+
+void Agraduation_projectCharacter::AimWepon()
+{
+	isAim = true;
+	FRotator newRotor = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
+	SetActorRotation(newRotor);
+}
+
+void Agraduation_projectCharacter::StopFireWepon()
+{
+	isFire = false;
+}
+
+void Agraduation_projectCharacter::StopAimWepon()
+{
+	isAim = false;
 }
 
 void Agraduation_projectCharacter::ChangeWepon(ABaseWepon* nextWepon)

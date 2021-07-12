@@ -13,11 +13,11 @@ class GRADUATION_PROJECT_API ACameraManager : public AActor
 public:
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-		class USpringArmComponent* CameraBoom;
+		class USpringArmComponent* cameraBoom;
 
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-		class UCameraComponent* FollowCamera;
+		class UCameraComponent* followCamera;
 public:	
 	// Sets default values for this actor's properties
 	ACameraManager();
