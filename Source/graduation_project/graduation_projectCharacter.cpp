@@ -65,6 +65,8 @@ void Agraduation_projectCharacter::SetupPlayerInputComponent(class UInputCompone
 
 void Agraduation_projectCharacter::Tick(float DeltaTime)
 {
+	Super::Tick(DeltaTime);
+
 	if (isAim)
 	{
 		FRotator newRotor = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
