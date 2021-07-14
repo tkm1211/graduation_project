@@ -7,6 +7,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "Kismet/GameplayStatics.h"
+#include "Wepon/BaseWepon.h"
 
 //////////////////////////////////////////////////////////////////////////
 // Agraduation_projectCharacter
@@ -50,8 +51,8 @@ void Agraduation_projectCharacter::SetupPlayerInputComponent(class UInputCompone
 	PlayerInputComponent->BindAction("Aim", IE_Pressed, this, &Agraduation_projectCharacter::AimWepon);
 	PlayerInputComponent->BindAction("Aim", IE_Released, this, &Agraduation_projectCharacter::StopAimWepon);
 
-	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &Agraduation_projectCharacter::FireWepon);
-	PlayerInputComponent->BindAction("Fire", IE_Released, this, &Agraduation_projectCharacter::StopFireWepon);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &Agraduation_projectCharacter::FireWepon).bConsumeInput = false;
+	PlayerInputComponent->BindAction("Fire", IE_Released, this, &Agraduation_projectCharacter::StopFireWepon).bConsumeInput = false;
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &Agraduation_projectCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &Agraduation_projectCharacter::MoveRight);
@@ -66,6 +67,14 @@ void Agraduation_projectCharacter::SetupPlayerInputComponent(class UInputCompone
 void Agraduation_projectCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (isAim && !isFire)
+	{
+		FRotator newRotor = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
+		newRotor.Pitch = 0.0f;
+		newRotor.Roll = 0.0f;
+		SetActorRotation(newRotor);
+	}
 }
 
 void Agraduation_projectCharacter::TurnAtRate(float Rate)
@@ -114,6 +123,7 @@ void Agraduation_projectCharacter::MoveRight(float Value)
 void Agraduation_projectCharacter::FireWepon()
 {
 	isFire = true;
+	useWepon->Fire();
 }
 
 void Agraduation_projectCharacter::AimWepon()
