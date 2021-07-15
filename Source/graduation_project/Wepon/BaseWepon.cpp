@@ -3,7 +3,6 @@
 
 #include "BaseWepon.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/ArrowComponent.h"
 #include "Particles/ParticleSystem.h"
 
 // Sets default values
@@ -18,8 +17,8 @@ ABaseWepon::ABaseWepon()
 	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	mesh->SetupAttachment(capsuleComp);
 
-	fireLocation = CreateDefaultSubobject<UArrowComponent>(TEXT("FireLocation"));
-	fireLocation->SetupAttachment(mesh);
+	firePoint = CreateDefaultSubobject<USceneComponent>(TEXT("firePoint"));
+	firePoint->SetupAttachment(mesh);
 
 }
 

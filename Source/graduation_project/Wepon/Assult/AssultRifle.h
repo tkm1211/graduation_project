@@ -6,18 +6,21 @@
 #include "../BaseWepon.h"
 #include "AssultRifle.generated.h"
 
-
 class ABaseAmmo;
 UCLASS()
 class GRADUATION_PROJECT_API AAssultRifle : public ABaseWepon
 {
 	GENERATED_BODY()
 public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "LineTrace")
 		FVector rayStart;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "LineTrace")
 		FVector rayEnd;
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ammo")
+
+	// 弾薬をエディット側で設定させる
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ammo")
+		TSubclassOf<ABaseAmmo> ammoClass;
 	//	TArray<ABaseAmmo> ammo;
 
 public:

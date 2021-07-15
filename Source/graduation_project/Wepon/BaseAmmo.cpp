@@ -11,13 +11,13 @@ ABaseAmmo::ABaseAmmo()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	sphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollider"));
-	sphereComp->SetupAttachment(RootComponent);
-
 	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	mesh->SetupAttachment(sphereComp);
+	RootComponent = mesh;
 
 	movement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
+	movement->InitialSpeed = movementSpeed;
+	movement->MaxSpeed = movementSpeed;
+	InitialLifeSpan = life;
 }
 
 // Called when the game starts or when spawned

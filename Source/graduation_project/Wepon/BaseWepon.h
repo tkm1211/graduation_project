@@ -6,7 +6,6 @@
 #include "GameFramework/Actor.h"
 #include "BaseWepon.generated.h"
 
-class UArrowComponent;
 class UParticleSystem;
 class UCapsuleComponent;
 
@@ -24,8 +23,9 @@ protected:
 		UCapsuleComponent* capsuleComp;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 		UStaticMeshComponent* mesh;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
-		UArrowComponent* fireLocation;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+		USceneComponent* firePoint;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 		UParticleSystem* muzzleFlash;
 

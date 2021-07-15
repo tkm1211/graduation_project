@@ -10,11 +10,7 @@
 
 AAssultRifle::AAssultRifle()
 {
-	//ABaseAmmo baseAmmo;
 
-	////baseAmmo
-
-	//ammo.Init();
 }
 
 void AAssultRifle::BeginPlay()
@@ -31,12 +27,23 @@ void AAssultRifle::Tick(float DeltaTime)
 
 void AAssultRifle::Fire()
 {
-	FHitResult result;
-	// ”­ŽËˆÊ’u
-	rayStart = fireLocation->K2_GetComponentLocation();
-	FRotator newRotator = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
-	FVector forwardVec = newRotator.Vector();
-	forwardVec *= 100000.0f;
+	//FHitResult result;
+	//// ”­ŽËˆÊ’u
+	//rayStart = firePoint->GetComponentLocation();
+	//FRotator newRotator = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
+	//FVector forwardVec = newRotator.Vector();
+	//forwardVec *= 100000.0f;
 
-	rayEnd = rayStart + forwardVec;
+	//rayEnd = rayStart + forwardVec;
+
+	if (ammoClass)
+	{
+		FVector fireLoc = firePoint->GetComponentLocation();
+		FRotator fireRot = firePoint->GetComponentRotation();
+
+		ABaseAmmo* tempAmmoBase = GetWorld()->SpawnActor<ABaseAmmo>(ammoClass, fireLoc, fireRot);
+
+		tempAmmoBase->SetOwner(this);
+	}
+
 }
