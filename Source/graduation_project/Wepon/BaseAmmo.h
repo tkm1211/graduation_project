@@ -24,7 +24,7 @@ public:
 	UProjectileMovementComponent* movement;
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ammo")
-		float movementSpeed = 500.0f;
+		float movementSpeed = 1500.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Life")
 		float life = 3.0f;

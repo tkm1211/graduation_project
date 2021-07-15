@@ -15,16 +15,16 @@ ABaseAmmo::ABaseAmmo()
 	RootComponent = mesh;
 
 	movement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
-	movement->InitialSpeed = movementSpeed;
-	movement->MaxSpeed = movementSpeed;
-	InitialLifeSpan = life;
+
 }
 
 // Called when the game starts or when spawned
 void ABaseAmmo::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	//movement->InitialSpeed = movementSpeed;
+	//movement->MaxSpeed = movementSpeed;
+	//InitialLifeSpan = life;
 }
 
 // Called every frame
