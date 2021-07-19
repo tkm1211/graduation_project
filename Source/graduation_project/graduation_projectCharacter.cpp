@@ -123,6 +123,7 @@ void Agraduation_projectCharacter::MoveRight(float Value)
 void Agraduation_projectCharacter::FireWepon()
 {
 	isFire = true;
+	isAim = true;
 	useWepon->Fire();
 }
 
