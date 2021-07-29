@@ -4,37 +4,41 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "BasePiece.generated.h"
+#include "PieceBase.generated.h"
 
+// Œ`
 UENUM()
 enum PieceShape
 {
-	Box,
+	O, // ¡
 	L,
 	I,
 	T
 };
 
+// í—Ş
 UENUM()
 enum PieceType
 {
-	Power,
-	Range,
-	Attribute
+	Power,    // ˆĞ—Í
+	Range,    // Ë’ö‹——£
+	Attribute // “ÁêŒø‰Ê
 };
 
 UCLASS()
-class GRADUATION_PROJECT_API ABasePiece : public AActor
+class GRADUATION_PROJECT_API APieceBase : public AActor
 {
 	GENERATED_BODY()
 	
 protected:
-	PieceShape shape;
-	PieceType type;
+	PieceShape shape; // Œ`
+	PieceType type;   // í—Ş
+
+	// TODO : Add Mesh.
 
 public:	
 	// Sets default values for this actor's properties
-	ABasePiece();
+	APieceBase();
 
 protected:
 	// Called when the game starts or when spawned
