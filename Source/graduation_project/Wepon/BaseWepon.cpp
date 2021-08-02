@@ -9,7 +9,7 @@
 ABaseWepon::ABaseWepon()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	capsuleComp = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleCollider"));
 	capsuleComp->SetupAttachment(RootComponent);
@@ -33,4 +33,11 @@ void ABaseWepon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+
+void ABaseWepon:: Fire()
+{
+	onFire = true;
+	fireTimer = 0.0f;
 }

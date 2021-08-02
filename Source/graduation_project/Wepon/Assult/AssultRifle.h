@@ -11,17 +11,13 @@ UCLASS()
 class GRADUATION_PROJECT_API AAssultRifle : public ABaseWepon
 {
 	GENERATED_BODY()
-public:
+private:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "LineTrace")
-		FVector rayStart;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "LineTrace")
-		FVector rayEnd;
+public:
 
 	// 弾薬をエディット側で設定させる
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ammo")
 		TSubclassOf<ABaseAmmo> ammoClass;
-	//	TArray<ABaseAmmo> ammo;
 
 public:
 	AAssultRifle();
@@ -35,5 +31,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void Fire() override;
+	void ShotFire(float DeltaTime) override;
 
 };

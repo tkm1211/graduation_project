@@ -21,23 +21,20 @@ void AAssultRifle::BeginPlay()
 void AAssultRifle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
 
+	// ’e”­ŽË
+	ShotFire(DeltaTime);
 }
 
 void AAssultRifle::Fire()
 {
-	//FHitResult result;
-	//// ”­ŽËˆÊ’u
-	//rayStart = firePoint->GetComponentLocation();
-	FRotator newRotator = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
-	FVector forwardVec = newRotator.Vector();
-	//forwardVec *= 100000.0f;
+	// ’e”­ŽË‚ÌƒR[ƒ‹‚ðŽó‚¯‚½
+	Super::Fire();
 
-	//rayEnd = rayStart + forwardVec;
-
+	// 1”­‚¾‚¯o‚·
 	if (ammoClass)
 	{
+		FRotator newRotator = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
 		FVector fireLoc = firePoint->GetComponentLocation();
 		FRotator fireRot = firePoint->GetComponentRotation();
 
@@ -45,5 +42,32 @@ void AAssultRifle::Fire()
 
 		tempAmmoBase->SetOwner(this);
 	}
+}
 
+void AAssultRifle::ShotFire(float DeltaTime)
+{
+	if (!onFire) return;
+	
+	if (fireDelayTime < fireTimer)
+	{
+		// Ammo‚ðÝ’è‚µ‚Ä‚¢‚½‚ç
+		if (ammoClass)
+		{
+			// ”­ŽË‚Ì•ûŒü‚ðŒvŽZ‚µ‚Äo‚·
+			FRotator newRotator = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
+			FVector fireLoc = firePoint->GetComponentLocation();
+			FRotator fireRot = firePoint->GetComponentRotation();
+
+			ABaseAmmo* tempAmmoBase = GetWorld()->SpawnActor<ABaseAmmo>(ammoClass, fireLoc, newRotator);
+
+			tempAmmoBase->SetOwner(this);
+		}
+
+		// Timer‚ð–ß‚·
+		fireTimer = 0.0f;
+	}
+	else
+	{
+		fireTimer += 1.0f * DeltaTime;
+	}
 }

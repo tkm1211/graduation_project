@@ -15,10 +15,6 @@ class GRADUATION_PROJECT_API ABaseWepon : public AActor
 	GENERATED_BODY()
 	
 protected:
-	float shotPowerValue;
-	float shotRangeValue;
-	float shotAttributeValue;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 		UCapsuleComponent* capsuleComp;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
@@ -28,6 +24,12 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 		UParticleSystem* muzzleFlash;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AmmoFire")
+		float fireDelayTime;
+
+	float fireTimer;
+	bool onFire;
 
 public:	
 	// Sets default values for this actor's properties
@@ -41,6 +43,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	virtual void Fire() {}
+	virtual void Fire();
+	virtual void ShotFire(float DeltaTime) {}
 
 };
