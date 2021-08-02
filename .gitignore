@@ -1,0 +1,9 @@
+.vs/
+Binaries/
+Config/
+Content/
+DerivedDataCache/
+Intermediate/
+Saved/
+*.sln
+*.uproject
