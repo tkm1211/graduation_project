@@ -48,6 +48,7 @@ void AAssultRifle::ShotFire(float DeltaTime)
 {
 	if (!onFire) return;
 	
+	return;
 	if (fireDelayTime < fireTimer)
 	{
 		// Ammo‚ðÝ’è‚µ‚Ä‚¢‚½‚ç
