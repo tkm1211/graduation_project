@@ -1,0 +1,10 @@
+.vs/
+Binaries/
+Config/
+Content/
+DerivedDataCache/
+Intermediate/
+Saved/
+WindowsNoEditor/
+*.sln
+*.uproject
