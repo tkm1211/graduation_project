@@ -68,7 +68,7 @@ void Agraduation_projectCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (isAim && !isFire)
+	if (isAim || isFire)
 	{
 		FRotator newRotor = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
 		newRotor.Pitch = 0.0f;
@@ -123,8 +123,7 @@ void Agraduation_projectCharacter::MoveRight(float Value)
 void Agraduation_projectCharacter::FireWepon()
 {
 	isFire = true;
-	isAim = true;
-	useWepon->Fire();
+	useWepon->FirstFire();
 }
 
 void Agraduation_projectCharacter::AimWepon()
@@ -135,6 +134,7 @@ void Agraduation_projectCharacter::AimWepon()
 void Agraduation_projectCharacter::StopFireWepon()
 {
 	isFire = false;
+	useWepon->SetOnFire(isFire);
 }
 
 void Agraduation_projectCharacter::StopAimWepon()

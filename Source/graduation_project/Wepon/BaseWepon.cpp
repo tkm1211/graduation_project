@@ -39,5 +39,11 @@ void ABaseWepon::Tick(float DeltaTime)
 void ABaseWepon:: Fire()
 {
 	onFire = true;
-	fireTimer = 0.0f;
+	fireTimer = fireDelayTime;
+}
+
+void ABaseWepon:: FirstFire()
+{
+	onFire = true;
+	fireTimer = 0.3f;
 }

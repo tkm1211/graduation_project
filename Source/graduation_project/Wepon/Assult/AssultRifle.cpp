@@ -5,8 +5,10 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "../../graduation_projectCharacter.h"
 #include "../BaseAmmo.h"
 #include "AssultRifle.h"
+#include "DrawDebugHelpers.h"
 
 AAssultRifle::AAssultRifle()
 {
@@ -34,41 +36,73 @@ void AAssultRifle::Fire()
 	// 1発だけ出す
 	if (ammoClass)
 	{
-		FRotator newRotator = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
-		FVector fireLoc = firePoint->GetComponentLocation();
-		FRotator fireRot = firePoint->GetComponentRotation();
+		FRotator _newRotator = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
+		FVector _fireLoc = firePoint->GetComponentLocation();
+		FRotator _fireRot = firePoint->GetComponentRotation();
 
-		ABaseAmmo* tempAmmoBase = GetWorld()->SpawnActor<ABaseAmmo>(ammoClass, fireLoc, newRotator);
+		ABaseAmmo* _tempAmmoBase = GetWorld()->SpawnActor<ABaseAmmo>(ammoClass, _fireLoc, _newRotator);
 
-		tempAmmoBase->SetOwner(this);
+		_tempAmmoBase->SetOwner(this);
+
+		TArray<FHitResult> _outHit;
+		FCollisionShape MyColSphere = FCollisionShape::MakeSphere(500.0f);
+		bool isHit = GetWorld()->SweepMultiByChannel(_outHit, _fireLoc, _fireLoc + (GetActorForwardVector() * 100.0f),  FQuat::Identity, ECC_WorldStatic, MyColSphere);
+		ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+
+		Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
+
+
+		if (isHit)
+		{
+			for (auto& Hit : _outHit)
+			{
+				if (Hit.GetActor() == _playerCharacter) continue;
+				// screen log information on what was hit
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Hit Result: %s"), *Hit.Actor->GetName()));
+				// uncommnet to see more info on sweeped actor
+				// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("All Hit Information: %s"), *Hit.ToString()));
+			}
+		}
 	}
+}
+
+void AAssultRifle::FirstFire()
+{
+	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+
+	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
+
+	if (!_playerCharacter) return;
+	// 1発だけ出す
+	if (ammoClass && _playerCharacter->isAim)
+	{
+		Super::Fire();
+
+		FRotator _newRotator = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
+		FVector _fireLoc = firePoint->GetComponentLocation();
+		FRotator _fireRot = firePoint->GetComponentRotation();
+
+		ABaseAmmo* _tempAmmoBase = GetWorld()->SpawnActor<ABaseAmmo>(ammoClass, _fireLoc, _newRotator);
+
+		_tempAmmoBase->SetOwner(this);
+	}
+	else
+	{
+		Super::FirstFire();
+	}
+
 }
 
 void AAssultRifle::ShotFire(float DeltaTime)
 {
 	if (!onFire) return;
 	
-	return;
-	if (fireDelayTime < fireTimer)
+	if (0 > fireTimer)
 	{
-		// Ammoを設定していたら
-		if (ammoClass)
-		{
-			// 発射の方向を計算して出す
-			FRotator newRotator = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
-			FVector fireLoc = firePoint->GetComponentLocation();
-			FRotator fireRot = firePoint->GetComponentRotation();
-
-			ABaseAmmo* tempAmmoBase = GetWorld()->SpawnActor<ABaseAmmo>(ammoClass, fireLoc, newRotator);
-
-			tempAmmoBase->SetOwner(this);
-		}
-
-		// Timerを戻す
-		fireTimer = 0.0f;
+		Fire();
 	}
 	else
 	{
-		fireTimer += 1.0f * DeltaTime;
+		fireTimer -= 1.0f * DeltaTime;
 	}
 }

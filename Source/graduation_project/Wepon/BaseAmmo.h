@@ -28,6 +28,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Life")
 		float life = 3.0f;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

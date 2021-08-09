@@ -43,7 +43,9 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	virtual void FirstFire();
 	virtual void Fire();
 	virtual void ShotFire(float DeltaTime) {}
 
+	void SetOnFire(bool flg) { onFire = flg; }
 };

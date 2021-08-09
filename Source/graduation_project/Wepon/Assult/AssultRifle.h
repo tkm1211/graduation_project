@@ -11,26 +11,22 @@ UCLASS()
 class GRADUATION_PROJECT_API AAssultRifle : public ABaseWepon
 {
 	GENERATED_BODY()
-private:
-
 public:
-
 	// 弾薬をエディット側で設定させる
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ammo")
 		TSubclassOf<ABaseAmmo> ammoClass;
-
-public:
-	AAssultRifle();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:
+	AAssultRifle();
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	void Fire() override;
+	void FirstFire() override;
 	void ShotFire(float DeltaTime) override;
 
 };

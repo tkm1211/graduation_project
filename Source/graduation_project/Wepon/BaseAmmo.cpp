@@ -22,9 +22,6 @@ ABaseAmmo::ABaseAmmo()
 void ABaseAmmo::BeginPlay()
 {
 	Super::BeginPlay();
-	//movement->InitialSpeed = movementSpeed;
-	//movement->MaxSpeed = movementSpeed;
-	//InitialLifeSpan = life;
 }
 
 // Called every frame
@@ -32,5 +29,11 @@ void ABaseAmmo::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	life -= DeltaTime;
+
+	if (life < 0)
+	{
+		Destroy();
+	}
 }
 
