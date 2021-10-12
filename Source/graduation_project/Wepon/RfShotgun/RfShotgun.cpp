@@ -5,8 +5,8 @@
 #include "Components/ArrowComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "../../graduation_projectCharacter.h"
-#include "../BaseAmmo.h"
 #include "RfShotgun.h"
+#include "../BaseAmmo.h"
 
 ARfShotgun::ARfShotgun()
 {

@@ -3,6 +3,10 @@
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "../graduation_projectCharacter.h"
+#include "TimerManager.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "UObject/NameTypes.h"
 #include "CameraManager.h"
 
 // Sets default values
@@ -11,16 +15,7 @@ ACameraManager::ACameraManager()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// Create a camera boom (pulls in towards the player if there is a collision)
-	cameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	cameraBoom->SetupAttachment(RootComponent);
-	cameraBoom->TargetArmLength = 300.0f; // The camera follows at this distance behind the character	
-	cameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
-
-	// Create a follow camera
-	followCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	followCamera->SetupAttachment(cameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
-	followCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+	cameraPoint = CreateDefaultSubobject<USceneComponent>(TEXT("CameraPoint"));
 
 }
 
@@ -29,9 +24,11 @@ void ACameraManager::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	APlayerController* playerContoroller = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	//APlayerController* playerContoroller = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 
-	playerContoroller->SetViewTargetWithBlend(this);
+	//playerContoroller->SetViewTargetWithBlend(this);
+
+	//// 一定秒数ごとに関数を実行する
 }
 
 // Called every frame
@@ -44,5 +41,50 @@ void ACameraManager::Tick(float DeltaTime)
 
 	SetActorLocation(newLocation);
 	SetActorRotation(newRotor);
+
+	if (hormingCastDelay > hormingCastDelayTimer)
+	{
+		SphereCastFrontCamera();
+		hormingCastDelayTimer = 0.0f;
+	}
+	else hormingCastDelayTimer += DeltaTime;
+
 }
 
+void ACameraManager::SphereCastFrontCamera()
+{
+	// プレイヤーを取得し、キャストする
+	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
+
+
+	// レイのスタート位置取得(ホーミング用)
+	FVector _rayStart = GetActorLocation();
+	FVector _rayForward = GetActorForwardVector();
+
+	// レイのヒットしたアクター保存用
+	TArray<AActor*> IngoreActors;
+	IngoreActors.Add(this);
+	TArray<FHitResult> HitRetArray;
+
+	// SphereCast
+	bool isHit = UKismetSystemLibrary::SphereTraceMultiByProfile(GetWorld(), _rayStart, _rayStart + (_rayForward * hormingCastRange), hormingCastRadius, TEXT("BlockAll"), false, IngoreActors, EDrawDebugTrace::Type::ForOneFrame, HitRetArray, true);
+
+	if (isHit)
+	{
+		// SphereCastにHitしたEnemyの数
+		int _rockOnEnemyCount = 0;
+
+		for (auto& Hit : HitRetArray)
+		{
+			// PlayerとTagがEnemyじゃないときはContinue
+			if (!Hit.Actor->ActorHasTag(FName("Enemy"))) continue;
+
+			_rockOnEnemyCount++;
+
+		} //  for (auto& Hit : HitRetArray)
+
+		if (_rockOnEnemyCount > 0) _playerCharacter->hotmingTargetRockOn = true;
+		else _playerCharacter->hotmingTargetRockOn = false;
+	}
+}

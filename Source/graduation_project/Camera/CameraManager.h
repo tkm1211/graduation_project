@@ -12,12 +12,20 @@ class GRADUATION_PROJECT_API ACameraManager : public AActor
 	GENERATED_BODY()
 public:
 	/** Camera boom positioning the camera behind the character */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-		class USpringArmComponent* cameraBoom;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+		USceneComponent* cameraPoint;
 
-	/** Follow camera */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-		class UCameraComponent* followCamera;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HormingRayCast")
+		float hormingCastRange = 4000.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HormingRayCast")
+		float hormingCastRadius = 100.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HormingRayCast")
+		float hormingCastDelay = 0.1f;
+private:
+		float hormingCastDelayTimer = 0.0f;
+private:
+	void SphereCastFrontCamera();
+
 public:	
 	// Sets default values for this actor's properties
 	ACameraManager();

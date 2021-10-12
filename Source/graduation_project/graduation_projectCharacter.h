@@ -13,6 +13,13 @@ class Agraduation_projectCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+		/** Camera boom positioning the camera behind the character */
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+		class USpringArmComponent* CameraBoom;
+
+	/** Follow camera */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+		class UCameraComponent* FollowCamera;
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Wepon")
 		ABaseWepon* useWepon;
@@ -25,6 +32,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Flag")
 		bool isFire;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wepon")
+		int32 weponNumber;
 public:
 	Agraduation_projectCharacter();
 
@@ -35,6 +45,9 @@ public:
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 		float BaseLookUpRate;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Horming)
+		bool hotmingTargetRockOn = false;
 
 protected:
 

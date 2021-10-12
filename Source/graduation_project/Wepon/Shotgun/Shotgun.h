@@ -15,9 +15,17 @@ public:
 	// 弾薬をエディット側で設定させる
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ammo")
 		TSubclassOf<ABaseAmmo> ammoClass;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ammo")
+		float spawnAmmoSpace;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ammo")
+		float ammoRayCastRange;
 
 public:
 	AShotgun();
+
+private:
+	void SpawnShot();
 
 protected:
 	// Called when the game starts or when spawned
@@ -28,6 +36,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void Fire() override;
+	void FirstFire() override;
 	void ShotFire(float DeltaTime) override;
 
 };

@@ -1,20 +1,18 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "graduation_projectCharacter.h"
+#include "TP_ThirdPersonCharacter.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
+#include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
-#include "Kismet/GameplayStatics.h"
-#include "Wepon/BaseWepon.h"
-#include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
 //////////////////////////////////////////////////////////////////////////
-// Agraduation_projectCharacter
+// ATP_ThirdPersonCharacter
 
-Agraduation_projectCharacter::Agraduation_projectCharacter()
+ATP_ThirdPersonCharacter::ATP_ThirdPersonCharacter()
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -34,9 +32,6 @@ Agraduation_projectCharacter::Agraduation_projectCharacter()
 	GetCharacterMovement()->JumpZVelocity = 600.f;
 	GetCharacterMovement()->AirControl = 0.2f;
 
-	JumpMaxCount = 2;
-	GetCharacterMovement()->GravityScale = 2.0;
-
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
@@ -48,60 +43,74 @@ Agraduation_projectCharacter::Agraduation_projectCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
+	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
+	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 }
 
 //////////////////////////////////////////////////////////////////////////
 // Input
 
-void Agraduation_projectCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
+void ATP_ThirdPersonCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	// Set up gameplay key bindings
 	check(PlayerInputComponent);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
-	PlayerInputComponent->BindAction("Aim", IE_Pressed, this, &Agraduation_projectCharacter::AimWepon);
-	PlayerInputComponent->BindAction("Aim", IE_Released, this, &Agraduation_projectCharacter::StopAimWepon);
+	PlayerInputComponent->BindAxis("MoveForward", this, &ATP_ThirdPersonCharacter::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &ATP_ThirdPersonCharacter::MoveRight);
 
-	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &Agraduation_projectCharacter::FireWepon).bConsumeInput = false;
-	PlayerInputComponent->BindAction("Fire", IE_Released, this, &Agraduation_projectCharacter::StopFireWepon).bConsumeInput = false;
-
-	PlayerInputComponent->BindAxis("MoveForward", this, &Agraduation_projectCharacter::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &Agraduation_projectCharacter::MoveRight);
-
+	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
+	// "turn" handles devices that provide an absolute delta, such as a mouse.
+	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("TurnRate", this, &Agraduation_projectCharacter::TurnAtRate);
+	PlayerInputComponent->BindAxis("TurnRate", this, &ATP_ThirdPersonCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
-	PlayerInputComponent->BindAxis("LookUpRate", this, &Agraduation_projectCharacter::LookUpAtRate);
+	PlayerInputComponent->BindAxis("LookUpRate", this, &ATP_ThirdPersonCharacter::LookUpAtRate);
 
+	// handle touch devices
+	PlayerInputComponent->BindTouch(IE_Pressed, this, &ATP_ThirdPersonCharacter::TouchStarted);
+	PlayerInputComponent->BindTouch(IE_Released, this, &ATP_ThirdPersonCharacter::TouchStopped);
+
+	// VR headset functionality
+	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &ATP_ThirdPersonCharacter::OnResetVR);
 }
 
-void Agraduation_projectCharacter::Tick(float DeltaTime)
+
+void ATP_ThirdPersonCharacter::OnResetVR()
 {
-	Super::Tick(DeltaTime);
-
-	if (isAim || isFire)
-	{
-		FRotator newRotor = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
-		newRotor.Pitch = 0.0f;
-		newRotor.Roll = 0.0f;
-		SetActorRotation(newRotor);
-	}
+	// If TP_ThirdPerson is added to a project via 'Add Feature' in the Unreal Editor the dependency on HeadMountedDisplay in TP_ThirdPerson.Build.cs is not automatically propagated
+	// and a linker error will result.
+	// You will need to either:
+	//		Add "HeadMountedDisplay" to [YourProject].Build.cs PublicDependencyModuleNames in order to build successfully (appropriate if supporting VR).
+	// or:
+	//		Comment or delete the call to ResetOrientationAndPosition below (appropriate if not supporting VR)
+	UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition();
 }
 
-void Agraduation_projectCharacter::TurnAtRate(float Rate)
+void ATP_ThirdPersonCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
+{
+		Jump();
+}
+
+void ATP_ThirdPersonCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVector Location)
+{
+		StopJumping();
+}
+
+void ATP_ThirdPersonCharacter::TurnAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
 	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 
-void Agraduation_projectCharacter::LookUpAtRate(float Rate)
+void ATP_ThirdPersonCharacter::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
-void Agraduation_projectCharacter::MoveForward(float Value)
+void ATP_ThirdPersonCharacter::MoveForward(float Value)
 {
 	if ((Controller != nullptr) && (Value != 0.0f))
 	{
@@ -113,11 +122,10 @@ void Agraduation_projectCharacter::MoveForward(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		AddMovementInput(Direction, Value);
 	}
-	inputMoveValue.Y = Value;
 }
 
-void Agraduation_projectCharacter::MoveRight(float Value)
-{	
+void ATP_ThirdPersonCharacter::MoveRight(float Value)
+{
 	if ( (Controller != nullptr) && (Value != 0.0f) )
 	{
 		// find out which way is right
@@ -129,39 +137,4 @@ void Agraduation_projectCharacter::MoveRight(float Value)
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
 	}
-	inputMoveValue.X = Value;
-}
-
-void Agraduation_projectCharacter::FireWepon()
-{
-	isFire = true;
-	useWepon->FirstFire();
-}
-
-void Agraduation_projectCharacter::AimWepon()
-{
-	isAim = true;
-}
-
-void Agraduation_projectCharacter::StopFireWepon()
-{
-	isFire = false;
-	useWepon->SetOnFire(isFire);
-}
-
-void Agraduation_projectCharacter::StopAimWepon()
-{
-	isAim = false;
-}
-
-void Agraduation_projectCharacter::ChangeWepon(ABaseWepon* nextWepon)
-{
-	useWepon = nextWepon;
-
-	FString weponName = UKismetSystemLibrary::GetObjectName(useWepon);
-	weponName = weponName.Right(5);
-	weponName = weponName.Left(1);
-
-	weponNumber = FCString::Atoi(*weponName);
-	
 }

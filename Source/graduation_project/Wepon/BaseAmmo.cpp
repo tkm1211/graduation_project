@@ -15,7 +15,7 @@ ABaseAmmo::ABaseAmmo()
 	RootComponent = mesh;
 
 	movement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
-
+	
 }
 
 // Called when the game starts or when spawned

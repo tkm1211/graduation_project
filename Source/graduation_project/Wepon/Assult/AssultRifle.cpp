@@ -9,6 +9,8 @@
 #include "../BaseAmmo.h"
 #include "AssultRifle.h"
 #include "DrawDebugHelpers.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "UObject/NameTypes.h"
 
 AAssultRifle::AAssultRifle()
 {
@@ -18,6 +20,7 @@ AAssultRifle::AAssultRifle()
 void AAssultRifle::BeginPlay()
 {
 	Super::BeginPlay();
+
 }
 
 void AAssultRifle::Tick(float DeltaTime)
@@ -36,55 +39,26 @@ void AAssultRifle::Fire()
 	// 1発だけ出す
 	if (ammoClass)
 	{
-		FRotator _newRotator = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
-		FVector _fireLoc = firePoint->GetComponentLocation();
-		FRotator _fireRot = firePoint->GetComponentRotation();
 
-		ABaseAmmo* _tempAmmoBase = GetWorld()->SpawnActor<ABaseAmmo>(ammoClass, _fireLoc, _newRotator);
+		SpawnShot();
 
-		_tempAmmoBase->SetOwner(this);
-
-		TArray<FHitResult> _outHit;
-		FCollisionShape MyColSphere = FCollisionShape::MakeSphere(500.0f);
-		bool isHit = GetWorld()->SweepMultiByChannel(_outHit, _fireLoc, _fireLoc + (GetActorForwardVector() * 100.0f),  FQuat::Identity, ECC_WorldStatic, MyColSphere);
-		ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-
-		Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
-
-
-		if (isHit)
-		{
-			for (auto& Hit : _outHit)
-			{
-				if (Hit.GetActor() == _playerCharacter) continue;
-				// screen log information on what was hit
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Hit Result: %s"), *Hit.Actor->GetName()));
-				// uncommnet to see more info on sweeped actor
-				// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("All Hit Information: %s"), *Hit.ToString()));
-			}
-		}
 	}
 }
 
+// 初弾の発射
 void AAssultRifle::FirstFire()
 {
+	// キャラクターが存在しいているかどうか
 	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-
 	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
 
 	if (!_playerCharacter) return;
-	// 1発だけ出す
+
+	// エイム中かどうか
 	if (ammoClass && _playerCharacter->isAim)
 	{
 		Super::Fire();
-
-		FRotator _newRotator = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
-		FVector _fireLoc = firePoint->GetComponentLocation();
-		FRotator _fireRot = firePoint->GetComponentRotation();
-
-		ABaseAmmo* _tempAmmoBase = GetWorld()->SpawnActor<ABaseAmmo>(ammoClass, _fireLoc, _newRotator);
-
-		_tempAmmoBase->SetOwner(this);
+		SpawnShot();
 	}
 	else
 	{
@@ -93,10 +67,12 @@ void AAssultRifle::FirstFire()
 
 }
 
+// 持続的に弾を出す
 void AAssultRifle::ShotFire(float DeltaTime)
 {
 	if (!onFire) return;
 	
+	// カウントして弾を出す
 	if (0 > fireTimer)
 	{
 		Fire();
@@ -106,3 +82,16 @@ void AAssultRifle::ShotFire(float DeltaTime)
 		fireTimer -= 1.0f * DeltaTime;
 	}
 }
+
+// 弾生成
+void AAssultRifle::SpawnShot()
+{
+	// プレイヤーの向きと発射位置取得
+	FRotator _newRotator = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
+	FVector _fireLoc = firePoint->GetComponentLocation();
+
+	//　スポーンさせる
+	ABaseAmmo* _tempAmmoBase = GetWorld()->SpawnActor<ABaseAmmo>(ammoClass, _fireLoc, _newRotator);
+	_tempAmmoBase->SetOwner(this);
+}
+

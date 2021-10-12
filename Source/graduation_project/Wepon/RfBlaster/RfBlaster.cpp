@@ -1,13 +1,19 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+
 #include "Engine/World.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "../../graduation_projectCharacter.h"
 #include "../BaseAmmo.h"
 #include "RfBlaster.h"
+#include "DrawDebugHelpers.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "../../Camera/CameraManager.h"
+#include "TimerManager.h"
+#include "UObject/NameTypes.h"
+
 
 ARfBlaster::ARfBlaster()
 {
@@ -17,6 +23,8 @@ ARfBlaster::ARfBlaster()
 void ARfBlaster::BeginPlay()
 {
 	Super::BeginPlay();
+
+
 }
 
 void ARfBlaster::Tick(float DeltaTime)
@@ -32,37 +40,59 @@ void ARfBlaster::Fire()
 	// 弾発射のコールを受けた
 	Super::Fire();
 
-	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	// 1発だけ出す
+	if (ammoClass)
+	{
+		SpawnShot();
+	}
+}
 
+// 初弾の発射
+void ARfBlaster::FirstFire()
+{
+	// キャラクターが存在しいているかどうか
+	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
 
 	if (!_playerCharacter) return;
-	// 1発だけ出す
+
+	// エイム中かどうか
 	if (ammoClass && _playerCharacter->isAim)
 	{
-		FRotator _newRotator = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
-		FVector _fireLoc = firePoint->GetComponentLocation();
-		FRotator _fireRot = firePoint->GetComponentRotation();
-
-		ABaseAmmo* _tempAmmoBase = GetWorld()->SpawnActor<ABaseAmmo>(ammoClass, _fireLoc, _newRotator);
-
-		_tempAmmoBase->SetOwner(this);
-
+		Super::Fire();
+		SpawnShot();
 	}
-
+	else
+	{
+		Super::FirstFire();
+	}
 
 }
 
+// 持続的に弾を出す
 void ARfBlaster::ShotFire(float DeltaTime)
 {
 	if (!onFire) return;
 
-	if (fireDelayTime < fireTimer)
+	// カウントして弾を出す
+	if (0 > fireTimer)
 	{
 		Fire();
 	}
 	else
 	{
-		fireTimer += 1.0f * DeltaTime;
+		fireTimer -= 1.0f * DeltaTime;
 	}
+}
+
+// 弾生成
+void ARfBlaster::SpawnShot()
+{
+	// プレイヤーの向きと発射位置取得
+	FRotator _newRotator = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
+	FVector _fireLoc = firePoint->GetComponentLocation();
+
+	//　スポーンさせる
+	ABaseAmmo* _tempAmmoBase = GetWorld()->SpawnActor<ABaseAmmo>(ammoClass, _fireLoc, _newRotator);
+	_tempAmmoBase->SetOwner(this);
 }

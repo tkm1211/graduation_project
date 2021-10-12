@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "NiagaraComponent.h"
 #include "BaseAmmo.generated.h"
 
 class USphereComponent;
@@ -22,6 +23,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ProjectileMovementComponent")
 	UProjectileMovementComponent* movement;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Niagara")
+	UNiagaraComponent* naiagaraTrail;
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ammo")
 		float movementSpeed = 1500.0f;

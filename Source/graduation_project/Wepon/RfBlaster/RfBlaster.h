@@ -16,18 +16,21 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ammo")
 		TSubclassOf<ABaseAmmo> ammoClass;
 
-public:
-	ARfBlaster();
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+private:
+	void SpawnShot();
+	void HormingRayPick();
+
 public:
+	ARfBlaster();
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	void Fire() override;
+	void FirstFire() override;
 	void ShotFire(float DeltaTime) override;
 
 };

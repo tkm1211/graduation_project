@@ -20,6 +20,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+private:
+	void SpawnShot();
+
 public:
 	AAssultRifle();
 	// Called every frame
