@@ -4,24 +4,23 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
-#include "PieceManager.generated.h"
+#include "PiecePattern.generated.h"
 
 UCLASS()
-class GRADUATION_PROJECT_API APieceManager : public APawn
+class GRADUATION_PROJECT_API APiecePattern : public APawn
 {
 	GENERATED_BODY()
 
 public:
-	// 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PieceMesh")
-	TArray<UStaticMesh*> meshs;
+	UStaticMesh* mesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PieceMaterial")
-	TArray<UMaterial*> materials;
+	UMaterial* material;
 
 public:
 	// Sets default values for this pawn's properties
-	APieceManager();
+	APiecePattern();
 
 protected:
 	// Called when the game starts or when spawned
@@ -29,7 +28,7 @@ protected:
 
 public:	
 	// Called every frame
-	//virtual void Tick(float DeltaTime) override;
+	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

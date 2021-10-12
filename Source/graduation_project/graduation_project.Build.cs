@@ -9,6 +9,6 @@ public class graduation_project : ModuleRules
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "UMG", "Niagara" });
-		PublicDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore", "Json", "JsonUtilities" });
 	}
 }
