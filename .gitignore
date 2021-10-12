@@ -6,5 +6,4 @@ DerivedDataCache/
 Intermediate/
 Saved/
 WindowsNoEditor/
-*.sln
 *.uproject
