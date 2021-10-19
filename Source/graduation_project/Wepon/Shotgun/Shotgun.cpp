@@ -8,6 +8,7 @@
 #include "../BaseAmmo.h"
 #include "Shotgun.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "../../Camera/CameraManager.h"
 
 AShotgun::AShotgun()
 {
@@ -28,7 +29,7 @@ void AShotgun::Tick(float DeltaTime)
 }
 
 void AShotgun::Fire()
-{
+{	
 	// 弾発射のコールを受けた
 	Super::Fire();
 
@@ -89,28 +90,33 @@ void AShotgun::SpawnShot()
 		right = FVector(right.X * adjustX, right.Y * adjustX, right.Z * adjustX);
 		up = FVector(up.X * adjustY, up.Y * adjustY, up.Z * adjustY);
 
-		FRotator _newRotator = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
-		FVector _fireLoc = (firePoint->GetComponentLocation() * firePoint->GetForwardVector() * 1000.0f) + right + up;
-		FRotator _fireRot = firePoint->GetComponentRotation();
 
-		//ABaseAmmo* _tempAmmoBase = GetWorld()->SpawnActor<ABaseAmmo>(ammoClass, _fireLoc, _newRotator);
-		//
-		//_tempAmmoBase->SetOwner(this);
+		TArray<AActor*> foundActors;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACameraManager::StaticClass(), foundActors);
+		FVector _rayForward = firePoint->GetForwardVector();
+
+		if (foundActors.Max() > 0)
+		{
+			ACameraManager* cameraM = Cast<ACameraManager>(foundActors[0]);
+			_rayForward = cameraM->cameraPoint->GetForwardVector();
+		}
+
+		// レイのスタート位置取得(ホーミング用)
+		FVector _rayStart = firePoint->GetComponentLocation();
+		FVector _rayEnd = (firePoint->GetComponentLocation() + right + up) + (_rayForward * ammoRayCastRange) ;
+
+		// レイのヒットしたアクター保存用
+		TArray<AActor*> IngoreActors;
+		IngoreActors.Add(this);
+		TArray<FHitResult> HitRetArray;
+
+		// SphereCast
+		bool isHit = UKismetSystemLibrary::LineTraceMulti(GetWorld(), _rayStart, _rayEnd, UEngineTypes::ConvertToTraceType(ECC_WorldStatic), false, IngoreActors, EDrawDebugTrace::Type::ForDuration, HitRetArray, true);
 
 
 	}
 
-	// レイのスタート位置取得(ホーミング用)
-	FVector _rayStart = firePoint->GetComponentLocation();
-	FVector _rayForward = firePoint->GetForwardVector();
 
-	// レイのヒットしたアクター保存用
-	TArray<AActor*> IngoreActors;
-	IngoreActors.Add(this);
-	TArray<FHitResult> HitRetArray;
-
-	// SphereCast
-	bool isHit = UKismetSystemLibrary::LineTraceMulti(GetWorld(), _rayStart, _rayStart + (_rayForward * ammoRayCastRange), UEngineTypes::ConvertToTraceType(ECC_WorldStatic), false, IngoreActors, EDrawDebugTrace::Type::ForOneFrame, HitRetArray, true);
 
 }
 

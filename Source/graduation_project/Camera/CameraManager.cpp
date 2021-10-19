@@ -7,6 +7,7 @@
 #include "TimerManager.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "UObject/NameTypes.h"
+#include "Components/ArrowComponent.h"
 #include "CameraManager.h"
 
 // Sets default values
@@ -15,8 +16,8 @@ ACameraManager::ACameraManager()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	cameraPoint = CreateDefaultSubobject<USceneComponent>(TEXT("CameraPoint"));
-
+	cameraPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("CameraPoint"));
+	cameraPoint->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned

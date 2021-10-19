@@ -9,6 +9,7 @@
 class UParticleSystem;
 class UCapsuleComponent;
 
+class UNiagaraComponent;
 UCLASS()
 class GRADUATION_PROJECT_API ABaseWepon : public AActor
 {
@@ -22,8 +23,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 		USceneComponent* firePoint;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
-		UParticleSystem* muzzleFlash;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Niagara")
+		UNiagaraComponent* muzzleFlash;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AmmoFire")
 		float fireDelayTime;

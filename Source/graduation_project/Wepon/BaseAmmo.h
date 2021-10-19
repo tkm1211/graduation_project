@@ -4,11 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "NiagaraComponent.h"
 #include "BaseAmmo.generated.h"
 
 class USphereComponent;
 class UProjectileMovementComponent;
+class UNiagaraComponent;
+
 UCLASS()
 class GRADUATION_PROJECT_API ABaseAmmo : public AActor
 {
@@ -41,4 +42,12 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION()
+	void OnHit(
+		UPrimitiveComponent* HitComponent,
+		AActor* OtherActor, 
+		UPrimitiveComponent* OtherComp,
+		FVector NormalImpulse, 
+		const FHitResult& Hit
+	);
 };

@@ -4,6 +4,7 @@
 #include "BaseWepon.h"
 #include "Components/CapsuleComponent.h"
 #include "Particles/ParticleSystem.h"
+#include "NiagaraComponent.h"
 
 // Sets default values
 ABaseWepon::ABaseWepon()
@@ -20,6 +21,7 @@ ABaseWepon::ABaseWepon()
 	firePoint = CreateDefaultSubobject<USceneComponent>(TEXT("firePoint"));
 	firePoint->SetupAttachment(mesh);
 
+	muzzleFlash = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Naiagara"));
 }
 
 // Called when the game starts or when spawned

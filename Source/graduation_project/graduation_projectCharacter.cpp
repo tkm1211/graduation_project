@@ -57,6 +57,9 @@ void Agraduation_projectCharacter::SetupPlayerInputComponent(class UInputCompone
 {
 	// Set up gameplay key bindings
 	check(PlayerInputComponent);
+
+	//if (!changePlayerInput)
+	//{
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
@@ -73,6 +76,7 @@ void Agraduation_projectCharacter::SetupPlayerInputComponent(class UInputCompone
 	PlayerInputComponent->BindAxis("TurnRate", this, &Agraduation_projectCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &Agraduation_projectCharacter::LookUpAtRate);
+	//}
 
 }
 
@@ -117,13 +121,13 @@ void Agraduation_projectCharacter::MoveForward(float Value)
 }
 
 void Agraduation_projectCharacter::MoveRight(float Value)
-{	
-	if ( (Controller != nullptr) && (Value != 0.0f) )
+{
+	if ((Controller != nullptr) && (Value != 0.0f))
 	{
 		// find out which way is right
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
-	
+
 		// get right vector 
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		// add movement in that direction
@@ -163,5 +167,5 @@ void Agraduation_projectCharacter::ChangeWepon(ABaseWepon* nextWepon)
 	weponName = weponName.Left(1);
 
 	weponNumber = FCString::Atoi(*weponName);
-	
+
 }

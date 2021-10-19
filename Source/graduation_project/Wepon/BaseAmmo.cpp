@@ -2,9 +2,11 @@
 
 
 #include "BaseAmmo.h"
+#include "Kismet/GameplayStatics.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
-	
+#include "NiagaraComponent.h"
+
 // Sets default values
 ABaseAmmo::ABaseAmmo()
 {
@@ -12,10 +14,11 @@ ABaseAmmo::ABaseAmmo()
 	PrimaryActorTick.bCanEverTick = true;
 
 	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	RootComponent = mesh;
 
 	movement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
 	
+	mesh->OnComponentHit.AddDynamic(this, &ABaseAmmo::OnHit);
+	RootComponent = mesh;
 }
 
 // Called when the game starts or when spawned
@@ -25,7 +28,7 @@ void ABaseAmmo::BeginPlay()
 }
 
 // Called every frame
-void ABaseAmmo::Tick(float DeltaTime)
+void ABaseAmmo::Tick(float DeltaTime)   
 {
 	Super::Tick(DeltaTime);
 
@@ -37,3 +40,16 @@ void ABaseAmmo::Tick(float DeltaTime)
 	}
 }
 
+void ABaseAmmo::OnHit(
+	UPrimitiveComponent* HitComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	FVector NormalImpulse,
+	const FHitResult& Hit
+)
+{
+	if (OtherActor && OtherActor != this && OtherActor != GetOwner())
+	{
+		Destroy();
+	}
+}

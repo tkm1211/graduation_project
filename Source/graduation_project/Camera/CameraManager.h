@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "CameraManager.generated.h"
 
+class UArrowComponent;
+
 UCLASS()
 class GRADUATION_PROJECT_API ACameraManager : public AActor
 {
@@ -13,7 +15,7 @@ class GRADUATION_PROJECT_API ACameraManager : public AActor
 public:
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-		USceneComponent* cameraPoint;
+		UArrowComponent* cameraPoint;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HormingRayCast")
 		float hormingCastRange = 4000.0f;
