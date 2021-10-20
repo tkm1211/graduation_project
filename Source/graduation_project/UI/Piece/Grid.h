@@ -4,11 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "PieceBase.h"
 #include "Grid.generated.h"
 
 class APieceOrigin;
 class APiecePanel;
-class AT_Piece;
+class APieceO;
+class APieceL;
+class APieceI;
+class APieceT;
 
 
 USTRUCT(BlueprintType)
@@ -54,7 +58,8 @@ class GRADUATION_PROJECT_API AGrid : public AActor
 	GENERATED_BODY()
 
 private:
-	const float PanelSize = 128.0f;
+	const float OriginPanelSize = 128.0f;
+	//const float PanelSize = 64.0f;
 	const float AjustPiece = -1.0f;
 	const int MaxWidthNum = 20;
 	const int MaxHeightNum = 20;
@@ -64,17 +69,66 @@ private:
 	TSubclassOf<APieceOrigin> PieceOrigin; // 元のピース（エディタで設定）
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APieceO> PieceO; // O字のピース（エディタで設定）
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APieceL> PieceL; // L字のピース（エディタで設定）
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APieceI> PieceI; // I字のピース（エディタで設定）
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APieceT> PieceT; // T字のピース（エディタで設定）
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<APiecePanel> PiecePanel; // ピースのパネル（エディタで設定）
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<AT_Piece> T_Piece; // Tのピース（エディタで設定）
+	FVector panelMinXPos;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	FVector panelMaxXPos;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	FVector panelMinYPos;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	FVector panelMaxYPos;
 
 private:
+	TArray<TArray<bool>> onPiece;
+	TArray<APieceOrigin*> pieces;
+	TArray<APiecePanel*> panels;
+
+	FVector rightVec;
+	FVector upVec;
+
+	FString panelFilePath;
+	
 	int widthNum = 0;
 	int heightNum = 0;
-	TArray<TArray<bool>> onPiece;
-	TArray<FPanel> panels;
-	
+
+	float panelSize = 0.0f;
+
+	float panelMinX = 0.0f;
+	float panelMaxX = 0.0f;
+	float panelMinY = 0.0f;
+	float panelMaxY = 0.0f;
+
+	bool onPieceUp = false;
+	bool onPieceDown = false;
+	bool onPieceLeft = false;
+	bool onPieceRight = false;
+	bool onPieceTurnLeft = false;
+	bool onPieceTurnRight = false;
+	bool onPieceDecision = false;
+	bool onPieceCancel = false;
+
+	bool canPieceDecision = false;
+
+	int selectNum = 0;
+	int selectPieceNum = 0;
+
 public:	
 	// Sets default values for this actor's properties
 	AGrid();
@@ -88,7 +142,36 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	void CreatePiece(const FVector& SpawnLocation);
-	void CreatePiecePanel(const FVector& SpawnLocation);
+	void CreatePanels(FVector SpawnLocation);
+	void CreatePiece(PieceShape pieceShape, FVector SpawnLocation);
+	void CreatePieceOrigin(FVector SpawnLocation);
+	void CreatePieceO(FVector SpawnLocation);
+	void CreatePieceL(FVector SpawnLocation);
+	void CreatePieceI(FVector SpawnLocation);
+	void CreatePieceT(FVector SpawnLocation);
+	void CreatePiecePanel(FVector SpawnLocation);
+
 	bool LoadJson(const FString& Path);
+
+	void JudgeInput(APieceOrigin* piece);
+	void JudgePieceDecision(APieceOrigin* piece);
+	void PieceUpdateBegin(APieceOrigin* piece);
+	void PieceUpdate(APieceOrigin* piece, float DeltaTime);
+	void PieceUpdateEnd(APieceOrigin* piece);
+	void PieceMove(APieceOrigin* piece);
+	void PieceDecision(APieceOrigin* piece);
+	void SelectPieceNum(APieceOrigin* piece);
+	void RangeLimit(APieceOrigin* piece);
+	void ResetFlags();
+
+	int JudgePieceInPanel(APieceOrigin* piece);
+
+	void OnPieceUp();
+	void OnPieceDown();
+	void OnPieceLeft();
+	void OnPieceRight();
+	void OnPieceTurnLeft();
+	void OnPieceTurnRight();
+	void OnPieceDecision();
+	void OnPieceCancel();
 };
