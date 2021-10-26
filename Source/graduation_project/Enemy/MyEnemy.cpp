@@ -23,6 +23,8 @@ AMyEnemy::AMyEnemy()
 
 }
 
+
+
 void AMyEnemy::OnSeePlayer(APawn* Pawn)
 {
     //AMyEnemyAIController* AIController = Cast<AMyEnemyAIController>(GetController());
@@ -34,6 +36,7 @@ void AMyEnemy::OnSeePlayer(APawn* Pawn)
     //    AIController->SetPlayerActorKey(Player);
     //}
 }
+
 // Called when the game starts or when spawned
 void AMyEnemy::BeginPlay()
 {

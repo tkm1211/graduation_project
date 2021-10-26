@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "BT_T_MoveToTarget.generated.h"
+#include "BT_T_LookAtTarget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class GRADUATION_PROJECT_API UBT_T_MoveToTarget : public UBTTaskNode
+class GRADUATION_PROJECT_API UBT_T_LookAtTarget : public UBTTaskNode
 {
 	GENERATED_BODY()
 	
