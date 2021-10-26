@@ -16,15 +16,30 @@ class GRADUATION_PROJECT_API ABaseWepon : public AActor
 	GENERATED_BODY()
 	
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 		UCapsuleComponent* capsuleComp;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 		UStaticMeshComponent* mesh;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 		USceneComponent* firePoint;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Niagara")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Niagara")
 		UNiagaraComponent* muzzleFlash;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AmmoFire")
+		float motionRate = 1.0f;
+
+	// íeÇÃà–óÕ
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AmmoDetails")
+		float damage;
+
+	// ãóó£å∏êä
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AmmoDetails")
+		float distanceDecay;
+
+	// íeÇÃê∂ë∂éûä‘
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AmmoDetails")
+		float lifeTime;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AmmoFire")
 		float fireDelayTime;

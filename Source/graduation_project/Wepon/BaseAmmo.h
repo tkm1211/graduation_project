@@ -6,8 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "BaseAmmo.generated.h"
 
-class USphereComponent;
 class UProjectileMovementComponent;
+class UNiagaraSystem;
 class UNiagaraComponent;
 
 UCLASS()
@@ -19,28 +19,39 @@ public:
 	// Sets default values for this actor's properties
 	ABaseAmmo();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	UStaticMeshComponent* mesh;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ProjectileMovementComponent")
 	UProjectileMovementComponent* movement;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Niagara")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Niagara")
 	UNiagaraComponent* naiagaraTrail;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Niagara")
+	UNiagaraComponent* explosion;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Niagara")
+	UNiagaraSystem* explosionSystem;
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ammo")
 		float movementSpeed = 1500.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Life")
-		float life = 3.0f;
+	float damage;
+	float distanceDecay;
+	float life;
+
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
+	void AmmoDestroy();
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	void SetParameter(float d, float dd, float l);
 
 	UFUNCTION()
 	void OnHit(

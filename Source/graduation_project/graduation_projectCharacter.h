@@ -7,11 +7,13 @@
 #include "graduation_projectCharacter.generated.h"
 
 class ABaseWepon;
+class UAnimMontage;
 
 UCLASS(config = Game)
 class Agraduation_projectCharacter : public ACharacter
 {
 	GENERATED_BODY()
+public:
 
 private:
 	/** Camera boom positioning the camera behind the character */
@@ -38,6 +40,20 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wepon")
 		int32 weponNumber;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wepon")
+		FString jumpName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HP")
+		float hp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AnimMontage")
+		TArray<UAnimMontage*> recoilMontages;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AnimMontage")
+		TArray<UAnimMontage*> aimMontages;
+
+
+
 public:
 	Agraduation_projectCharacter();
 
@@ -53,6 +69,8 @@ public:
 		bool hotmingTargetRockOn = false;
 
 protected:
+
+	void Jump() override;
 
 	void MoveForward(float Value);
 

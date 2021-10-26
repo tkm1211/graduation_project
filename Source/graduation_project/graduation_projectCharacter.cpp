@@ -10,6 +10,7 @@
 #include "Wepon/BaseWepon.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Animation/AnimMontage.h"
 
 //////////////////////////////////////////////////////////////////////////
 // Agraduation_projectCharacter
@@ -90,6 +91,28 @@ void Agraduation_projectCharacter::Tick(float DeltaTime)
 		newRotor.Pitch = 0.0f;
 		newRotor.Roll = 0.0f;
 		SetActorRotation(newRotor);
+
+		auto animInstance = GetMesh()->GetAnimInstance();
+		if (!animInstance->Montage_IsPlaying(aimMontages[0]) && !animInstance->Montage_IsPlaying(recoilMontages[0]))
+		{
+			animInstance->Montage_Play(aimMontages[0], 1.0f);
+		}
+	}
+}
+
+void Agraduation_projectCharacter::Jump()
+{
+	Super::Jump();
+	if (!GetCharacterMovement()->IsFalling())
+	{
+		if (FMath::RandRange(1, 100) < 30)
+		{
+			jumpName = "Rotation";
+		}
+		else
+		{
+			jumpName = "Normal";
+		}
 	}
 }
 

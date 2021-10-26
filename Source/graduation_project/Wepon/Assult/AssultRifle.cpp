@@ -10,6 +10,7 @@
 #include "AssultRifle.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "UObject/NameTypes.h"
 
 AAssultRifle::AAssultRifle()
@@ -26,6 +27,11 @@ void AAssultRifle::BeginPlay()
 void AAssultRifle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	//ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	//Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
+
+	//if (_playerCharacter->GetCharacterMovement()->IsFalling()) return;
 
 	// 弾発射
 	ShotFire(DeltaTime);
@@ -93,5 +99,6 @@ void AAssultRifle::SpawnShot()
 	//　スポーンさせる
 	ABaseAmmo* _tempAmmoBase = GetWorld()->SpawnActor<ABaseAmmo>(ammoClass, _fireLoc, _newRotator);
 	_tempAmmoBase->SetOwner(this);
+	_tempAmmoBase->SetParameter(damage, distanceDecay, lifeTime);
 }
 

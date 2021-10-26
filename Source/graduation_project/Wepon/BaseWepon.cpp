@@ -3,8 +3,12 @@
 
 #include "BaseWepon.h"
 #include "Components/CapsuleComponent.h"
-#include "Particles/ParticleSystem.h"
+#include "Kismet/GameplayStatics.h"
 #include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
+#include "Components/ActorComponent.h"
+#include "../graduation_projectCharacter.h"
+#include "Animation/AnimMontage.h"
 
 // Sets default values
 ABaseWepon::ABaseWepon()
@@ -21,7 +25,9 @@ ABaseWepon::ABaseWepon()
 	firePoint = CreateDefaultSubobject<USceneComponent>(TEXT("firePoint"));
 	firePoint->SetupAttachment(mesh);
 
-	muzzleFlash = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Naiagara"));
+	muzzleFlash = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Trail"));
+	muzzleFlash->SetupAttachment(mesh);
+
 }
 
 // Called when the game starts or when spawned
@@ -33,8 +39,7 @@ void ABaseWepon::BeginPlay()
 // Called every frame
 void ABaseWepon::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
-
+	Super::Tick(DeltaTime);	
 }
 
 
@@ -42,6 +47,19 @@ void ABaseWepon:: Fire()
 {
 	onFire = true;
 	fireTimer = fireDelayTime;
+
+	// マズルフラッシュ発射
+	if (muzzleFlash)
+	{
+		muzzleFlash->Activate(true);
+	}
+
+	// モンタージュ再生
+	// プレイヤーを取得し、キャストする
+	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
+	auto animInstance = _playerCharacter->GetMesh()->GetAnimInstance();
+	animInstance->Montage_Play(_playerCharacter->recoilMontages[0], motionRate);
 }
 
 void ABaseWepon:: FirstFire()
