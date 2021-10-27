@@ -25,6 +25,7 @@ private:
 		class UCameraComponent* FollowCamera;
 
 	bool changePlayerInput = false;
+	bool pauseTrg = false;
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Wepon")
 		ABaseWepon* useWepon;
@@ -85,6 +86,9 @@ protected:
 
 	void StopFireWepon();
 	void StopAimWepon();
+
+	void Pause();
+	void ReleasePause();
 
 protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

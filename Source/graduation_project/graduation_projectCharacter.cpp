@@ -59,8 +59,6 @@ void Agraduation_projectCharacter::SetupPlayerInputComponent(class UInputCompone
 	// Set up gameplay key bindings
 	check(PlayerInputComponent);
 
-	//if (!changePlayerInput)
-	//{
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
@@ -70,6 +68,9 @@ void Agraduation_projectCharacter::SetupPlayerInputComponent(class UInputCompone
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &Agraduation_projectCharacter::FireWepon).bConsumeInput = false;
 	PlayerInputComponent->BindAction("Fire", IE_Released, this, &Agraduation_projectCharacter::StopFireWepon).bConsumeInput = false;
 
+	PlayerInputComponent->BindAction("Pause", IE_Pressed, this, &Agraduation_projectCharacter::Pause);
+	PlayerInputComponent->BindAction("Pause", IE_Released, this, &Agraduation_projectCharacter::ReleasePause);
+
 	PlayerInputComponent->BindAxis("MoveForward", this, &Agraduation_projectCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &Agraduation_projectCharacter::MoveRight);
 
@@ -77,13 +78,13 @@ void Agraduation_projectCharacter::SetupPlayerInputComponent(class UInputCompone
 	PlayerInputComponent->BindAxis("TurnRate", this, &Agraduation_projectCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &Agraduation_projectCharacter::LookUpAtRate);
-	//}
 
 }
 
 void Agraduation_projectCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (changePlayerInput) return;
 
 	if (isAim || isFire)
 	{
@@ -102,6 +103,8 @@ void Agraduation_projectCharacter::Tick(float DeltaTime)
 
 void Agraduation_projectCharacter::Jump()
 {
+	if (changePlayerInput) return;
+
 	Super::Jump();
 	if (!GetCharacterMovement()->IsFalling())
 	{
@@ -118,18 +121,24 @@ void Agraduation_projectCharacter::Jump()
 
 void Agraduation_projectCharacter::TurnAtRate(float Rate)
 {
+	if (changePlayerInput) return;
+
 	// calculate delta for this frame from the rate information
 	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 
 void Agraduation_projectCharacter::LookUpAtRate(float Rate)
 {
+	if (changePlayerInput) return;
+
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
 void Agraduation_projectCharacter::MoveForward(float Value)
 {
+	if (changePlayerInput) return;
+
 	if ((Controller != nullptr) && (Value != 0.0f))
 	{
 		// find out which way is forward
@@ -145,6 +154,8 @@ void Agraduation_projectCharacter::MoveForward(float Value)
 
 void Agraduation_projectCharacter::MoveRight(float Value)
 {
+	if (changePlayerInput) return;
+
 	if ((Controller != nullptr) && (Value != 0.0f))
 	{
 		// find out which way is right
@@ -161,23 +172,31 @@ void Agraduation_projectCharacter::MoveRight(float Value)
 
 void Agraduation_projectCharacter::FireWepon()
 {
+	if (changePlayerInput) return;
+
 	isFire = true;
 	useWepon->FirstFire();
 }
 
 void Agraduation_projectCharacter::AimWepon()
 {
+	if (changePlayerInput) return;
+
 	isAim = true;
 }
 
 void Agraduation_projectCharacter::StopFireWepon()
 {
+	if (changePlayerInput) return;
+
 	isFire = false;
 	useWepon->SetOnFire(isFire);
 }
 
 void Agraduation_projectCharacter::StopAimWepon()
 {
+	if (changePlayerInput) return;
+
 	isAim = false;
 }
 
@@ -191,4 +210,18 @@ void Agraduation_projectCharacter::ChangeWepon(ABaseWepon* nextWepon)
 
 	weponNumber = FCString::Atoi(*weponName);
 
+}
+
+void Agraduation_projectCharacter::Pause()
+{
+	if (pauseTrg) return;
+
+	if (changePlayerInput) changePlayerInput = false;
+	else changePlayerInput = true;
+
+}
+
+void Agraduation_projectCharacter::ReleasePause()
+{
+	pauseTrg = false;
 }
