@@ -17,9 +17,9 @@ class GRADUATION_PROJECT_API ATestBoss_MK1 : public ACharacter
 public:
 	// Sets default values for this character's properties
 	ATestBoss_MK1(const class FObjectInitializer& ObjectInitializer);
-	
+
 	UPROPERTY(BlueprintAssignable)
-	FlookAtPlayer lookAtPlayer;
+		FlookAtPlayer lookAtPlayer;
 
 	UPROPERTY(EditAnywhere, Category = "HP");
 	float HealthPoint = 1000.f;
@@ -27,13 +27,17 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "AI")
 		class UPawnSensingComponent* PawnSensingComp;
 
-	//UPROPERTY(EditAnywhere, Category = "")
 	class UCharacterMovementComponent* CharaMoveComp;
 
-	UPROPERTY(VisibleAnywhere, Category = "Collision")
-	UCapsuleComponent* LFireCapsuleComp;
-	UPROPERTY(VisibleAnywhere, Category = "Collision")
-	UCapsuleComponent* RArmCapsuleComp;
+	UPROPERTY(VisibleAnywhere, Category = "HitCollision")
+		class UCapsuleComponent* RArmCapsuleComp;
+
+	UPROPERTY(VisibleAnywhere, Category = "HitCollision")
+		class UCapsuleComponent* LFireCapsuleComp;
+
+	UPROPERTY(VisibleAnywhere, Category = "HitCollision")
+		class UCapsuleComponent* RFireCapsuleComp;
+
 
 	UPROPERTY(VisibleAnywhere, Category = "AI")
 		bool IsFocusToPlayer = true;
@@ -41,6 +45,8 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "AI")
 		int WitchAtk = 0;
 
+	UFUNCTION()
+		void Damage(float giveDamage);
 
 	UFUNCTION()
 		void OnSeePlayer();
@@ -52,7 +58,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

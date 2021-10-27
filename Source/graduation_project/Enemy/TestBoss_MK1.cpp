@@ -15,14 +15,30 @@
 // Sets default values
 ATestBoss_MK1::ATestBoss_MK1(const class FObjectInitializer& ObjectInitializer)
 {
+	AIControllerClass = ATestBoss_MK1AIController::StaticClass();
+
     lookAtPlayer.AddDynamic(this, &ATestBoss_MK1::OnSeePlayer);
 
     CharaMoveComp = GetCharacterMovement();
+	CharaMoveComp->DefaultLandMovementMode = MOVE_Flying;
     CharaMoveComp->MaxWalkSpeed = 400.f;
 
 	LFireCapsuleComp = ObjectInitializer.CreateDefaultSubobject<UCapsuleComponent>(this, TEXT("LeftFireCapsuleComp"));
+	RFireCapsuleComp = ObjectInitializer.CreateDefaultSubobject<UCapsuleComponent>(this, TEXT("RightFireCapsuleComp"));
 	RArmCapsuleComp = ObjectInitializer.CreateDefaultSubobject<UCapsuleComponent>(this, TEXT("RightArmCapsuleComp"));
 
+	FVector FireScale = { 10.f, 10.f, 50.f };
+	RFireCapsuleComp->SetWorldScale3D(FireScale);
+	FRotator capRotator = { 90.f, 0.f, 0.f };
+	LFireCapsuleComp->SetWorldRotation(capRotator);
+	RFireCapsuleComp->SetWorldRotation(capRotator);
+	RArmCapsuleComp->SetWorldRotation(capRotator);
+
+	FName RArmName = "RightArm";
+	FVector RArmPos = GetMesh()->GetSocketLocation(RArmName);
+	RArmCapsuleComp->SetWorldLocation(RArmPos);
+	
+	RFireCapsuleComp->SetWorldLocation(RArmPos);
 
 	OnActorHit.AddDynamic(this, &ATestBoss_MK1::OnHit);
     
@@ -47,6 +63,11 @@ void ATestBoss_MK1::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalI
 
 }
 
+void ATestBoss_MK1::Damage(float giveDamage)
+{
+	HealthPoint -= giveDamage;
+}
+
 // Called when the game starts or when spawned
 void ATestBoss_MK1::BeginPlay()
 {
@@ -58,6 +79,15 @@ void ATestBoss_MK1::BeginPlay()
 void ATestBoss_MK1::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
+
+	FName RArmName = "RightArm";
+	FName LArmName = "LeftArm";
+	FVector LArmPos = GetMesh()->GetSocketLocation(LArmName);
+
+	LFireCapsuleComp->SetWorldLocation(LArmPos);
+	//ERelativeTransformSpace
+	FRotator LeftCapRotator = GetMesh()->GetSocketRotation(LArmName);
+	LFireCapsuleComp->SetWorldRotation(LeftCapRotator);
 
 }
 
