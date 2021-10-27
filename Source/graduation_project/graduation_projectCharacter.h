@@ -45,8 +45,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wepon")
 		FString jumpName;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HP")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "HP")
 		float hp;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HP")
+		float defaultHp = 100;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AnimMontage")
 		TArray<UAnimMontage*> recoilMontages;
@@ -97,5 +99,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void ChangeWepon(ABaseWepon* nextWepon);
+
+	void Damage(float d);
 };
 

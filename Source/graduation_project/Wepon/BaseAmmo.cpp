@@ -3,6 +3,7 @@
 
 #include "BaseAmmo.h"
 #include "Kismet/GameplayStatics.h"
+#include "../graduation_projectCharacter.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
@@ -64,7 +65,11 @@ void ABaseAmmo::OnHit(
 	const FHitResult& Hit
 )
 {
-	if (OtherActor && OtherActor != this && OtherActor != GetOwner())
+	// プレイヤーを取得し、キャストする
+	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
+
+	if (OtherActor && OtherActor != this && OtherActor != GetOwner() && OtherActor != _playerCharacter)
 	{
 		AmmoDestroy();
 	}

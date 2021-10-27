@@ -49,6 +49,8 @@ Agraduation_projectCharacter::Agraduation_projectCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
+
+	hp = defaultHp;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -219,9 +221,19 @@ void Agraduation_projectCharacter::Pause()
 	if (changePlayerInput) changePlayerInput = false;
 	else changePlayerInput = true;
 
+	Damage(10.0f);
 }
 
 void Agraduation_projectCharacter::ReleasePause()
 {
 	pauseTrg = false;
+}
+
+void Agraduation_projectCharacter::Damage(float d)
+{
+	hp -= d;
+	if (hp < 0)
+	{
+		return;
+	}
 }
