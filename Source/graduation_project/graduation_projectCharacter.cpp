@@ -49,8 +49,11 @@ Agraduation_projectCharacter::Agraduation_projectCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
+	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
+	GetCharacterMovement()->MaxAcceleration = 2048.0f;
 
 	hp = defaultHp;
+	isDead = false;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -86,7 +89,25 @@ void Agraduation_projectCharacter::SetupPlayerInputComponent(class UInputCompone
 void Agraduation_projectCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (isDead)
+	{
+		if (GetCharacterMovement()->IsFalling())
+		{
+			GetCharacterMovement()->MaxWalkSpeed = 10000.0f;
+			GetCharacterMovement()->MaxAcceleration = 10000.0f;
+			const FRotator Rotation = Controller->GetControlRotation();
+			const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+			// get forward vector
+			const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X) ;
+			AddMovementInput(Direction, -1);
+		}
 	if (changePlayerInput) return;
+
+
+		return;
+	}
 
 	if (isAim || isFire)
 	{
@@ -105,7 +126,7 @@ void Agraduation_projectCharacter::Tick(float DeltaTime)
 
 void Agraduation_projectCharacter::Jump()
 {
-	if (changePlayerInput) return;
+	if (changePlayerInput && isDead) return;
 
 	Super::Jump();
 	if (!GetCharacterMovement()->IsFalling())
@@ -123,7 +144,7 @@ void Agraduation_projectCharacter::Jump()
 
 void Agraduation_projectCharacter::TurnAtRate(float Rate)
 {
-	if (changePlayerInput) return;
+	if (changePlayerInput || isDead) return;
 
 	// calculate delta for this frame from the rate information
 	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
@@ -131,7 +152,7 @@ void Agraduation_projectCharacter::TurnAtRate(float Rate)
 
 void Agraduation_projectCharacter::LookUpAtRate(float Rate)
 {
-	if (changePlayerInput) return;
+	if (changePlayerInput || isDead) return;
 
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
@@ -139,7 +160,7 @@ void Agraduation_projectCharacter::LookUpAtRate(float Rate)
 
 void Agraduation_projectCharacter::MoveForward(float Value)
 {
-	if (changePlayerInput) return;
+	if (changePlayerInput || isDead) return;
 
 	if ((Controller != nullptr) && (Value != 0.0f))
 	{
@@ -156,7 +177,7 @@ void Agraduation_projectCharacter::MoveForward(float Value)
 
 void Agraduation_projectCharacter::MoveRight(float Value)
 {
-	if (changePlayerInput) return;
+	if (changePlayerInput || isDead) return;
 
 	if ((Controller != nullptr) && (Value != 0.0f))
 	{
@@ -174,7 +195,7 @@ void Agraduation_projectCharacter::MoveRight(float Value)
 
 void Agraduation_projectCharacter::FireWepon()
 {
-	if (changePlayerInput) return;
+	if (changePlayerInput || isDead) return;
 
 	isFire = true;
 	useWepon->FirstFire();
@@ -182,14 +203,14 @@ void Agraduation_projectCharacter::FireWepon()
 
 void Agraduation_projectCharacter::AimWepon()
 {
-	if (changePlayerInput) return;
+	if (changePlayerInput || isDead) return;
 
 	isAim = true;
 }
 
 void Agraduation_projectCharacter::StopFireWepon()
 {
-	if (changePlayerInput) return;
+	if (changePlayerInput || isDead) return;
 
 	isFire = false;
 	useWepon->SetOnFire(isFire);
@@ -197,7 +218,7 @@ void Agraduation_projectCharacter::StopFireWepon()
 
 void Agraduation_projectCharacter::StopAimWepon()
 {
-	if (changePlayerInput) return;
+	if (changePlayerInput || isDead) return;
 
 	isAim = false;
 }
@@ -231,9 +252,26 @@ void Agraduation_projectCharacter::ReleasePause()
 
 void Agraduation_projectCharacter::Damage(float d)
 {
-	hp -= d;
-	if (hp < 0)
+	if (changePlayerInput || isDead) return;
+
+	auto animInstance = GetMesh()->GetAnimInstance();
+	if (!animInstance->Montage_IsPlaying(nockMontages))
 	{
+		animInstance->Montage_Play(nockMontages, 1.0f);
+	}
+
+	hp -= d;
+	
+	if (hp <= 0)
+	{
+		isDead = true;
+		hp = 0.0f;
+		if (!animInstance->Montage_IsPlaying(deadMontages))
+		{
+			animInstance->Montage_Play(deadMontages, 1.0f);
+
+			Super::Jump();
+		}
 		return;
 	}
 }

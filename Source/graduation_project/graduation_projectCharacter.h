@@ -50,10 +50,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HP")
 		float defaultHp = 100;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Dead")
+		bool isDead;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AnimMontage")
 		TArray<UAnimMontage*> recoilMontages;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AnimMontage")
 		TArray<UAnimMontage*> aimMontages;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AnimMontage")
+		UAnimMontage* deadMontages;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AnimMontage")
+		UAnimMontage* nockMontages;
 
 
 
