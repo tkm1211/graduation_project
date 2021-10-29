@@ -22,7 +22,49 @@ void UBT_S_Target::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory
 
 	if (Boss_mk1->WitchAtk == 0)
 	{
-		Boss_mk1->WitchAtk = (int)(((double)rand() / ((double)RAND_MAX + 1)) * 4) + 1;
+		static int SLAM = 40;
+		static int FLAME = SLAM + 30;
+
+		PrevPrevATK = PrevATK;
+
+		PrevATK = Boss_mk1->WitchAtk;
+
+		int rand_num = (int)(((double)rand() / ((double)RAND_MAX + 1)) * 100);
+		if (rand_num < SLAM)
+		{
+			Boss_mk1->WitchAtk = ATestBoss_MK1::SLAM_ATK;
+		}
+		else if (rand_num < FLAME)
+		{
+			Boss_mk1->WitchAtk = ATestBoss_MK1::FLAME_FIRE;
+		}
+		else
+		{
+			Boss_mk1->WitchAtk = ATestBoss_MK1::MISSILE_FIRE;
+		}
+		
+		
+		//ŽO˜A‘±“¯‚¶UŒ‚‚ð‚³‚¹‚È‚¢
+		if (PrevATK == Boss_mk1->WitchAtk)
+		{
+			if (PrevPrevATK == PrevATK)
+			{
+				rand_num = (int)(((double)rand() / ((double)RAND_MAX + 1)) * 100);
+
+				if (rand_num < 50)
+				{
+					Boss_mk1->WitchAtk--;
+				}
+				else
+				{
+					Boss_mk1->WitchAtk++;
+				}
+
+				if (Boss_mk1->WitchAtk <= 0)Boss_mk1->WitchAtk += 3;
+				else if (Boss_mk1->WitchAtk > 3)Boss_mk1->WitchAtk -= 3;
+			}
+		}
+
 		WitchATK = Boss_mk1->WitchAtk;
 	}
 }

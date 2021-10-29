@@ -31,6 +31,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = "HitCollision")
 		class UCapsuleComponent* RArmCapsuleComp;
+	
+	UPROPERTY(VisibleAnywhere, Category = "HitCollision")
+		class UCapsuleComponent* LArmCapsuleComp;
 
 	UPROPERTY(VisibleAnywhere, Category = "HitCollision")
 		class UCapsuleComponent* LFireCapsuleComp;
@@ -53,6 +56,15 @@ public:
 
 	UFUNCTION()
 		void OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
+
+	enum ATTACK_STATE
+	{
+		IDLE = 0,
+		SLAM_ATK,
+		FLAME_FIRE,
+		MISSILE_FIRE,
+		WIDERANGEBEEM,
+	};
 
 protected:
 	// Called when the game starts or when spawned

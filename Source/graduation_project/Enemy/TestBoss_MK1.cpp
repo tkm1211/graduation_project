@@ -26,12 +26,14 @@ ATestBoss_MK1::ATestBoss_MK1(const class FObjectInitializer& ObjectInitializer)
 	LFireCapsuleComp = ObjectInitializer.CreateDefaultSubobject<UCapsuleComponent>(this, TEXT("LeftFireCapsuleComp"));
 	RFireCapsuleComp = ObjectInitializer.CreateDefaultSubobject<UCapsuleComponent>(this, TEXT("RightFireCapsuleComp"));
 	RArmCapsuleComp = ObjectInitializer.CreateDefaultSubobject<UCapsuleComponent>(this, TEXT("RightArmCapsuleComp"));
+	LArmCapsuleComp = ObjectInitializer.CreateDefaultSubobject<UCapsuleComponent>(this, TEXT("LeftArmCapsuleComp"));
 
-	FVector FireScale = { 10.f, 10.f, 50.f };
+	FVector FireScale = { 30.f, 30.f, 50.f };
 	RFireCapsuleComp->SetWorldScale3D(FireScale);
 	FRotator capRotator = { 90.f, 0.f, 0.f };
 	LFireCapsuleComp->SetWorldRotation(capRotator);
 	RFireCapsuleComp->SetWorldRotation(capRotator);
+	LArmCapsuleComp->SetWorldRotation(capRotator);
 	RArmCapsuleComp->SetWorldRotation(capRotator);
 
 	FName RArmName = "RightArm";
