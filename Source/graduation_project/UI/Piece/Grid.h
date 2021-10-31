@@ -16,40 +16,18 @@ class APieceT;
 
 
 USTRUCT(BlueprintType)
-struct FSaveData
+struct FPieceData
 {
 	GENERATED_USTRUCT_BODY();
 
-	int widthNum = 0;
-	int heightNum = 0;
-	TArray<TArray<bool>> onPiece;
-};
+	// 表示
+	bool isVisible = false;
 
-UENUM(BlueprintType)
-enum class EAroundPanelType : uint8
-{
-	Top,
-	Down,
-	Right,
-	Left,
-};
+	// 配置
+	bool isPlacement = false;
 
-USTRUCT(BlueprintType)
-struct FAroundPanel
-{
-	GENERATED_USTRUCT_BODY();
-
-	EAroundPanelType type;
-	TSharedPtr<FPanel> panel;
-};
-
-USTRUCT(BlueprintType)
-struct FPanel
-{
-	GENERATED_USTRUCT_BODY();
-
-	int num;
-	TArray<FAroundPanel> aroundPanels;
+	// 種類
+	PieceShape type = PieceShape::T;
 };
 
 UCLASS()
@@ -59,8 +37,9 @@ class GRADUATION_PROJECT_API AGrid : public AActor
 
 private:
 	const float OriginPanelSize = 128.0f;
-	//const float PanelSize = 64.0f;
-	const float AjustPiece = -1.0f;
+	const float AdjustPiece = 0.1f;
+	const float AdjustSlotPieceNum = 7.0f;
+	const float AdjustSideSlotPiece = 175.0f;
 	const int MaxWidthNum = 20;
 	const int MaxHeightNum = 20;
 
@@ -95,16 +74,30 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
 	FVector panelMaxYPos;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	FVector originPiecePos;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	FString panelFilePath = "Tool\\Data\\Document\\Puzzle\\BackData";
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	bool onPieceOrigin = false;
+
 private:
-	TArray<TArray<bool>> onPiece;
+	TArray<bool> onPanel; // パネルが見えているか？
+	TArray<bool> onPiece; // ピースが置かれているか？
+	TArray<FVector> panelPositions;
 	TArray<APieceOrigin*> pieces;
+	TArray<APieceOrigin*> slotPieces;
+	TArray<FPieceData> pieceDatas;
 	TArray<APiecePanel*> panels;
+
+	FVector originPiecePosAtBackUp;
 
 	FVector rightVec;
 	FVector upVec;
-
-	FString panelFilePath;
 	
+	int selectPieceNum = 0;
 	int widthNum = 0;
 	int heightNum = 0;
 
@@ -115,6 +108,7 @@ private:
 	float panelMinY = 0.0f;
 	float panelMaxY = 0.0f;
 
+	bool onPuzzle = false;
 	bool onPieceUp = false;
 	bool onPieceDown = false;
 	bool onPieceLeft = false;
@@ -123,11 +117,11 @@ private:
 	bool onPieceTurnRight = false;
 	bool onPieceDecision = false;
 	bool onPieceCancel = false;
+	bool onPieceSlotLeft = false;
+	bool onPieceSlotRight = false;
 
+	bool onPieceInPiece = false;
 	bool canPieceDecision = false;
-
-	int selectNum = 0;
-	int selectPieceNum = 0;
 
 public:	
 	// Sets default values for this actor's properties
@@ -142,17 +136,21 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
+	void PuzzleUpdate(float DeltaTime);
+	void SlotUpdate(float DeltaTime);
+
 	void CreatePanels(FVector SpawnLocation);
 	void CreatePiece(PieceShape pieceShape, FVector SpawnLocation);
 	void CreatePieceOrigin(FVector SpawnLocation);
-	void CreatePieceO(FVector SpawnLocation);
-	void CreatePieceL(FVector SpawnLocation);
-	void CreatePieceI(FVector SpawnLocation);
-	void CreatePieceT(FVector SpawnLocation);
+	bool CreatePieceO(FVector SpawnLocation);
+	bool CreatePieceL(FVector SpawnLocation);
+	bool CreatePieceI(FVector SpawnLocation);
+	bool CreatePieceT(FVector SpawnLocation);
 	void CreatePiecePanel(FVector SpawnLocation);
 
 	bool LoadJson(const FString& Path);
 
+	void SetUpPiece(APieceOrigin* piece);
 	void JudgeInput(APieceOrigin* piece);
 	void JudgePieceDecision(APieceOrigin* piece);
 	void PieceUpdateBegin(APieceOrigin* piece);
@@ -160,12 +158,20 @@ private:
 	void PieceUpdateEnd(APieceOrigin* piece);
 	void PieceMove(APieceOrigin* piece);
 	void PieceDecision(APieceOrigin* piece);
+	void MoveCantBeDecision(APieceOrigin* piece, bool atInitialize);
+	void SetVisiblePiece(int currentPieceNum, bool isVisible, FVector currntPiecePos);
+	void SelectSlotPiece(int currentPieceNum);
 	void SelectPieceNum(APieceOrigin* piece);
+	void AdjustPiecePos(int currentPieceNum);
+	void AdjustPiecePos(FVector& piecePos, PieceShape type, int turnCnt);
+	void AdjustPiecePosFromOrigin(FVector& piecePos, PieceShape type, int turnCnt);
+	void AdjustOriginPos(FVector& originPos, int panelNum, TArray<int> pieceNums, PieceShape type, int turnCnt);
 	void RangeLimit(APieceOrigin* piece);
 	void ResetFlags();
 
 	int JudgePieceInPanel(APieceOrigin* piece);
 
+	void OnPuzzle();
 	void OnPieceUp();
 	void OnPieceDown();
 	void OnPieceLeft();
@@ -174,4 +180,6 @@ private:
 	void OnPieceTurnRight();
 	void OnPieceDecision();
 	void OnPieceCancel();
+	void OnPieceSlotLeft();
+	void OnPieceSlotRight();
 };

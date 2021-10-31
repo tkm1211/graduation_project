@@ -6,8 +6,7 @@
 
 void APieceI::DoInitialize(int selectNum)
 {
-	originNum = selectNum;
-	turnCnt = 0;
+
 }
 
 void APieceI::DoUpdate(float DeltaTime)
@@ -15,23 +14,23 @@ void APieceI::DoUpdate(float DeltaTime)
 	
 }
 
-void APieceI::DoPieceMove(FVector spawnGridPos, FVector rightVec, FVector upVec)
+void APieceI::DoPieceMove(FVector originPiecePos, FVector rightVec, FVector upVec)
 {
 	FVector pos = GetActorLocation();
 
-	if (turnCnt % 2 == 0)
+	if (mainData.turnCnt % 2 == 0)
 	{
-		pieceMinXPos = (pos - rightVec * (pieceSize * 1.5f));
-		pieceMaxXPos = (pos + rightVec * (pieceSize * 1.5f));
-		pieceMinYPos = pos;
-		pieceMaxYPos = pos;
+		mainData.pieceMinXPos = (pos - rightVec * (pieceSize * 1.5f));
+		mainData.pieceMaxXPos = (pos + rightVec * (pieceSize * 1.5f));
+		mainData.pieceMinYPos = pos;
+		mainData.pieceMaxYPos = pos;
 	}
 	else
 	{
-		pieceMinXPos = pos;
-		pieceMaxXPos = pos;
-		pieceMinYPos = (pos + upVec * (pieceSize * 1.5f));
-		pieceMaxYPos = (pos - upVec * (pieceSize * 1.5f));
+		mainData.pieceMinXPos = pos;
+		mainData.pieceMaxXPos = pos;
+		mainData.pieceMinYPos = (pos + upVec * (pieceSize * 1.5f));
+		mainData.pieceMaxYPos = (pos - upVec * (pieceSize * 1.5f));
 	}
 }
 
@@ -44,7 +43,7 @@ void APieceI::DoTurnLeft()
 {
 	FVector pos = GetActorLocation();
 
-	if (turnCnt % 2 == 0)
+	if (mainData.turnCnt % 2 == 0)
 	{
 		pos += panelRightVec * (pieceSize * 0.5f);
 		pos -= panelUpVec * (pieceSize * 0.5f);
@@ -62,7 +61,7 @@ void APieceI::DoTurnRight()
 {
 	FVector pos = GetActorLocation();
 
-	if (turnCnt % 2 == 0)
+	if (mainData.turnCnt % 2 == 0)
 	{
 		pos -= panelRightVec * (pieceSize * 0.5f);
 		pos -= panelUpVec * (pieceSize * 0.5f);
@@ -74,4 +73,22 @@ void APieceI::DoTurnRight()
 	}
 
 	SetActorLocation(pos);
+}
+
+void APieceI::SelectPieceNum(int selectPieceNum)
+{
+	if (mainData.turnCnt % 2 == 0)
+	{
+		mainData.pieceNums[0] = selectPieceNum;
+		mainData.pieceNums[1] = mainData.pieceNums[0] - 1;
+		mainData.pieceNums[2] = mainData.pieceNums[0] + 1;
+		mainData.pieceNums[3] = mainData.pieceNums[0] + 2;
+	}
+	else
+	{
+		mainData.pieceNums[0] = selectPieceNum;
+		mainData.pieceNums[1] = mainData.pieceNums[0] - panelWidth;
+		mainData.pieceNums[2] = mainData.pieceNums[0] - panelWidth * 2.0f;
+		mainData.pieceNums[3] = mainData.pieceNums[0] + panelWidth;
+	}
 }

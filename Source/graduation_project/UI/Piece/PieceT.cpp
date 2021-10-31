@@ -6,13 +6,7 @@
 
 void APieceT::DoInitialize(int selectNum)
 {
-	originNum = selectNum;
-	turnCnt = 0;
 
-	pieceNums.Add(selectNum);
-	pieceNums.Add(selectNum - 1);
-	pieceNums.Add(selectNum + 1);
-	pieceNums.Add(selectNum + panelWidth);
 }
 
 void APieceT::DoUpdate(float DeltaTime)
@@ -20,38 +14,38 @@ void APieceT::DoUpdate(float DeltaTime)
 	
 }
 
-void APieceT::DoPieceMove(FVector spawnGridPos, FVector rightVec, FVector upVec)
+void APieceT::DoPieceMove(FVector originPiecePos, FVector rightVec, FVector upVec)
 {
 	FVector pos = GetActorLocation();
 
-	switch (turnCnt)
+	switch (mainData.turnCnt)
 	{
 	case 0: // Å´
-		pieceMinXPos = (pos - rightVec * pieceSize);
-		pieceMaxXPos = (pos + rightVec * pieceSize);
-		pieceMinYPos = pos;
-		pieceMaxYPos = (pos - upVec * pieceSize);
+		mainData.pieceMinXPos = (pos - rightVec * pieceSize);
+		mainData.pieceMaxXPos = (pos + rightVec * pieceSize);
+		mainData.pieceMinYPos = pos;
+		mainData.pieceMaxYPos = (pos - upVec * pieceSize);
 		break;
 
 	case 1: // Å©
-		pieceMinXPos = (pos - rightVec * pieceSize);
-		pieceMaxXPos = pos;
-		pieceMinYPos = (pos + upVec * pieceSize);
-		pieceMaxYPos = (pos - upVec * pieceSize);
+		mainData.pieceMinXPos = (pos - rightVec * pieceSize);
+		mainData.pieceMaxXPos = pos;
+		mainData.pieceMinYPos = (pos + upVec * pieceSize);
+		mainData.pieceMaxYPos = (pos - upVec * pieceSize);
 		break;
 
 	case 2: // Å™
-		pieceMinXPos = (pos - rightVec * pieceSize);
-		pieceMaxXPos = (pos + rightVec * pieceSize);
-		pieceMinYPos = (pos + upVec * pieceSize);
-		pieceMaxYPos = pos;
+		mainData.pieceMinXPos = (pos - rightVec * pieceSize);
+		mainData.pieceMaxXPos = (pos + rightVec * pieceSize);
+		mainData.pieceMinYPos = (pos + upVec * pieceSize);
+		mainData.pieceMaxYPos = pos;
 		break;
 
 	case 3: // Å®
-		pieceMinXPos = pos;
-		pieceMaxXPos = (pos + rightVec * pieceSize);
-		pieceMinYPos = (pos + upVec * pieceSize);
-		pieceMaxYPos = (pos - upVec * pieceSize);
+		mainData.pieceMinXPos = pos;
+		mainData.pieceMaxXPos = (pos + rightVec * pieceSize);
+		mainData.pieceMinYPos = (pos + upVec * pieceSize);
+		mainData.pieceMaxYPos = (pos - upVec * pieceSize);
 		break;
 
 	default: break;
@@ -75,34 +69,34 @@ void APieceT::DoTurnRight()
 
 void APieceT::SelectPieceNum(int selectPieceNum)
 {
-	switch (turnCnt)
+	switch (mainData.turnCnt)
 	{
 	case 0: // Å´
-		pieceNums[0] = selectPieceNum;
-		pieceNums[1] = pieceNums[0] - 1;
-		pieceNums[2] = pieceNums[0] + 1;
-		pieceNums[3] = pieceNums[0] + panelWidth;
+		mainData.pieceNums[0] = selectPieceNum;
+		mainData.pieceNums[1] = mainData.pieceNums[0] - 1;
+		mainData.pieceNums[2] = mainData.pieceNums[0] + 1;
+		mainData.pieceNums[3] = mainData.pieceNums[0] + panelWidth;
 		break;
 
-	case 1: // Å®
-		pieceNums[0] = selectPieceNum;
-		pieceNums[1] = pieceNums[0] - panelWidth;
-		pieceNums[2] = pieceNums[0] + 1;
-		pieceNums[3] = pieceNums[0] + panelWidth;
+	case 1: // Å©
+		mainData.pieceNums[0] = selectPieceNum;
+		mainData.pieceNums[1] = mainData.pieceNums[0] - panelWidth;
+		mainData.pieceNums[2] = mainData.pieceNums[0] - 1;
+		mainData.pieceNums[3] = mainData.pieceNums[0] + panelWidth;
 		break;
 
 	case 2: // Å™
-		pieceNums[0] = selectPieceNum;
-		pieceNums[1] = pieceNums[0] - 1;
-		pieceNums[2] = pieceNums[0] + 1;
-		pieceNums[3] = pieceNums[0] - panelWidth;
+		mainData.pieceNums[0] = selectPieceNum;
+		mainData.pieceNums[1] = mainData.pieceNums[0] - 1;
+		mainData.pieceNums[2] = mainData.pieceNums[0] + 1;
+		mainData.pieceNums[3] = mainData.pieceNums[0] - panelWidth;
 		break;
 
-	case 3: // Å©
-		pieceNums[0] = selectPieceNum;
-		pieceNums[1] = pieceNums[0] - panelWidth;
-		pieceNums[2] = pieceNums[0] - 1;
-		pieceNums[3] = pieceNums[0] + panelWidth;
+	case 3: // Å®
+		mainData.pieceNums[0] = selectPieceNum;
+		mainData.pieceNums[1] = mainData.pieceNums[0] - panelWidth;
+		mainData.pieceNums[2] = mainData.pieceNums[0] + 1;
+		mainData.pieceNums[3] = mainData.pieceNums[0] + panelWidth;
 		break;
 
 	default: break;

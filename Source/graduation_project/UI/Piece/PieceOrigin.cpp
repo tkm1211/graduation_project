@@ -6,15 +6,27 @@
 
 void APieceOrigin::Initialize(int selectNum, int panelWidthNum, int panelHegihtNum, float onePieceSize)
 {
+	mainData.turnCnt = 0;
+
 	pieceSize = onePieceSize;
 	panelWidth = panelWidthNum;
 	panelHegiht = panelHegihtNum;
+
+	mainData.originPos = GetActorLocation();
+	mainData.originRotate = GetActorRotation();
+
+	mainData.pieceNums.Add(selectNum);
+	mainData.pieceNums.Add(selectNum);
+	mainData.pieceNums.Add(selectNum);
+	mainData.pieceNums.Add(selectNum);
 
 	DoInitialize(selectNum);
 }
 
 void APieceOrigin::UpdateBegin()
 {
+	backUpData = mainData;
+
 	if (onPieceTurnLeft) TurnLeft();
 	if (onPieceTurnRight) TurnRight();
 }
@@ -26,6 +38,11 @@ void APieceOrigin::Update(float DeltaTime)
 
 void APieceOrigin::UpdateEnd()
 {
+	mainData.originPos = GetActorLocation();
+	mainData.originRotate = GetActorRotation();
+
+	originPos = mainData.originPos;
+
 	onPieceUp = false;
 	onPieceDown = false;
 	onPieceLeft = false;
@@ -34,43 +51,41 @@ void APieceOrigin::UpdateEnd()
 	onPieceTurnRight = false;
 }
 
-void APieceOrigin::PieceMove(FVector spawnGridPos, FVector rightVec, FVector upVec)
+void APieceOrigin::PieceMove(FVector originPiecePos, FVector spawnGridPos, FVector rightVec, FVector upVec)
 {
-	FVector pos = GetActorLocation();
+	SetActorLocation(originPiecePos);
+	DoPieceMove(originPiecePos, rightVec, upVec);
 
-	panelRightVec = rightVec;
-	panelUpVec = upVec;
-
-	if (onPieceUp)
-	{
-		pos += upVec * pieceSize;
-	}
-	if (onPieceDown)
-	{
-		pos -= upVec * pieceSize;
-	}
-	if (onPieceLeft)
-	{
-		pos -= rightVec * pieceSize;
-	}
-	if (onPieceRight)
-	{
-		pos += rightVec * pieceSize;
-	}
-
-	SetActorLocation(pos);
-
-	DoPieceMove(spawnGridPos, rightVec, upVec);
-
-	pieceMinX = (pieceMinXPos - spawnGridPos).Size();
-	pieceMaxX = (pieceMaxXPos - spawnGridPos).Size();
-	pieceMinY = (pieceMinYPos - spawnGridPos).Size();
-	pieceMaxY = (pieceMaxYPos - spawnGridPos).Size();
+	mainData.pieceMinX = (mainData.pieceMinXPos - spawnGridPos).Size();
+	mainData.pieceMaxX = (mainData.pieceMaxXPos - spawnGridPos).Size();
+	mainData.pieceMinY = (mainData.pieceMinYPos - spawnGridPos).Size();
+	mainData.pieceMaxY = (mainData.pieceMaxYPos - spawnGridPos).Size();
 }
 
 void APieceOrigin::PieceDecision()
 {
 
+}
+
+void APieceOrigin::UndoData()
+{
+	int subTurnCnt = backUpData.turnCnt - mainData.turnCnt;
+	if (1 < fabsf(subTurnCnt))
+	{
+		if (subTurnCnt < 0)
+		{
+			subTurnCnt += 2;
+		}
+		else if (0 < subTurnCnt)
+		{
+			subTurnCnt -= 2;
+		}
+	}
+
+	mainData = backUpData;
+
+	SetActorLocation(mainData.originPos);
+	SetActorRotation(mainData.originRotate);
 }
 
 void APieceOrigin::OnPieceUp()
@@ -105,22 +120,24 @@ void APieceOrigin::OnPieceTurnRight()
 
 void APieceOrigin::TurnLeft()
 {
-	--turnCnt;
-	if (turnCnt < 0) turnCnt = 3;
-
-	FRotator rotation = FRotator(90.0f, 0.0f, 0.0f);
-	AddActorLocalRotation(rotation, false, 0, ETeleportType::TeleportPhysics);
-
+	TurnPiece(-1);
 	DoTurnLeft();
 }
 
 void APieceOrigin::TurnRight()
 {
-	++turnCnt;
-	if (3 < turnCnt) turnCnt = 0;
-
-	FRotator rotation = FRotator(-90.0f, 0.0f, 0.0f);
-	AddActorLocalRotation(rotation, false, 0, ETeleportType::TeleportPhysics);
-
+	TurnPiece(1);
 	DoTurnRight();
+}
+
+void APieceOrigin::TurnPiece(int addTurnCnt)
+{
+	mainData.turnCnt += addTurnCnt;
+	if (mainData.turnCnt < 0) mainData.turnCnt = 3;
+	if (3 < mainData.turnCnt) mainData.turnCnt = 0;
+
+	float addRotateX = 90.0f * addTurnCnt * -1.0f;
+
+	FRotator rotation = FRotator(addRotateX, 0.0f, 0.0f);
+	AddActorLocalRotation(rotation, false, 0, ETeleportType::TeleportPhysics);
 }

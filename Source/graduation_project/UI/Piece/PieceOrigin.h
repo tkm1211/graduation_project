@@ -6,18 +6,28 @@
 #include "PaperSpriteActor.h"
 #include "PieceOrigin.generated.h"
 
-/**
- * 
- */
-
 
 USTRUCT(BlueprintType)
-struct FAroundPiece
+struct FPieceShareData
 {
 	GENERATED_USTRUCT_BODY();
 
-	int type; // ピースの種類 (0 : top, 1 : right, 2 : down, 3 : left)
-	int pieceNum; // ピースのあるパネル番号
+	TArray<int> pieceNums; // 各ピースがあるパネル番号
+
+	FVector originPos;
+	FRotator originRotate;
+
+	FVector pieceMinXPos;
+	FVector pieceMaxXPos;
+	FVector pieceMinYPos;
+	FVector pieceMaxYPos;
+
+	int turnCnt = 0; // 回転するたびにカウント（右回りカウントアップ、左回りカウントダウン。偶数は横向き、奇数は縦向き。）
+
+	float pieceMinX = 0.0f;
+	float pieceMaxX = 0.0f;
+	float pieceMinY = 0.0f;
+	float pieceMaxY = 0.0f;
 };
 
 UCLASS()
@@ -25,40 +35,21 @@ class GRADUATION_PROJECT_API APieceOrigin : public APaperSpriteActor
 {
 	GENERATED_BODY()
 
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	FVector originPos;
+
 protected:
-	int originNum; // 起点となるピースのあるパネル番号
-	TArray<FAroundPiece> aroundPieces; // 周辺のピース
-
-	TArray<int> pieceNums; // 各ピースがあるパネル番号
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type")
-	FVector pieceMinXPos;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type")
-	FVector pieceMaxXPos;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type")
-	FVector pieceMinYPos;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type")
-	FVector pieceMaxYPos;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type")
-	FVector gridPos;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	FPieceShareData mainData;
+	FPieceShareData backUpData;
 
 	FVector panelRightVec;
 	FVector panelUpVec;
 
-	int turnCnt = 0; // 回転するたびにカウント（右回りカウントアップ、左回りカウントダウン。偶数は横向き、奇数は縦向き。）
-
 	int panelWidth = 0;
 	int panelHegiht = 0;
 	float pieceSize = 0.0f;
-
-	float pieceMinX = 0.0f;
-	float pieceMaxX = 0.0f;
-	float pieceMinY = 0.0f;
-	float pieceMaxY = 0.0f;
 
 	bool onPieceUp = false;
 	bool onPieceDown = false;
@@ -72,8 +63,9 @@ public:
 	void UpdateBegin();
 	void Update(float DeltaTime);
 	void UpdateEnd();
-	void PieceMove(FVector spawnGridPos, FVector rightVec, FVector upVec);
+	void PieceMove(FVector originPiecePos, FVector spawnGridPos, FVector rightVec, FVector upVec);
 	void PieceDecision();
+	void UndoData();
 	void OnPieceUp();
 	void OnPieceDown();
 	void OnPieceLeft();
@@ -83,24 +75,29 @@ public:
 	void TurnLeft();
 	void TurnRight();
 
-	float GetPieceMinX() { return pieceMinX; }
-	float GetPieceMaxX() { return pieceMaxX; }
-	float GetPieceMinY() { return pieceMinY; }
-	float GetPieceMaxY() { return pieceMaxY; }
+	int GetTurnCnt() { return mainData.turnCnt; }
 
-	FVector GetPieceMinXPos() { return pieceMinXPos; }
-	FVector GetPieceMaxXPos() { return pieceMaxXPos; }
-	FVector GetPieceMinYPos() { return pieceMinYPos; }
-	FVector GetPieceMaxYPos() { return pieceMaxYPos; }
+	float GetPieceMinX() { return mainData.pieceMinX; }
+	float GetPieceMaxX() { return mainData.pieceMaxX; }
+	float GetPieceMinY() { return mainData.pieceMinY; }
+	float GetPieceMaxY() { return mainData.pieceMaxY; }
 
-	TArray<int> GetPieceNums() { return pieceNums; }
+	FVector GetPieceMinXPos() { return mainData.pieceMinXPos; }
+	FVector GetPieceMaxXPos() { return mainData.pieceMaxXPos; }
+	FVector GetPieceMinYPos() { return mainData.pieceMinYPos; }
+	FVector GetPieceMaxYPos() { return mainData.pieceMaxYPos; }
+
+	TArray<int> GetPieceNums() { return mainData.pieceNums; }
 
 public:
 	virtual void DoInitialize(int selectNum) {}
 	virtual void DoUpdate(float DeltaTime) {}
-	virtual void DoPieceMove(FVector spawnGridPos, FVector rightVec, FVector upVec) {}
+	virtual void DoPieceMove(FVector originPiecePos, FVector rightVec, FVector upVec) {}
 	virtual void DoPieceDecision() {}
 	virtual void DoTurnLeft() {}
 	virtual void DoTurnRight() {}
 	virtual void SelectPieceNum(int selectPieceNum) {}
+
+private:
+	void TurnPiece(int addTurnCnt);
 };
