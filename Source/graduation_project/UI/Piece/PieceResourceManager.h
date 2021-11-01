@@ -3,31 +3,46 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Pawn.h"
+#include "Subsystems/GameInstanceSubsystem.h"
 #include "PieceBase.h"
 #include "PieceResourceManager.generated.h"
 
+
+USTRUCT(BlueprintType)
+struct FPieceResourceData
+{
+	GENERATED_USTRUCT_BODY();
+
+	// 形
+	PieceShape shape = PieceShape::T;
+
+	// 種類
+	PieceType type = PieceType::Power;
+};
+
 UCLASS()
-class GRADUATION_PROJECT_API APieceResourceManager : public APawn
+class GRADUATION_PROJECT_API UPieceResourceManager : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
-
+	
 private:
-	TArray<APieceBase> pieces;
+	TArray<FPieceResourceData> pieceDatas;
 
 public:
-	// Sets default values for this pawn's properties
-	APieceResourceManager();
+	// 初期化
+	virtual void Initialize(FSubsystemCollectionBase& Collection);
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	// 終了化
+	virtual void Deinitialize();
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+public:
+	// ゲーム開始時の初期化
+	void InitializeAtGameStart();
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	// ピースを取得した時に設定
+	void SetPiece(PieceShape shape, PieceType type);
 
+public:
+	// 現在、保持しているピースをすべて取得
+	TArray<FPieceResourceData> GetPieceResourceDatas() { return pieceDatas; }
 };

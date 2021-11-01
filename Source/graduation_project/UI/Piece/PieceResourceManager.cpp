@@ -1,35 +1,42 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-//#include "UI/Piece/PieceResourceManager.h"
 #include "PieceResourceManager.h"
 
-// Sets default values
-APieceResourceManager::APieceResourceManager()
-{
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
 
+// èâä˙âª
+void UPieceResourceManager::Initialize(FSubsystemCollectionBase& Collection)
+{
+	pieceDatas.Empty();
+	{
+		SetPiece(PieceShape::T, PieceType::Power);
+		SetPiece(PieceShape::I, PieceType::Power);
+		SetPiece(PieceShape::O, PieceType::Power);
+		SetPiece(PieceShape::L, PieceType::Power);
+		SetPiece(PieceShape::T, PieceType::Power);
+		SetPiece(PieceShape::I, PieceType::Power);
+		SetPiece(PieceShape::O, PieceType::Power);
+		SetPiece(PieceShape::L, PieceType::Power);
+	}
 }
 
-// Called when the game starts or when spawned
-void APieceResourceManager::BeginPlay()
+// èIóπâª
+void UPieceResourceManager::Deinitialize()
 {
-	Super::BeginPlay();
-	
+	pieceDatas.Empty();
 }
 
-// Called every frame
-void APieceResourceManager::Tick(float DeltaTime)
+void UPieceResourceManager::InitializeAtGameStart()
 {
-	Super::Tick(DeltaTime);
-
+	pieceDatas.Empty();
 }
 
-// Called to bind functionality to input
-void APieceResourceManager::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void UPieceResourceManager::SetPiece(PieceShape shape, PieceType type)
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
+	FPieceResourceData data;
+	{
+		data.shape = shape;
+		data.type = type;
+	}
+	pieceDatas.Add(data);
 }
-

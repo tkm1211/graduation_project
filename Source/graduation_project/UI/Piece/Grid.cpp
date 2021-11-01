@@ -8,6 +8,7 @@
 #include "PieceI.h"
 #include "PieceT.h"
 #include "PiecePanel.h"
+#include "PieceResourceManager.h"
 #include "PaperSpriteComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "../../FileStream/JsonFunctionLibrary.h"
@@ -87,18 +88,13 @@ void AGrid::BeginPlay()
 			}
 		}
 
-		CreatePiece(PieceShape::T, SpawnLocation);
-		CreatePiece(PieceShape::L, SpawnLocation);
-		CreatePiece(PieceShape::I, SpawnLocation);
-		CreatePiece(PieceShape::O, SpawnLocation);
-		/*CreatePiece(PieceShape::T, SpawnLocation);
-		CreatePiece(PieceShape::T, SpawnLocation);
-		CreatePiece(PieceShape::O, SpawnLocation);
-		CreatePiece(PieceShape::O, SpawnLocation);
-		CreatePiece(PieceShape::I, SpawnLocation);
-		CreatePiece(PieceShape::I, SpawnLocation);
-		CreatePiece(PieceShape::L, SpawnLocation);
-		CreatePiece(PieceShape::L, SpawnLocation);*/
+		UGameInstance* instance = GetWorld()->GetGameInstance();
+		auto resourceManager = instance->GetSubsystem<UPieceResourceManager>();
+		auto datas = resourceManager->GetPieceResourceDatas();
+		for (auto data : datas)
+		{
+			CreatePiece(data.shape, SpawnLocation);
+		}
 
 		SetVisiblePiece(selectPieceNum, true, pieces[selectPieceNum]->GetActorLocation());
 	}
