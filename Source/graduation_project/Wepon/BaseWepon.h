@@ -32,14 +32,17 @@ protected:
 	// ’e‚ÌˆĞ—Í
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AmmoDetails")
 		float damage;
-
-	// ‹——£Œ¸Š
+	// —LŒøË’ö
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AmmoDetails")
-		float distanceDecay;
+		float effectiveRange;
+	// Ë’ö”{—¦
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AmmoDetails")
+		float rangeMag;
 
 	// ’e‚Ì¶‘¶ŠÔ
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AmmoDetails")
 		float lifeTime;
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AmmoFire")
 		float fireDelayTime;

@@ -99,6 +99,6 @@ void AAssultRifle::SpawnShot()
 	//　スポーンさせる
 	ABaseAmmo* _tempAmmoBase = GetWorld()->SpawnActor<ABaseAmmo>(ammoClass, _fireLoc, _newRotator);
 	_tempAmmoBase->SetOwner(this);
-	_tempAmmoBase->SetParameter(damage, distanceDecay, lifeTime);
+	_tempAmmoBase->SetParameter(damage, effectiveRange, rangeMag, lifeTime);
 }
 

@@ -53,6 +53,7 @@ Agraduation_projectCharacter::Agraduation_projectCharacter()
 	GetCharacterMovement()->MaxAcceleration = 2048.0f;
 
 	hp = defaultHp;
+	invincibleTime = defaultInvincibleTime;
 	isDead = false;
 }
 
@@ -86,12 +87,15 @@ void Agraduation_projectCharacter::SetupPlayerInputComponent(class UInputCompone
 
 }
 
+// 更新
 void Agraduation_projectCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// 死んだ時の処理
 	if (isDead)
 	{
+		// 空中時に移動させる
 		if (GetCharacterMovement()->IsFalling())
 		{
 			GetCharacterMovement()->MaxWalkSpeed = 10000.0f;
@@ -99,16 +103,24 @@ void Agraduation_projectCharacter::Tick(float DeltaTime)
 			const FRotator Rotation = Controller->GetControlRotation();
 			const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-			// get forward vector
-			const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X) ;
-			AddMovementInput(Direction, -1);
+			AddMovementInput(directionCollision, 1);
 		}
-	if (changePlayerInput) return;
-
-
 		return;
 	}
+	if (changePlayerInput) return;
 
+	// 無敵時間
+	if (isInvincible)
+	{
+		invincibleTime -= DeltaTime;
+		if (invincibleTime <= 0)
+		{
+			invincibleTime = defaultInvincibleTime;
+			isInvincible = false;
+		}
+	}
+
+	// 銃を構えるまたは、射撃中はカメラのほうにプレイヤーを固定
 	if (isAim || isFire)
 	{
 		FRotator newRotor = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
@@ -116,6 +128,7 @@ void Agraduation_projectCharacter::Tick(float DeltaTime)
 		newRotor.Roll = 0.0f;
 		SetActorRotation(newRotor);
 
+		// エイムのアニメーション再生
 		auto animInstance = GetMesh()->GetAnimInstance();
 		if (!animInstance->Montage_IsPlaying(aimMontages[0]) && !animInstance->Montage_IsPlaying(recoilMontages[0]))
 		{
@@ -124,11 +137,14 @@ void Agraduation_projectCharacter::Tick(float DeltaTime)
 	}
 }
 
+// ジャンプ処理
 void Agraduation_projectCharacter::Jump()
 {
 	if (changePlayerInput && isDead) return;
 
 	Super::Jump();
+
+	// ジャンプの誤差処理 (70%で普通の、30%で回転)
 	if (!GetCharacterMovement()->IsFalling())
 	{
 		if (FMath::RandRange(1, 100) < 30)
@@ -173,6 +189,7 @@ void Agraduation_projectCharacter::MoveForward(float Value)
 		AddMovementInput(Direction, Value);
 	}
 	inputMoveValue.Y = Value;
+
 }
 
 void Agraduation_projectCharacter::MoveRight(float Value)
@@ -193,6 +210,7 @@ void Agraduation_projectCharacter::MoveRight(float Value)
 	inputMoveValue.X = Value;
 }
 
+// 射撃開始
 void Agraduation_projectCharacter::FireWepon()
 {
 	if (changePlayerInput || isDead) return;
@@ -201,6 +219,7 @@ void Agraduation_projectCharacter::FireWepon()
 	useWepon->FirstFire();
 }
 
+// エイム開始
 void Agraduation_projectCharacter::AimWepon()
 {
 	if (changePlayerInput || isDead) return;
@@ -208,6 +227,7 @@ void Agraduation_projectCharacter::AimWepon()
 	isAim = true;
 }
 
+// 射撃終了
 void Agraduation_projectCharacter::StopFireWepon()
 {
 	if (changePlayerInput || isDead) return;
@@ -216,6 +236,7 @@ void Agraduation_projectCharacter::StopFireWepon()
 	useWepon->SetOnFire(isFire);
 }
 
+// エイム終了
 void Agraduation_projectCharacter::StopAimWepon()
 {
 	if (changePlayerInput || isDead) return;
@@ -223,10 +244,12 @@ void Agraduation_projectCharacter::StopAimWepon()
 	isAim = false;
 }
 
+// 武器チェンジ
 void Agraduation_projectCharacter::ChangeWepon(ABaseWepon* nextWepon)
 {
 	useWepon = nextWepon;
 
+	// 名前から武器の番号取得
 	FString weponName = UKismetSystemLibrary::GetObjectName(useWepon);
 	weponName = weponName.Right(5);
 	weponName = weponName.Left(1);
@@ -235,6 +258,7 @@ void Agraduation_projectCharacter::ChangeWepon(ABaseWepon* nextWepon)
 
 }
 
+// ポーズ処理
 void Agraduation_projectCharacter::Pause()
 {
 	if (pauseTrg) return;
@@ -242,30 +266,44 @@ void Agraduation_projectCharacter::Pause()
 	if (changePlayerInput) changePlayerInput = false;
 	else changePlayerInput = true;
 
-	Damage(10.0f);
+	Damage(10.0f, FVector(0,0,0));
 }
 
+// ポーズのトリガー処理
 void Agraduation_projectCharacter::ReleasePause()
 {
 	pauseTrg = false;
 }
 
-void Agraduation_projectCharacter::Damage(float d)
+// ダメージ処理
+void Agraduation_projectCharacter::Damage(float giveDamage, FVector hitPosition)
 {
-	if (changePlayerInput || isDead) return;
+	// 死んだときに即return
+	if (isDead || isInvincible) return;
 
+	// nockのアニメーションが再生されてなかったら再生する
 	auto animInstance = GetMesh()->GetAnimInstance();
 	if (!animInstance->Montage_IsPlaying(nockMontages))
 	{
 		animInstance->Montage_Play(nockMontages, 1.0f);
 	}
 
-	hp -= d;
+	// 吹っ飛ぶ方向計算
+	FVector charaPos = GetActorLocation();
+	directionCollision = charaPos - hitPosition;
+	directionCollision.Normalize();
+
+	// ダメージ処理
+	hp -= giveDamage;
 	
+	isInvincible = true;
+
+	// 死んだかの判断
 	if (hp <= 0)
 	{
 		isDead = true;
 		hp = 0.0f;
+		// 死ぬアニメーションを再生
 		if (!animInstance->Montage_IsPlaying(deadMontages))
 		{
 			animInstance->Montage_Play(deadMontages, 1.0f);

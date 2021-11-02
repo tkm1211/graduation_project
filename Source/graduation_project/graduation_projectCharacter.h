@@ -24,6 +24,8 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class UCameraComponent* FollowCamera;
 
+	FVector directionCollision;
+
 	bool changePlayerInput = false;
 	bool pauseTrg = false;
 public:
@@ -52,7 +54,13 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Dead")
 		bool isDead;
-	
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Nock")
+		float defaultInvincibleTime;
+
+	float invincibleTime;
+	bool isInvincible;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AnimMontage")
 		TArray<UAnimMontage*> recoilMontages;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AnimMontage")
@@ -61,7 +69,6 @@ public:
 		UAnimMontage* deadMontages;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AnimMontage")
 		UAnimMontage* nockMontages;
-
 
 
 public:
@@ -107,6 +114,6 @@ public:
 
 	void ChangeWepon(ABaseWepon* nextWepon);
 
-	void Damage(float d);
+	void Damage(float giveDamage, FVector hitPosition);
 };
 

@@ -37,9 +37,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ammo")
 		float movementSpeed = 1500.0f;
 
-	float damage;
-	float distanceDecay;
+	float damage;	
+	float effectiveRange;
+	float rangeMag;
 	float life;
+	float defaultLife;
 
 
 protected:
@@ -51,7 +53,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void SetParameter(float d, float dd, float l);
+	void SetParameter(float _damage, float _effectiveRange, float _rangeMag, float _life);
 
 	UFUNCTION()
 	void OnHit(

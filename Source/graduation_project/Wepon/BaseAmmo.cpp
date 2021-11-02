@@ -4,6 +4,7 @@
 #include "BaseAmmo.h"
 #include "Kismet/GameplayStatics.h"
 #include "../graduation_projectCharacter.h"
+#include "../Enemy/TestBoss_MK1.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
@@ -40,20 +41,21 @@ void ABaseAmmo::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	life += DeltaTime;
 
-	life -= DeltaTime;
-
-	if (life < 0)
+	if (life > defaultLife)
 	{
 		AmmoDestroy();
 	}
 }
 
-void ABaseAmmo::SetParameter(float d, float dd, float l)
+void ABaseAmmo::SetParameter(float _damage, float _effectiveRange, float _rangeMag, float _life)
 {
-	damage = d;
-	distanceDecay = dd;
-	life = l;
+	damage = _damage;
+	effectiveRange = _effectiveRange;
+	rangeMag = _rangeMag;
+	life = 0.0f;
+	defaultLife = _life;
 }
 
 
@@ -71,6 +73,18 @@ void ABaseAmmo::OnHit(
 
 	if (OtherActor && OtherActor != this && OtherActor != GetOwner() && OtherActor != _playerCharacter)
 	{
+		float hitDamage = damage - ((rangeMag * effectiveRange) * (rangeMag * effectiveRange)) * life;
+		if (OtherActor->Tags.Max() > 0)
+		{
+			if (OtherActor->Tags[0] == "Wepon") return;
+			if (OtherActor->Tags[0] == "Boss")
+			{
+				ATestBoss_MK1* bossCharacter = Cast<ATestBoss_MK1>(OtherActor);
+
+
+				bossCharacter->Damage(hitDamage);
+			}
+		}
 		AmmoDestroy();
 	}
 }
