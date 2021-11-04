@@ -20,7 +20,7 @@ ATestBoss_MK1AIController::ATestBoss_MK1AIController(const class FObjectInitiali
     SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
     AISensorComp->ConfigureSense(*SightConfig);
 
-    ConstructorHelpers::FObjectFinder<UBehaviorTree> BTFinder(TEXT("/Game/ThirdPersonCPP/Blueprints/AI/BT_PrototypeMK1"));
+    ConstructorHelpers::FObjectFinder<UBehaviorTree> BTFinder(TEXT("/Game/Enemy/Boss/Blueprints/AI/BT_PrototypeMK1"));
     BehaviorTree = BTFinder.Object;
 
     PlayerActorKeyName = "PlayerActor";

@@ -38,9 +38,13 @@ void UBT_S_Target::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory
 		{
 			Boss_mk1->WitchAtk = ATestBoss_MK1::FLAME_FIRE;
 		}
-		else
+		else if (rand_num < FLAME + 20)
 		{
 			Boss_mk1->WitchAtk = ATestBoss_MK1::MISSILE_FIRE;
+		}
+		else
+		{
+			Boss_mk1->WitchAtk = ATestBoss_MK1::WIDERANGEBEEM;
 		}
 		
 		

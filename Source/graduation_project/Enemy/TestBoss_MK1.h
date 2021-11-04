@@ -21,7 +21,7 @@ public:
 	UPROPERTY(BlueprintAssignable)
 		FlookAtPlayer lookAtPlayer;
 
-	UPROPERTY(EditAnywhere, Category = "HP");
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HP");
 	float HealthPoint = 1000.f;
 
 	UPROPERTY(VisibleAnywhere, Category = "AI")
@@ -29,16 +29,16 @@ public:
 
 	class UCharacterMovementComponent* CharaMoveComp;
 
-	UPROPERTY(VisibleAnywhere, Category = "HitCollision")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "HitCollision")
 		class UCapsuleComponent* RArmCapsuleComp;
 	
-	UPROPERTY(VisibleAnywhere, Category = "HitCollision")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "HitCollision")
 		class UCapsuleComponent* LArmCapsuleComp;
 
-	UPROPERTY(VisibleAnywhere, Category = "HitCollision")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "HitCollision")
 		class UCapsuleComponent* LFireCapsuleComp;
 
-	UPROPERTY(VisibleAnywhere, Category = "HitCollision")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "HitCollision")
 		class UCapsuleComponent* RFireCapsuleComp;
 
 
