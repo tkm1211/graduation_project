@@ -26,7 +26,10 @@ AGrid::AGrid()
 void AGrid::BeginPlay()
 {
 	Super::BeginPlay();
+}
 
+void AGrid::Initialize()
+{
 	// •Ï”‰Šú‰»
 	{
 		selectPieceNum = 0;

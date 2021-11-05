@@ -135,6 +135,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+public:
+	void Initialize();
+
 private:
 	void PuzzleUpdate(float DeltaTime);
 	void SlotUpdate(float DeltaTime);
