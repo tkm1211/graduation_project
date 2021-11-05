@@ -48,8 +48,12 @@ ATestBoss_MK1::ATestBoss_MK1(const class FObjectInitializer& ObjectInitializer)
 	
 	RFireCapsuleComp->SetWorldLocation(RArmPos);
 
-	OnActorHit.AddDynamic(this, &ATestBoss_MK1::OnHit);
+	//OnActorHit.AddDynamic(this, &ATestBoss_MK1::OnHit);
     
+	LFireCapsuleComp->SetGenerateOverlapEvents(true);
+	LFireCapsuleComp->OnComponentBeginOverlap.AddDynamic(this, &ATestBoss_MK1::OnHit);
+	RFireCapsuleComp->SetGenerateOverlapEvents(true);
+	RFireCapsuleComp->OnComponentBeginOverlap.AddDynamic(this, &ATestBoss_MK1::OnHit);
 }
 
 void ATestBoss_MK1::OnSeePlayer()
@@ -66,9 +70,16 @@ void ATestBoss_MK1::OnSeePlayer()
 
 }
 
-void ATestBoss_MK1::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)
+void ATestBoss_MK1::OnHit(class UPrimitiveComponent* HitComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	Agraduation_projectCharacter* pl = Cast<Agraduation_projectCharacter>(OtherActor);
 
+	if (pl == nullptr)
+	{
+		return;
+	}
+
+	pl->Damage(20.f, SweepResult.Location);
 }
 
 void ATestBoss_MK1::Damage(float giveDamage)
