@@ -1,8 +1,11 @@
 .vs/
 Binaries/
+//Content/
 Config/
-Content/
 DerivedDataCache/
 Intermediate/
 Saved/
 WindowsNoEditor/
+Tool/Data/Shader/
+
+*.fbx
