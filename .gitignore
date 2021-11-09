@@ -1,6 +1,5 @@
 .vs/
 Binaries/
-//Content/
 Config/
 DerivedDataCache/
 Intermediate/
@@ -8,5 +7,6 @@ Saved/
 WindowsNoEditor/
 Tool/Data/Shader/
 
+*.sln
 *.fbx
 *.zip
