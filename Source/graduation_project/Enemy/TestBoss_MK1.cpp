@@ -9,6 +9,7 @@
 
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "../Mo2Func.h"
 
@@ -64,19 +65,19 @@ void ATestBoss_MK1::OnHit(class UPrimitiveComponent* HitComp, class AActor* Othe
 
 		//壁に当たった時短くするためやっていたが、正常に作動していないためコメントアウト
 		//UE４側で貫通して当たらないようになっているので、とりあえず放置
-		float dist = GetDistanceTo(OtherActor);
+		//float dist = GetDistanceTo(OtherActor);
 
-		UCapsuleComponent* cap = Cast<UCapsuleComponent>(HitComp);
+		//UCapsuleComponent* cap = Cast<UCapsuleComponent>(HitComp);
 
-		if (cap == LFireCapsuleComp)
-		{
-			LFireCapsuleComp->SetCapsuleHalfHeight(dist * 0.5f);
-		}
+		//if (cap == LFireCapsuleComp)
+		//{
+		//	LFireCapsuleComp->SetCapsuleHalfHeight(dist * 0.5f);
+		//}
 
-		if (cap == RFireCapsuleComp)
-		{
-			RFireCapsuleComp->SetCapsuleHalfHeight(dist * 0.5f);
-		}
+		//if (cap == RFireCapsuleComp)
+		//{
+		//	RFireCapsuleComp->SetCapsuleHalfHeight(dist * 0.5f);
+		//}
 
 		return;
 	}
@@ -89,7 +90,7 @@ void ATestBoss_MK1::OnHit(class UPrimitiveComponent* HitComp, class AActor* Othe
 
 void ATestBoss_MK1::OnLeftFireON()
 {
-	LFireCapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	LFireCapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
 void ATestBoss_MK1::OnLeftFireOFF()
@@ -99,7 +100,7 @@ void ATestBoss_MK1::OnLeftFireOFF()
 
 void ATestBoss_MK1::OnRightFireON()
 {
-	RFireCapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	RFireCapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
 void ATestBoss_MK1::OnRightFireOFF()
@@ -118,13 +119,13 @@ void ATestBoss_MK1::BeginPlay()
     Super::BeginPlay();
 
 	LFireCapsuleComp->SetVisibility(true);
-	LFireCapsuleComp->SetHiddenInGame(false);
+	LFireCapsuleComp->SetHiddenInGame(true);
 	LFireCapsuleComp->SetCapsuleRadius(600.f);
 	LFireCapsuleComp->SetCapsuleHalfHeight(1200.f);
 	LFireCapsuleComp->ShapeColor = FColor::Green;
 
 	RFireCapsuleComp->SetVisibility(true);
-	RFireCapsuleComp->SetHiddenInGame(false);
+	RFireCapsuleComp->SetHiddenInGame(true);
 	RFireCapsuleComp->SetCapsuleRadius(600.f);
 	RFireCapsuleComp->SetCapsuleHalfHeight(1200.f);
 	RFireCapsuleComp->ShapeColor = FColor::Green;
@@ -155,20 +156,39 @@ void ATestBoss_MK1::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-	FRotator LeftCapRotator = GetMesh()->GetSocketRotation(LSocketName);
 	FTransform Lt = GetMesh()->GetSocketTransform(LSocketName);
-	FVector LArmPos = GetMesh()->GetSocketLocation(LSocketName) + Lt.GetUnitAxis(EAxis::Z) * 1200.f;
+	FTransform Rt = GetMesh()->GetSocketTransform(RSocketName);
+
+	FVector Lstart = GetMesh()->GetSocketLocation(LSocketName);
+	FVector Lend = GetMesh()->GetSocketLocation(LSocketName) + Lt.GetUnitAxis(EAxis::Z) * 6000.f;;
+
+	FVector Rstart = GetMesh()->GetSocketLocation(RSocketName);
+	FVector Rend = GetMesh()->GetSocketLocation(RSocketName) - Rt.GetUnitAxis(EAxis::Z) * 6000.f;;
+
+	FHitResult LHit, RHit;
+	TArray<AActor*> actors;
+	UKismetSystemLibrary::SphereTraceSingle(GetWorld(), Lstart, Lend, 100.f,
+		ETraceTypeQuery::TraceTypeQuery2, false, actors, EDrawDebugTrace::Type::ForOneFrame, LHit, true, FLinearColor::Red, FLinearColor::Yellow);
+	UKismetSystemLibrary::SphereTraceSingle(GetWorld(), Rstart, Rend, 100.f,
+		ETraceTypeQuery::TraceTypeQuery2, false, actors, EDrawDebugTrace::Type::ForOneFrame, RHit, true, FLinearColor::Red, FLinearColor::Yellow);
+
+	FVector LeftRange = LHit.Location - GetMesh()->GetSocketLocation(LSocketName);
+	float half_dist = LeftRange.Size()/2;
+	FRotator LeftCapRotator = GetMesh()->GetSocketRotation(LSocketName);
+	FVector LArmPos = GetMesh()->GetSocketLocation(LSocketName) + Lt.GetUnitAxis(EAxis::Z) * half_dist;
 	
+	LFireCapsuleComp->SetCapsuleHalfHeight(half_dist);
 	LFireCapsuleComp->SetWorldLocation(LArmPos);
 	LFireCapsuleComp->SetWorldRotation(LeftCapRotator);
 
-
+	FVector RightRange = RHit.Location - GetMesh()->GetSocketLocation(RSocketName);
+	half_dist = LeftRange.Size() / 2;
 	FRotator RightCapRotator = GetMesh()->GetSocketRotation(RSocketName);
-	FTransform Rt = GetMesh()->GetSocketTransform(RSocketName);
 	FVector RArmPos = GetMesh()->GetSocketLocation(RSocketName) - Rt.GetUnitAxis(EAxis::Z) * 1200.f;
 
 	RFireCapsuleComp->SetWorldLocation(RArmPos);
 	RFireCapsuleComp->SetWorldRotation(RightCapRotator);
+
 
 }
 
