@@ -18,41 +18,26 @@ ATestBoss_MK1::ATestBoss_MK1(const class FObjectInitializer& ObjectInitializer)
 	AIControllerClass = ATestBoss_MK1AIController::StaticClass();
 
     lookAtPlayer.AddDynamic(this, &ATestBoss_MK1::OnSeePlayer);
+	LFireColON.AddDynamic(this, &ATestBoss_MK1::OnLeftFireON);
+	LFireColOFF.AddDynamic(this, &ATestBoss_MK1::OnLeftFireOFF);
+	RFireColON.AddDynamic(this, &ATestBoss_MK1::OnRightFireON);
+	RFireColOFF.AddDynamic(this, &ATestBoss_MK1::OnRightFireOFF);
+
 
     CharaMoveComp = GetCharacterMovement();
 	CharaMoveComp->DefaultLandMovementMode = MOVE_Flying;
     CharaMoveComp->MaxWalkSpeed = 400.f;
 
+	//攻撃用ソケット名前取得（コリジョンやミサイル発射用）
+	RSocketName = "arm_2_RSocket";
+	LSocketName = "arm_2_LSocket";
+
+	//攻撃用カプセルコリジョンの生成
 	LFireCapsuleComp = ObjectInitializer.CreateDefaultSubobject<UCapsuleComponent>(this, TEXT("LeftFireCapsuleComp"), true);
 	RFireCapsuleComp = ObjectInitializer.CreateDefaultSubobject<UCapsuleComponent>(this, TEXT("RightFireCapsuleComp"));
-	RArmCapsuleComp = ObjectInitializer.CreateDefaultSubobject<UCapsuleComponent>(this, TEXT("RightArmCapsuleComp"));
-	LArmCapsuleComp = ObjectInitializer.CreateDefaultSubobject<UCapsuleComponent>(this, TEXT("LeftArmCapsuleComp"));
-
-	//LFireCapsuleComp->Response
-
-	FVector FireScale = { 30.f, 30.f, 50.f };
-	//RFireCapsuleComp->SetWorldScale3D(FireScale);
-	RFireCapsuleComp->SetCapsuleRadius(100.f);
-	RFireCapsuleComp->SetCapsuleHalfHeight(2000.f);
-
-
-	FRotator capRotator = { 90.f, 0.f, 0.f };
-	LFireCapsuleComp->SetWorldRotation(capRotator);
-	RFireCapsuleComp->SetWorldRotation(capRotator);
-	LArmCapsuleComp->SetWorldRotation(capRotator);
-	RArmCapsuleComp->SetWorldRotation(capRotator);
-
-	FName RArmName = L"arm_2_RSocket";
-	FVector RArmPos = GetMesh()->GetSocketLocation(RArmName);
-	RArmCapsuleComp->SetWorldLocation(RArmPos);
-	
-	RFireCapsuleComp->SetWorldLocation(RArmPos);
-
-	//OnActorHit.AddDynamic(this, &ATestBoss_MK1::OnHit);
     
-	LFireCapsuleComp->SetGenerateOverlapEvents(true);
+	//コリジョン接触時イベントの発行
 	LFireCapsuleComp->OnComponentBeginOverlap.AddDynamic(this, &ATestBoss_MK1::OnHit);
-	RFireCapsuleComp->SetGenerateOverlapEvents(true);
 	RFireCapsuleComp->OnComponentBeginOverlap.AddDynamic(this, &ATestBoss_MK1::OnHit);
 }
 
@@ -65,7 +50,7 @@ void ATestBoss_MK1::OnSeePlayer()
 	FVector target = { Target->GetActorLocation().X, Target->GetActorLocation().Y, 0.f };
 	FRotator target_rot = UKismetMathLibrary::FindLookAtRotation(start, target);
 
-
+	//いつか線形補間
 	this->SetActorRotation(target_rot);
 
 }
@@ -76,10 +61,50 @@ void ATestBoss_MK1::OnHit(class UPrimitiveComponent* HitComp, class AActor* Othe
 
 	if (pl == nullptr)
 	{
+
+		//壁に当たった時短くするためやっていたが、正常に作動していないためコメントアウト
+		//UE４側で貫通して当たらないようになっているので、とりあえず放置
+		float dist = GetDistanceTo(OtherActor);
+
+		UCapsuleComponent* cap = Cast<UCapsuleComponent>(HitComp);
+
+		if (cap == LFireCapsuleComp)
+		{
+			LFireCapsuleComp->SetCapsuleHalfHeight(dist * 0.5f);
+		}
+
+		if (cap == RFireCapsuleComp)
+		{
+			RFireCapsuleComp->SetCapsuleHalfHeight(dist * 0.5f);
+		}
+
 		return;
 	}
 
 	pl->Damage(20.f, SweepResult.Location);
+
+	LFireColOFF.Broadcast();
+	RFireColOFF.Broadcast();
+}
+
+void ATestBoss_MK1::OnLeftFireON()
+{
+	LFireCapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+}
+
+void ATestBoss_MK1::OnLeftFireOFF()
+{
+	LFireCapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void ATestBoss_MK1::OnRightFireON()
+{
+	RFireCapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+}
+
+void ATestBoss_MK1::OnRightFireOFF()
+{
+	RFireCapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void ATestBoss_MK1::Damage(float giveDamage)
@@ -91,7 +116,6 @@ void ATestBoss_MK1::Damage(float giveDamage)
 void ATestBoss_MK1::BeginPlay()
 {
     Super::BeginPlay();
-
 
 	LFireCapsuleComp->SetVisibility(true);
 	LFireCapsuleComp->SetHiddenInGame(false);
@@ -108,9 +132,22 @@ void ATestBoss_MK1::BeginPlay()
 	FRotator capRotator = { 90.f, 0.f, 0.f };
 	LFireCapsuleComp->SetWorldRotation(capRotator);
 	RFireCapsuleComp->SetWorldRotation(capRotator);
-	LArmCapsuleComp->SetWorldRotation(capRotator);
-	RArmCapsuleComp->SetWorldRotation(capRotator);
 
+	
+
+	LFireCapsuleComp->SetCollisionProfileName("Custom...");
+	LFireCapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	LFireCapsuleComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+	LFireCapsuleComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
+	LFireCapsuleComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+	LFireCapsuleComp->SetGenerateOverlapEvents(true);
+	
+	RFireCapsuleComp->SetCollisionProfileName("Custom...");
+	RFireCapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	LFireCapsuleComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+	RFireCapsuleComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
+	RFireCapsuleComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+	RFireCapsuleComp->SetGenerateOverlapEvents(true);
 }
 
 // Called every frame
@@ -118,19 +155,17 @@ void ATestBoss_MK1::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-	FName RArmName = "arm_2_RSocket";
-	FName LArmName = "arm_2_LSocket";
-	FRotator LeftCapRotator = GetMesh()->GetSocketRotation(LArmName);
-	FTransform Lt = GetMesh()->GetSocketTransform(LArmName);
-	FVector LArmPos = GetMesh()->GetSocketLocation(LArmName) + Lt.GetUnitAxis(EAxis::Z) * 1000.f;
+	FRotator LeftCapRotator = GetMesh()->GetSocketRotation(LSocketName);
+	FTransform Lt = GetMesh()->GetSocketTransform(LSocketName);
+	FVector LArmPos = GetMesh()->GetSocketLocation(LSocketName) + Lt.GetUnitAxis(EAxis::Z) * 1200.f;
 	
 	LFireCapsuleComp->SetWorldLocation(LArmPos);
 	LFireCapsuleComp->SetWorldRotation(LeftCapRotator);
 
 
-	FRotator RightCapRotator = GetMesh()->GetSocketRotation(RArmName);
-	FTransform Rt = GetMesh()->GetSocketTransform(RArmName);
-	FVector RArmPos = GetMesh()->GetSocketLocation(RArmName) - Rt.GetUnitAxis(EAxis::Z) * 1000.f;
+	FRotator RightCapRotator = GetMesh()->GetSocketRotation(RSocketName);
+	FTransform Rt = GetMesh()->GetSocketTransform(RSocketName);
+	FVector RArmPos = GetMesh()->GetSocketLocation(RSocketName) - Rt.GetUnitAxis(EAxis::Z) * 1200.f;
 
 	RFireCapsuleComp->SetWorldLocation(RArmPos);
 	RFireCapsuleComp->SetWorldRotation(RightCapRotator);

@@ -8,6 +8,11 @@
 #include "TestBoss_MK1.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FlookAtPlayer);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLFireColON);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLFireColOFF);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRFireColON);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRFireColOFF);
+
 
 UCLASS()
 class GRADUATION_PROJECT_API ATestBoss_MK1 : public ACharacter
@@ -20,9 +25,22 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 		FlookAtPlayer lookAtPlayer;
+	UPROPERTY(BlueprintAssignable)
+		FLFireColON LFireColON;
+	UPROPERTY(BlueprintAssignable)
+		FLFireColOFF LFireColOFF;
+	UPROPERTY(BlueprintAssignable)
+		FRFireColON RFireColON;
+	UPROPERTY(BlueprintAssignable)
+		FRFireColOFF RFireColOFF;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HP");
 	float HealthPoint = 1000.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = Socket)
+		FName RSocketName;
+	UPROPERTY(EditDefaultsOnly, Category = Socket)
+		FName LSocketName;
 
 	UPROPERTY(VisibleAnywhere, Category = "AI")
 		class UPawnSensingComponent* PawnSensingComp;
@@ -56,6 +74,18 @@ public:
 
 	UFUNCTION()
 		void OnHit(class UPrimitiveComponent* HitComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+		void OnLeftFireON();
+
+	UFUNCTION()
+		void OnLeftFireOFF();
+
+	UFUNCTION()
+		void OnRightFireON();
+
+	UFUNCTION()
+		void OnRightFireOFF();
 
 	enum ATTACK_STATE
 	{

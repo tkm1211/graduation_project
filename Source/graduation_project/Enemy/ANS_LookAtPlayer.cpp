@@ -7,15 +7,16 @@
 
 void UANS_LookAtPlayer::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)
 {
-	
-	if (!MeshComp->GetOwner()->GetWorld())
-	{
-		return;
-	}
-	for (TActorIterator<ATestBoss_MK1>ActItr(MeshComp->GetOwner()->GetWorld()); ActItr; ++ActItr)
-	{
-		boss = *ActItr;
-	}
+	boss = Cast<ATestBoss_MK1>(MeshComp->GetOwner());
+
+	//if (!MeshComp->GetOwner()->GetWorld())
+	//{
+	//	return;
+	//}
+	//for (TActorIterator<ATestBoss_MK1>ActItr(MeshComp->GetOwner()->GetWorld()); ActItr; ++ActItr)
+	//{
+	//	boss = *ActItr;
+	//}
 }
 
 void UANS_LookAtPlayer::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime)
