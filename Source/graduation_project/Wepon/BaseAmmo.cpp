@@ -74,15 +74,17 @@ void ABaseAmmo::OnHit(
 	if (OtherActor && OtherActor != this && OtherActor != GetOwner() && OtherActor != _playerCharacter)
 	{
 		float hitDamage = damage - ((rangeMag * effectiveRange) * (rangeMag * effectiveRange)) * life;
-		if (OtherActor->Tags.Max() > 0)
+		if (OtherComp->ComponentTags.Max() > 0)
 		{
-			if (OtherActor->Tags[0] == "Wepon") return;
-			if (OtherActor->Tags[0] == "Boss")
+			if (OtherComp->ComponentTags[0] == "Wepon") return;
+			if (OtherComp->ComponentTags[0] == "Boss")
 			{
 				ATestBoss_MK1* bossCharacter = Cast<ATestBoss_MK1>(OtherActor);
 
+				UE_LOG(LogTemp, Warning, TEXT("Boss"));
 
 				bossCharacter->Damage(hitDamage);
+				hitdam = hitDamage;
 			}
 		}
 		AmmoDestroy();

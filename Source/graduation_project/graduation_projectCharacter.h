@@ -48,9 +48,9 @@ public:
 		FString jumpName;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "HP")
-		float hp;
+		float hp = defaultHp;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HP")
-		float defaultHp = 100;
+		float defaultHp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Dead")
 		bool isDead;
@@ -58,8 +58,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Nock")
 		float defaultInvincibleTime;
 
-	float invincibleTime;
-	bool isInvincible;
+	float invincibleTime = defaultInvincibleTime;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Horming)
+		bool isInvincible;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AnimMontage")
 		TArray<UAnimMontage*> recoilMontages;
@@ -86,6 +88,8 @@ public:
 		bool hotmingTargetRockOn = false;
 
 protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
 
 	void Jump() override;
 

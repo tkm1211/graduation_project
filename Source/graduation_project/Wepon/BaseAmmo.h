@@ -24,6 +24,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ProjectileMovementComponent")
 	UProjectileMovementComponent* movement;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ProjectileMovementComponent")
+		float hitdam;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Niagara")
 	UNiagaraComponent* naiagaraTrail;

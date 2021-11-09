@@ -35,8 +35,7 @@ Agraduation_projectCharacter::Agraduation_projectCharacter()
 	GetCharacterMovement()->JumpZVelocity = 600.f;
 	GetCharacterMovement()->AirControl = 0.2f;
 
-	JumpMaxCount = 2;
-	GetCharacterMovement()->GravityScale = 2.0;
+	GetCharacterMovement()->GravityScale = 4.0;
 
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -54,6 +53,22 @@ Agraduation_projectCharacter::Agraduation_projectCharacter()
 
 	hp = defaultHp;
 	invincibleTime = defaultInvincibleTime;
+	isInvincible = false;
+	isDead = false;
+}
+
+void Agraduation_projectCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+
+	GetCharacterMovement()->GravityScale = 4.0;
+	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
+	GetCharacterMovement()->MaxAcceleration = 2048.0f;
+
+	hp = defaultHp;
+	invincibleTime = defaultInvincibleTime;
+	isInvincible = false;
 	isDead = false;
 }
 
@@ -110,13 +125,23 @@ void Agraduation_projectCharacter::Tick(float DeltaTime)
 	if (changePlayerInput) return;
 
 	// ñ≥ìGéûä‘
+	static float _visibility = 0.8f;
 	if (isInvincible)
 	{
 		invincibleTime -= DeltaTime;
+		if (invincibleTime < _visibility)
+		{
+			if(GetMesh()->IsVisible()) GetMesh()->SetVisibility(false);
+			else GetMesh()->SetVisibility(true);
+			_visibility -= 0.2f;
+		}
+
 		if (invincibleTime <= 0)
 		{
 			invincibleTime = defaultInvincibleTime;
 			isInvincible = false;
+			GetMesh()->SetVisibility(true);
+			_visibility = 0.8f;
 		}
 	}
 
@@ -215,6 +240,8 @@ void Agraduation_projectCharacter::FireWepon()
 {
 	if (changePlayerInput || isDead) return;
 
+	if (!useWepon) return;
+
 	isFire = true;
 	useWepon->FirstFire();
 }
@@ -231,6 +258,8 @@ void Agraduation_projectCharacter::AimWepon()
 void Agraduation_projectCharacter::StopFireWepon()
 {
 	if (changePlayerInput || isDead) return;
+
+	if (!useWepon) return;
 
 	isFire = false;
 	useWepon->SetOnFire(isFire);
@@ -293,10 +322,10 @@ void Agraduation_projectCharacter::Damage(float giveDamage, FVector hitPosition)
 	directionCollision = charaPos - hitPosition;
 	directionCollision.Normalize();
 
+	isInvincible = true;
 	// É_ÉÅÅ[ÉWèàóù
 	hp -= giveDamage;
 	
-	isInvincible = true;
 
 	// éÄÇÒÇæÇ©ÇÃîªíf
 	if (hp <= 0)
