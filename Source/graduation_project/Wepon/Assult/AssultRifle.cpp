@@ -26,15 +26,18 @@ void AAssultRifle::BeginPlay()
 
 void AAssultRifle::Tick(float DeltaTime)
 {
+	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
+
+	if (_playerCharacter && _playerCharacter->isDead) return;
+
 	Super::Tick(DeltaTime);
-
-	//ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	//Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
-
-	//if (_playerCharacter->GetCharacterMovement()->IsFalling()) return;
 
 	// ’e”­ŽË
 	ShotFire(DeltaTime);
+	fireTimer -= 1.0f * DeltaTime;
+
+	if (fireTimer < 0.0f) fireTimer = -1.0f;
 }
 
 void AAssultRifle::Fire()
@@ -63,8 +66,16 @@ void AAssultRifle::FirstFire()
 	// ƒGƒCƒ€’†‚©‚Ç‚¤‚©
 	if (ammoClass && _playerCharacter->isAim)
 	{
-		Super::Fire();
-		SpawnShot();
+		if (Super::FirstShotEnable())
+		{
+			firstFireTimer = fireDelayTime;
+			Super::Fire();
+			SpawnShot();
+		}
+		else
+		{
+			onFire = true;
+		}
 	}
 	else
 	{
@@ -85,7 +96,7 @@ void AAssultRifle::ShotFire(float DeltaTime)
 	}
 	else
 	{
-		fireTimer -= 1.0f * DeltaTime;
+		
 	}
 }
 

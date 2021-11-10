@@ -69,7 +69,7 @@ void ACameraManager::SphereCastFrontCamera()
 	TArray<FHitResult> HitRetArray;
 
 	// SphereCast
-	bool isHit = UKismetSystemLibrary::SphereTraceMultiByProfile(GetWorld(), _rayStart, _rayStart + (_rayForward * hormingCastRange), hormingCastRadius, TEXT("BlockAll"), false, IngoreActors, EDrawDebugTrace::Type::ForOneFrame, HitRetArray, true);
+	bool isHit = UKismetSystemLibrary::SphereTraceMultiByProfile(GetWorld(), _rayStart, _rayStart + (_rayForward * hormingCastRange), hormingCastRadius, TEXT("BlockAll"), false, IngoreActors, EDrawDebugTrace::Type::None, HitRetArray, true);
 
 	if (isHit)
 	{

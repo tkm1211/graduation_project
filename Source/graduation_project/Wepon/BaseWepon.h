@@ -47,7 +47,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AmmoFire")
 		float fireDelayTime;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ProjectileMovementComponent")
 	float fireTimer;
+	
+	float firstFireTimer;
 	bool onFire;
 
 public:	
@@ -66,5 +69,6 @@ public:
 	virtual void Fire();
 	virtual void ShotFire(float DeltaTime) {}
 
+	bool FirstShotEnable();
 	void SetOnFire(bool flg) { onFire = flg; }
 };

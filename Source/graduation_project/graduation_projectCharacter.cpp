@@ -11,6 +11,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Animation/AnimMontage.h"
+#include "Kismet/KismetMathLibrary.h"
 
 //////////////////////////////////////////////////////////////////////////
 // Agraduation_projectCharacter
@@ -48,6 +49,7 @@ Agraduation_projectCharacter::Agraduation_projectCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
+
 	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
 	GetCharacterMovement()->MaxAcceleration = 2048.0f;
 
@@ -55,6 +57,7 @@ Agraduation_projectCharacter::Agraduation_projectCharacter()
 	invincibleTime = defaultInvincibleTime;
 	isInvincible = false;
 	isDead = false;
+	cameraChangeTimer = 0.0f;
 }
 
 void Agraduation_projectCharacter::BeginPlay()
@@ -70,6 +73,7 @@ void Agraduation_projectCharacter::BeginPlay()
 	invincibleTime = defaultInvincibleTime;
 	isInvincible = false;
 	isDead = false;
+	cameraChangeTimer = 0.0f;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -120,6 +124,9 @@ void Agraduation_projectCharacter::Tick(float DeltaTime)
 
 			AddMovementInput(directionCollision, 1);
 		}
+
+		CameraChange(DeltaTime);
+
 		return;
 	}
 	if (changePlayerInput) return;
@@ -159,13 +166,16 @@ void Agraduation_projectCharacter::Tick(float DeltaTime)
 		{
 			animInstance->Montage_Play(aimMontages[0], 1.0f);
 		}
+
 	}
+	CameraChange(DeltaTime);
+
 }
 
 // ジャンプ処理
 void Agraduation_projectCharacter::Jump()
 {
-	if (changePlayerInput && isDead) return;
+	if (changePlayerInput || isDead) return;
 
 	Super::Jump();
 
@@ -331,6 +341,8 @@ void Agraduation_projectCharacter::Damage(float giveDamage, FVector hitPosition)
 	if (hp <= 0)
 	{
 		isDead = true;
+		isAim = false;
+		isDead = false;
 		hp = 0.0f;
 		// 死ぬアニメーションを再生
 		if (!animInstance->Montage_IsPlaying(deadMontages))
@@ -342,3 +354,40 @@ void Agraduation_projectCharacter::Damage(float giveDamage, FVector hitPosition)
 		return;
 	}
 }
+
+void Agraduation_projectCharacter::CameraChange(float DeltaTime)
+{
+	float x = 0.0f, y = 0.0f, z = 0.0f;
+	if (isAim)
+	{
+		
+		x = UKismetMathLibrary::Ease(NormalCameraLocation.X, AimCameraLocation.X, cameraChangeTimer, EEasingFunc::EaseIn) * -1.0f;
+		y = UKismetMathLibrary::Ease(NormalCameraLocation.Y, AimCameraLocation.Y, cameraChangeTimer, EEasingFunc::EaseIn);
+		z = UKismetMathLibrary::Ease(NormalCameraLocation.Z, AimCameraLocation.Z, cameraChangeTimer, EEasingFunc::EaseIn);
+		
+		cameraChangeTimer += 2.0f * DeltaTime;
+		if (cameraChangeTimer >= 1.0f) cameraChangeTimer = 1.0f;
+
+		CameraBoom->bEnableCameraLag = false;
+	}
+	else
+	{
+		x = UKismetMathLibrary::Ease(NormalCameraLocation.X, AimCameraLocation.X, cameraChangeTimer, EEasingFunc::EaseIn) * -1.0f;
+		y = UKismetMathLibrary::Ease(NormalCameraLocation.Y, AimCameraLocation.Y, cameraChangeTimer, EEasingFunc::EaseIn);
+		z = UKismetMathLibrary::Ease(NormalCameraLocation.Z, AimCameraLocation.Z, cameraChangeTimer, EEasingFunc::EaseIn);
+
+		cameraChangeTimer -= 2.0f * DeltaTime;
+		if (cameraChangeTimer <= 0.0f) cameraChangeTimer = 0.0f;
+
+		CameraBoom->bEnableCameraLag = true;
+	}
+
+	CameraBoom->TargetArmLength = x;
+	CameraBoom->SocketOffset.Y = y;
+	CameraBoom->SocketOffset.Z = z;
+}
+
+
+
+
+

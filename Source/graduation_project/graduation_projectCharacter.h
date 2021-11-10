@@ -24,10 +24,13 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class UCameraComponent* FollowCamera;
 
+
 	FVector directionCollision;
 
 	bool changePlayerInput = false;
 	bool pauseTrg = false;
+
+	float cameraChangeTimer;
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Wepon")
 		ABaseWepon* useWepon;
@@ -72,6 +75,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AnimMontage")
 		UAnimMontage* nockMontages;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "CameraLocation")
+		FVector NormalCameraLocation;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "CameraLocation")
+		FVector AimCameraLocation;
+
 
 public:
 	Agraduation_projectCharacter();
@@ -113,6 +121,7 @@ protected:
 protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	void CameraChange(float DeltaTime);
 public:
 	virtual void Tick(float DeltaTime) override;
 

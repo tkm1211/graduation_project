@@ -28,18 +28,22 @@ ABaseWepon::ABaseWepon()
 	muzzleFlash = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Trail"));
 	muzzleFlash->SetupAttachment(mesh);
 
+	firstFireTimer = 0.0f;
 }
 
 // Called when the game starts or when spawned
 void ABaseWepon::BeginPlay()
 {
 	Super::BeginPlay();
+	firstFireTimer = 0.0f;
 }
 
 // Called every frame
 void ABaseWepon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);	
+	firstFireTimer -= DeltaTime;
+	if (firstFireTimer < 0.0f) firstFireTimer = -1.0f;
 }
 
 
@@ -66,4 +70,17 @@ void ABaseWepon:: FirstFire()
 {
 	onFire = true;
 	fireTimer = 0.3f;
+}
+
+bool ABaseWepon::FirstShotEnable()
+{
+	if (firstFireTimer <= 0.0f && fireTimer <= 0)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+
 }
