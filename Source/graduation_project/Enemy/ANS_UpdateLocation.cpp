@@ -21,8 +21,8 @@ void UANS_UpdateLocation::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequ
 {
 	if (!boss)return;
 
-	boss->GetActorRotation();
-	FVector goal = {};
+	FTransform t = boss->GetActorTransform();
+	FVector goal = {t.GetUnitAxis(EAxis::X).X * ForwardOffset, t.GetUnitAxis(EAxis::X).X * ForwardOffset, UpOffset};
 
 	FVector NewVec = FMath::Lerp(prev, goal, current_time / total_time);
 
