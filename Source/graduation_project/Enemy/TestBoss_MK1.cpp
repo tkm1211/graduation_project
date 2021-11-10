@@ -12,34 +12,43 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "../Mo2Func.h"
+#include "UObject/ConstructorHelpers.h"
+//#include "NiagaraSystem.h"
+#include "PrototypeMissile.h"
+#include "NiagaraComponent.h"
 
 // Sets default values
 ATestBoss_MK1::ATestBoss_MK1(const class FObjectInitializer& ObjectInitializer)
 {
 	AIControllerClass = ATestBoss_MK1AIController::StaticClass();
+	ProjectileClass = APrototypeMissile::StaticClass();
 
-    lookAtPlayer.AddDynamic(this, &ATestBoss_MK1::OnSeePlayer);
+	lookAtPlayer.AddDynamic(this, &ATestBoss_MK1::OnSeePlayer);
 	LFireColON.AddDynamic(this, &ATestBoss_MK1::OnLeftFireON);
 	LFireColOFF.AddDynamic(this, &ATestBoss_MK1::OnLeftFireOFF);
 	RFireColON.AddDynamic(this, &ATestBoss_MK1::OnRightFireON);
 	RFireColOFF.AddDynamic(this, &ATestBoss_MK1::OnRightFireOFF);
 
+	NS_LaserHit[LEFT_HAND] = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NS_LeftBeam_Hit"));
+	NS_LaserHit[RIGHT_HAND] = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NS_RightBeam_Hit"));
+	//NS_Laser = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NS_Beam_System"));
 
-    CharaMoveComp = GetCharacterMovement();
+	CharaMoveComp = GetCharacterMovement();
 	CharaMoveComp->DefaultLandMovementMode = MOVE_Flying;
-    CharaMoveComp->MaxWalkSpeed = 400.f;
+	CharaMoveComp->MaxWalkSpeed = 400.f;
 
 	//攻撃用ソケット名前取得（コリジョンやミサイル発射用）
-	RSocketName = "arm_2_RSocket";
-	LSocketName = "arm_2_LSocket";
+	SocketName[LEFT_HAND] = "arm_2_LSocket";
+	SocketName[RIGHT_HAND] = "arm_2_RSocket";
 
 	//攻撃用カプセルコリジョンの生成
 	LFireCapsuleComp = ObjectInitializer.CreateDefaultSubobject<UCapsuleComponent>(this, TEXT("LeftFireCapsuleComp"), true);
 	RFireCapsuleComp = ObjectInitializer.CreateDefaultSubobject<UCapsuleComponent>(this, TEXT("RightFireCapsuleComp"));
-    
+
 	//コリジョン接触時イベントの発行
 	LFireCapsuleComp->OnComponentBeginOverlap.AddDynamic(this, &ATestBoss_MK1::OnHit);
 	RFireCapsuleComp->OnComponentBeginOverlap.AddDynamic(this, &ATestBoss_MK1::OnHit);
+
 }
 
 void ATestBoss_MK1::OnSeePlayer()
@@ -63,21 +72,6 @@ void ATestBoss_MK1::OnHit(class UPrimitiveComponent* HitComp, class AActor* Othe
 	if (pl == nullptr)
 	{
 
-		//壁に当たった時短くするためやっていたが、正常に作動していないためコメントアウト
-		//UE４側で貫通して当たらないようになっているので、とりあえず放置
-		//float dist = GetDistanceTo(OtherActor);
-
-		//UCapsuleComponent* cap = Cast<UCapsuleComponent>(HitComp);
-
-		//if (cap == LFireCapsuleComp)
-		//{
-		//	LFireCapsuleComp->SetCapsuleHalfHeight(dist * 0.5f);
-		//}
-
-		//if (cap == RFireCapsuleComp)
-		//{
-		//	RFireCapsuleComp->SetCapsuleHalfHeight(dist * 0.5f);
-		//}
 
 		return;
 	}
@@ -86,6 +80,45 @@ void ATestBoss_MK1::OnHit(class UPrimitiveComponent* HitComp, class AActor* Othe
 
 	LFireColOFF.Broadcast();
 	RFireColOFF.Broadcast();
+}
+
+void ATestBoss_MK1::FireMissile()
+{
+	// Attempt to fire a projectile.
+	if (ProjectileClass)
+	{
+		// Get the camera transform.
+		FVector CameraLocation;
+		FRotator CameraRotation;
+		GetActorEyesViewPoint(CameraLocation, CameraRotation);
+
+		// Set MuzzleOffset to spawn projectiles slightly in front of the camera.
+		//MuzzleOffset.Set(100.0f, 0.0f, 0.0f);
+
+		// Transform MuzzleOffset from camera space to world space.
+		FVector MuzzleLocation = GetMesh()->GetSocketLocation(SocketName[LEFT_HAND]);
+
+		// Skew the aim to be slightly upwards.
+		FRotator MuzzleRotation = CameraRotation;
+		//MuzzleRotation.Pitch += 10.0f;
+
+		UWorld* World = GetWorld();
+		if (World)
+		{
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.Owner = this;
+			SpawnParams.Instigator = GetInstigator();
+
+			// Spawn the projectile at the muzzle.
+			APrototypeMissile* Projectile = World->SpawnActor<APrototypeMissile>(ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParams);
+			if (Projectile)
+			{
+				// Set the projectile's initial trajectory.
+				//FVector LaunchDirection = MuzzleRotation.Vector();
+				//Projectile->FireInDirection(LaunchDirection);
+			}
+		}
+	}
 }
 
 void ATestBoss_MK1::OnLeftFireON()
@@ -116,17 +149,17 @@ void ATestBoss_MK1::Damage(float giveDamage)
 // Called when the game starts or when spawned
 void ATestBoss_MK1::BeginPlay()
 {
-    Super::BeginPlay();
+	Super::BeginPlay();
 
 	LFireCapsuleComp->SetVisibility(true);
-	LFireCapsuleComp->SetHiddenInGame(true);
-	LFireCapsuleComp->SetCapsuleRadius(600.f);
+	LFireCapsuleComp->SetHiddenInGame(false);
+	LFireCapsuleComp->SetCapsuleRadius(400.f);
 	LFireCapsuleComp->SetCapsuleHalfHeight(1200.f);
 	LFireCapsuleComp->ShapeColor = FColor::Green;
 
 	RFireCapsuleComp->SetVisibility(true);
-	RFireCapsuleComp->SetHiddenInGame(true);
-	RFireCapsuleComp->SetCapsuleRadius(600.f);
+	RFireCapsuleComp->SetHiddenInGame(false);
+	RFireCapsuleComp->SetCapsuleRadius(400.f);
 	RFireCapsuleComp->SetCapsuleHalfHeight(1200.f);
 	RFireCapsuleComp->ShapeColor = FColor::Green;
 
@@ -134,7 +167,7 @@ void ATestBoss_MK1::BeginPlay()
 	LFireCapsuleComp->SetWorldRotation(capRotator);
 	RFireCapsuleComp->SetWorldRotation(capRotator);
 
-	
+
 
 	LFireCapsuleComp->SetCollisionProfileName("Custom...");
 	LFireCapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -142,7 +175,7 @@ void ATestBoss_MK1::BeginPlay()
 	LFireCapsuleComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
 	LFireCapsuleComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	LFireCapsuleComp->SetGenerateOverlapEvents(true);
-	
+
 	RFireCapsuleComp->SetCollisionProfileName("Custom...");
 	RFireCapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	LFireCapsuleComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
@@ -154,41 +187,102 @@ void ATestBoss_MK1::BeginPlay()
 // Called every frame
 void ATestBoss_MK1::Tick(float DeltaTime)
 {
-    Super::Tick(DeltaTime);
+	Super::Tick(DeltaTime);
 
-	FTransform Lt = GetMesh()->GetSocketTransform(LSocketName);
-	FTransform Rt = GetMesh()->GetSocketTransform(RSocketName);
 
-	FVector Lstart = GetMesh()->GetSocketLocation(LSocketName);
-	FVector Lend = GetMesh()->GetSocketLocation(LSocketName) + Lt.GetUnitAxis(EAxis::Z) * 6000.f;;
-
-	FVector Rstart = GetMesh()->GetSocketLocation(RSocketName);
-	FVector Rend = GetMesh()->GetSocketLocation(RSocketName) - Rt.GetUnitAxis(EAxis::Z) * 6000.f;;
-
-	FHitResult LHit, RHit;
-	TArray<AActor*> actors;
-	UKismetSystemLibrary::SphereTraceSingle(GetWorld(), Lstart, Lend, 100.f,
-		ETraceTypeQuery::TraceTypeQuery2, false, actors, EDrawDebugTrace::Type::ForOneFrame, LHit, true, FLinearColor::Red, FLinearColor::Yellow);
-	UKismetSystemLibrary::SphereTraceSingle(GetWorld(), Rstart, Rend, 100.f,
-		ETraceTypeQuery::TraceTypeQuery2, false, actors, EDrawDebugTrace::Type::ForOneFrame, RHit, true, FLinearColor::Red, FLinearColor::Yellow);
-
-	FVector LeftRange = LHit.Location - GetMesh()->GetSocketLocation(LSocketName);
-	float half_dist = LeftRange.Size()/2;
-	FRotator LeftCapRotator = GetMesh()->GetSocketRotation(LSocketName);
-	FVector LArmPos = GetMesh()->GetSocketLocation(LSocketName) + Lt.GetUnitAxis(EAxis::Z) * half_dist;
+	NS_COL_BeemBlock(LFireCapsuleComp, LEFT_HAND);
+	NS_COL_BeemBlock(RFireCapsuleComp, RIGHT_HAND);
 	
-	LFireCapsuleComp->SetCapsuleHalfHeight(half_dist);
-	LFireCapsuleComp->SetWorldLocation(LArmPos);
-	LFireCapsuleComp->SetWorldRotation(LeftCapRotator);
-
-	FVector RightRange = RHit.Location - GetMesh()->GetSocketLocation(RSocketName);
-	half_dist = LeftRange.Size() / 2;
-	FRotator RightCapRotator = GetMesh()->GetSocketRotation(RSocketName);
-	FVector RArmPos = GetMesh()->GetSocketLocation(RSocketName) - Rt.GetUnitAxis(EAxis::Z) * 1200.f;
-
-	RFireCapsuleComp->SetWorldLocation(RArmPos);
-	RFireCapsuleComp->SetWorldRotation(RightCapRotator);
-
+	ModifyCollision();
 
 }
 
+void ATestBoss_MK1::NS_COL_BeemBlock(UCapsuleComponent* FireCapComp, TEnumAsByte<WITCH_HAND> WitchHand)
+{
+	FHitResult Hit;
+	TArray<AActor*> actors;
+	static float radius = 100.f;
+	static float EndRange = 6000.f;
+	int Re;
+
+	if (WitchAtk != WIDERANGEBEEM)return;
+
+	WitchHand == LEFT_HAND ? Re = 1 : Re = -1;
+
+	FTransform t = GetMesh()->GetSocketTransform(SocketName[WitchHand]);
+
+	FVector start = GetMesh()->GetSocketLocation(SocketName[WitchHand]);
+	FVector end = GetMesh()->GetSocketLocation(SocketName[WitchHand]) + t.GetUnitAxis(EAxis::Z) * EndRange * Re;
+
+
+	UKismetSystemLibrary::SphereTraceSingle(GetWorld(), start, end, radius,
+		ETraceTypeQuery::TraceTypeQuery1, true, actors, EDrawDebugTrace::Type::ForOneFrame, Hit, true, FLinearColor::Red, FLinearColor::Yellow);
+
+
+	FVector Range = Hit.Location - start;
+	float half_dist = Range.Size() / 2;
+	FRotator CapRotator = GetMesh()->GetSocketRotation(SocketName[WitchHand]);
+	FVector OffsetArmPos = GetMesh()->GetSocketLocation(SocketName[WitchHand]) + t.GetUnitAxis(EAxis::Z) * half_dist * Re;
+
+	FireCapComp->SetCapsuleHalfHeight(half_dist);
+	FireCapComp->SetWorldLocation(OffsetArmPos);
+	FireCapComp->SetWorldRotation(CapRotator);
+
+	bool FX_Isburst = FireCapComp->GetCollisionEnabled() && Hit.IsValidBlockingHit();
+	if (Hit.IsValidBlockingHit())
+	{
+		FVector vec = end - start;
+		vec.Normalize();
+		FVector beem_range = Range + vec * radius;
+		FVector hit_serface = Hit.Location + vec * radius;
+		float beem_dist = beem_range.Size();
+		//DebugRange = beem_dist;
+		if (NS_Laser[WitchHand])
+		{
+			end = { 0.1f, 0.f, 0.f };
+			NS_Laser[WitchHand]->SetVectorParameter("LaserEnd", end * (beem_dist + 250.f));
+		}
+
+		NS_LaserHit[WitchHand]->SetVisibility(FX_Isburst);
+		NS_LaserHit[WitchHand]->SetWorldLocation(hit_serface);
+	}
+	else
+	{
+		if (NS_Laser[WitchHand])
+		{
+			end = { 1.f, 0.f, 0.f };
+			NS_Laser[WitchHand]->SetVectorParameter("LaserEnd", end * EndRange);
+		}
+		NS_LaserHit[WitchHand]->SetVisibility(FX_Isburst);
+	}
+
+}
+
+void ATestBoss_MK1::ModifyCollision()
+{
+	FTransform t;
+	float half_dist;
+	FVector OffsetArmPos;
+	switch (WitchAtk)
+	{
+	case SLAM_ATK:
+		RFireCapsuleComp->SetCapsuleRadius(400.f);
+		t = GetMesh()->GetSocketTransform(SocketName[RIGHT_HAND]);
+		half_dist = 1200.f;
+		OffsetArmPos = GetMesh()->GetSocketLocation(SocketName[RIGHT_HAND]) + t.GetUnitAxis(EAxis::Z) * half_dist/2;
+		RFireCapsuleComp->SetCapsuleHalfHeight(half_dist);
+		RFireCapsuleComp->SetWorldLocation(OffsetArmPos);
+		break;
+	case FLAME_FIRE:
+		LFireCapsuleComp->SetCapsuleRadius(400.f);
+		break;
+	case MISSILE_FIRE:
+		break;
+	case WIDERANGEBEEM:
+		LFireCapsuleComp->SetCapsuleRadius(100.f);
+		RFireCapsuleComp->SetCapsuleRadius(100.f);
+		break;
+	default:
+		break;
+	}
+}

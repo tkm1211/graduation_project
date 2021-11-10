@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Components/CapsuleComponent.h"
+#include "PrototypeMissile.h"
 #include "TestBoss_MK1.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FlookAtPlayer);
@@ -23,6 +24,22 @@ public:
 	// Sets default values for this character's properties
 	ATestBoss_MK1(const class FObjectInitializer& ObjectInitializer);
 
+	enum ATTACK_STATE
+	{
+		IDLE = 0,
+		SLAM_ATK,
+		FLAME_FIRE,
+		MISSILE_FIRE,
+		WIDERANGEBEEM,
+	};
+
+	enum WITCH_HAND
+	{
+		LEFT_HAND = 0,
+		RIGHT_HAND,
+		BOTH_HANDS,
+	};
+
 	UPROPERTY(BlueprintAssignable)
 		FlookAtPlayer lookAtPlayer;
 	UPROPERTY(BlueprintAssignable)
@@ -34,13 +51,29 @@ public:
 	UPROPERTY(BlueprintAssignable)
 		FRFireColOFF RFireColOFF;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HP");
-	float HealthPoint = 1000.f;
+	UPROPERTY(EditAnywhere, Category = Projectile)
+		TSubclassOf<class APrototypeMissile> ProjectileClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HP")
+		float HealthPoint = 1000.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ATK")
+		int ForceNextAtk = 0;
+
 
 	UPROPERTY(EditDefaultsOnly, Category = Socket)
-		FName RSocketName;
-	UPROPERTY(EditDefaultsOnly, Category = Socket)
-		FName LSocketName;
+		FName SocketName[BOTH_HANDS];
+	//UPROPERTY(EditDefaultsOnly, Category = Socket)
+	//	FName LSocketName;
+
+	UPROPERTY(VisibleAnywhere, Category = "Niagara")
+		class UNiagaraComponent* NS_LaserHit[BOTH_HANDS];
+	//UPROPERTY(VisibleAnywhere, Category = "Niagara")
+	//	class UNiagaraComponent* NS_RightLaserHit;
+	UPROPERTY()
+		class UNiagaraComponent* NS_Laser[BOTH_HANDS];
+	//UPROPERTY()
+	//	class UNiagaraComponent* NS_RightLaser;
 
 	UPROPERTY(VisibleAnywhere, Category = "AI")
 		class UPawnSensingComponent* PawnSensingComp;
@@ -49,7 +82,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "HitCollision")
 		class UCapsuleComponent* RArmCapsuleComp;
-	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "HitCollision")
 		class UCapsuleComponent* LArmCapsuleComp;
 
@@ -73,6 +106,9 @@ public:
 		void OnSeePlayer();
 
 	UFUNCTION()
+		void FireMissile();
+
+	UFUNCTION()
 		void OnHit(class UPrimitiveComponent* HitComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION()
@@ -87,14 +123,9 @@ public:
 	UFUNCTION()
 		void OnRightFireOFF();
 
-	enum ATTACK_STATE
-	{
-		IDLE = 0,
-		SLAM_ATK,
-		FLAME_FIRE,
-		MISSILE_FIRE,
-		WIDERANGEBEEM,
-	};
+	void NS_COL_BeemBlock(class UCapsuleComponent* FireCapComp, TEnumAsByte<WITCH_HAND> WitchHand);
+
+	void ModifyCollision();
 
 protected:
 	// Called when the game starts or when spawned
