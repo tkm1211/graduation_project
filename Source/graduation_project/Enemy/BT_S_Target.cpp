@@ -34,19 +34,15 @@ void UBT_S_Target::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory
 		{
 			if (rand_num < SLAM)
 			{
-				Boss_mk1->WitchAtk = ATestBoss_MK1::WIDERANGEBEEM;
+				Boss_mk1->WitchAtk = ATestBoss_MK1::SLAM_ATK;
 			}
 			else if (rand_num < FLAME)
 			{
-				Boss_mk1->WitchAtk = ATestBoss_MK1::WIDERANGEBEEM;
+				Boss_mk1->WitchAtk = ATestBoss_MK1::FLAME_FIRE;
 			}
 			else if (rand_num < FLAME + 20)
 			{
-				Boss_mk1->WitchAtk = ATestBoss_MK1::WIDERANGEBEEM;
-			}
-			else
-			{
-				Boss_mk1->WitchAtk = ATestBoss_MK1::WIDERANGEBEEM;
+				Boss_mk1->WitchAtk = ATestBoss_MK1::MISSILE_FIRE;
 			}
 
 
@@ -70,6 +66,10 @@ void UBT_S_Target::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory
 					else if (Boss_mk1->WitchAtk > 3)Boss_mk1->WitchAtk -= 3;
 				}
 			}
+		}
+		else
+		{
+			Boss_mk1->WitchAtk = Boss_mk1->ForceNextAtk;
 		}
 		WitchATK = Boss_mk1->WitchAtk;
 	}

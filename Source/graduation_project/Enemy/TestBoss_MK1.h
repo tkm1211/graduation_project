@@ -57,7 +57,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HP")
 		float HealthPoint = 1000.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ATK")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HP")
 		int ForceNextAtk = 0;
 
 
