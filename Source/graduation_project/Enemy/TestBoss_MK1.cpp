@@ -203,7 +203,7 @@ void ATestBoss_MK1::Damage(float giveDamage)
 
 	HealthPoint -= (giveDamage - defence);
 
-	special_charge += giveDamage;
+	special_charge += (giveDamage - defence);
 }
 
 // Called when the game starts or when spawned
@@ -257,8 +257,8 @@ void ATestBoss_MK1::Tick(float DeltaTime)
 
 	if (special_charge > 300.f)
 	{
-		if (WitchAtk != WIDERANGEBEEM) ForceNextAtk = WIDERANGEBEEM;
 		special_charge -= 300.f;
+		if (WitchAtk != WIDERANGEBEEM) ForceNextAtk = WIDERANGEBEEM;
 	}
 
 }
@@ -296,9 +296,9 @@ void ATestBoss_MK1::NS_COL_BeemBlock(UCapsuleComponent* FireCapComp, UNiagaraCom
 
 
 	bool FX_Isburst = FireCapComp->GetCollisionEnabled() && Hit.IsValidBlockingHit();
-	if (WitchAtk == WIDERANGEBEEM)
+	if (NS_BeemHit)
 	{
-		if (NS_BeemHit)
+		if (WitchAtk == WIDERANGEBEEM)
 		{
 			if (Hit.IsValidBlockingHit())
 			{
@@ -327,6 +327,11 @@ void ATestBoss_MK1::NS_COL_BeemBlock(UCapsuleComponent* FireCapComp, UNiagaraCom
 				NS_BeemHit->SetVisibility(FX_Isburst);
 			}
 		}
+		//else
+		//{
+		//	NS_BeemHit->SetVisibility(false);
+		//}
+
 	}
 }
 
@@ -336,6 +341,10 @@ void ATestBoss_MK1::ModifyCollision()
 	float half_dist;
 	FVector OffsetArmPos;
 	FRotator CapRotator;
+	
+	NS_LeftLaserHit->SetVisibility(false);
+	NS_RightLaserHit->SetVisibility(false);
+	
 	switch (WitchAtk)
 	{
 	case SLAM_ATK:

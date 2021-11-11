@@ -49,7 +49,7 @@ void AMissileTarget::Tick(float DeltaTime)
 	if (IsDestroy)
 	{
 		timer += DeltaTime;
-		if (timer > 3.f)
+		if (timer > 1.f)
 		{
 			Destroy();
 		}

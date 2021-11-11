@@ -134,7 +134,7 @@ void APrototypeMissile::OnHit(class UPrimitiveComponent* HitComp, class AActor* 
 		pl->Damage(25.f, SweepResult.Location);
 	}
 
-
+	marker->SetDestroy();
 	Destroy();
 
 }
