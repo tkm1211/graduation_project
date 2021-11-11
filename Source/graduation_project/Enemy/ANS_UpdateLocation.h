@@ -20,7 +20,8 @@ class GRADUATION_PROJECT_API UANS_UpdateLocation : public UAnimNotifyState
 		float UpOffset;
 
 	class ATestBoss_MK1* boss;
-	FVector prev;
+	FVector prev, goal;
+	FTransform transform;
 	float total_time;
 	float current_time;
 

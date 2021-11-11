@@ -16,12 +16,14 @@
 //#include "NiagaraSystem.h"
 #include "PrototypeMissile.h"
 #include "NiagaraComponent.h"
+#include "NiagaraSystem.h"
+#include "NiagaraFunctionLibrary.h"
 
 // Sets default values
 ATestBoss_MK1::ATestBoss_MK1(const class FObjectInitializer& ObjectInitializer)
 {
 	AIControllerClass = ATestBoss_MK1AIController::StaticClass();
-	ProjectileClass = APrototypeMissile::StaticClass();
+	//ProjectileClass = APrototypeMissile::StaticClass();
 
 	lookAtPlayer.AddDynamic(this, &ATestBoss_MK1::OnSeePlayer);
 	LFireColON.AddDynamic(this, &ATestBoss_MK1::OnLeftFireON);
@@ -29,8 +31,11 @@ ATestBoss_MK1::ATestBoss_MK1(const class FObjectInitializer& ObjectInitializer)
 	RFireColON.AddDynamic(this, &ATestBoss_MK1::OnRightFireON);
 	RFireColOFF.AddDynamic(this, &ATestBoss_MK1::OnRightFireOFF);
 
-	NS_LaserHit[LEFT_HAND] = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NS_LeftBeam_Hit"));
-	NS_LaserHit[RIGHT_HAND] = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NS_RightBeam_Hit"));
+	//UNiagaraFunctionLibrary::SpawnSystemAttached()
+	NS_LeftLaserHit = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NS_LeftBeam_Hit"));;
+	NS_RightLaserHit = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NS_RightBeam_Hit"));
+	//NS_LaserHit[LEFT_HAND] = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NS_LeftBeam_Hit"));
+	//NS_LaserHit[RIGHT_HAND] = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NS_RightBeam_Hit"));
 	//NS_Laser = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NS_Beam_System"));
 
 	CharaMoveComp = GetCharacterMovement();
@@ -96,11 +101,18 @@ void ATestBoss_MK1::FireMissile()
 		//MuzzleOffset.Set(100.0f, 0.0f, 0.0f);
 
 		// Transform MuzzleOffset from camera space to world space.
-		FVector MuzzleLocation = GetMesh()->GetSocketLocation(SocketName[LEFT_HAND]);
+		FVector LMuzzleLocation = GetMesh()->GetSocketLocation(SocketName[LEFT_HAND]);
+		FVector RMuzzleLocation = GetMesh()->GetSocketLocation(SocketName[RIGHT_HAND]);
 
 		// Skew the aim to be slightly upwards.
-		FRotator MuzzleRotation = CameraRotation;
+		FVector LFront = LMuzzleLocation + GetMesh()->GetBoneAxis("arm_3_L", EAxis::Z);
+		FVector RFront = RMuzzleLocation - GetMesh()->GetBoneAxis("arm_3_R", EAxis::Z);
+		FRotator LMuzzleRotation = UKismetMathLibrary::FindLookAtRotation(LMuzzleLocation, LFront);
+
+		FRotator RMuzzleRotation = UKismetMathLibrary::FindLookAtRotation(RMuzzleLocation, RFront);
+
 		//MuzzleRotation.Pitch += 10.0f;
+		
 
 		UWorld* World = GetWorld();
 		if (World)
@@ -110,8 +122,9 @@ void ATestBoss_MK1::FireMissile()
 			SpawnParams.Instigator = GetInstigator();
 
 			// Spawn the projectile at the muzzle.
-			APrototypeMissile* Projectile = World->SpawnActor<APrototypeMissile>(ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParams);
-			if (Projectile)
+			World->SpawnActor<APrototypeMissile>(ProjectileClass, LMuzzleLocation, LMuzzleRotation, SpawnParams);
+			World->SpawnActor<APrototypeMissile>(ProjectileClass, RMuzzleLocation, RMuzzleRotation, SpawnParams);
+			//if (Projectile)
 			{
 				// Set the projectile's initial trajectory.
 				//FVector LaunchDirection = MuzzleRotation.Vector();
@@ -152,13 +165,13 @@ void ATestBoss_MK1::BeginPlay()
 	Super::BeginPlay();
 
 	LFireCapsuleComp->SetVisibility(true);
-	LFireCapsuleComp->SetHiddenInGame(false);
+	LFireCapsuleComp->SetHiddenInGame(true);
 	LFireCapsuleComp->SetCapsuleRadius(400.f);
 	LFireCapsuleComp->SetCapsuleHalfHeight(1200.f);
 	LFireCapsuleComp->ShapeColor = FColor::Green;
 
 	RFireCapsuleComp->SetVisibility(true);
-	RFireCapsuleComp->SetHiddenInGame(false);
+	RFireCapsuleComp->SetHiddenInGame(true);
 	RFireCapsuleComp->SetCapsuleRadius(400.f);
 	RFireCapsuleComp->SetCapsuleHalfHeight(1200.f);
 	RFireCapsuleComp->ShapeColor = FColor::Green;
@@ -190,22 +203,20 @@ void ATestBoss_MK1::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 
-	NS_COL_BeemBlock(LFireCapsuleComp, LEFT_HAND);
-	NS_COL_BeemBlock(RFireCapsuleComp, RIGHT_HAND);
+	NS_COL_BeemBlock(LFireCapsuleComp, NS_LeftLaserHit, LEFT_HAND);
+	NS_COL_BeemBlock(RFireCapsuleComp, NS_RightLaserHit, RIGHT_HAND);
 	
 	ModifyCollision();
 
 }
 
-void ATestBoss_MK1::NS_COL_BeemBlock(UCapsuleComponent* FireCapComp, TEnumAsByte<WITCH_HAND> WitchHand)
+void ATestBoss_MK1::NS_COL_BeemBlock(UCapsuleComponent* FireCapComp, UNiagaraComponent* NS_BeemHit, TEnumAsByte<WITCH_HAND> WitchHand, float radius)
 {
 	FHitResult Hit;
 	TArray<AActor*> actors;
-	static float radius = 100.f;
 	static float EndRange = 6000.f;
 	int Re;
 
-	if (WitchAtk != WIDERANGEBEEM)return;
 
 	WitchHand == LEFT_HAND ? Re = 1 : Re = -1;
 
@@ -216,7 +227,7 @@ void ATestBoss_MK1::NS_COL_BeemBlock(UCapsuleComponent* FireCapComp, TEnumAsByte
 
 
 	UKismetSystemLibrary::SphereTraceSingle(GetWorld(), start, end, radius,
-		ETraceTypeQuery::TraceTypeQuery1, true, actors, EDrawDebugTrace::Type::ForOneFrame, Hit, true, FLinearColor::Red, FLinearColor::Yellow);
+		ETraceTypeQuery::TraceTypeQuery1, true, actors, EDrawDebugTrace::Type::ForOneFrame, Hit, true, FLinearColor::Transparent, FLinearColor::Transparent);
 
 
 	FVector Range = Hit.Location - start;
@@ -227,35 +238,38 @@ void ATestBoss_MK1::NS_COL_BeemBlock(UCapsuleComponent* FireCapComp, TEnumAsByte
 	FireCapComp->SetCapsuleHalfHeight(half_dist);
 	FireCapComp->SetWorldLocation(OffsetArmPos);
 	FireCapComp->SetWorldRotation(CapRotator);
+	FireCapComp->SetCapsuleRadius(radius);
 
 	bool FX_Isburst = FireCapComp->GetCollisionEnabled() && Hit.IsValidBlockingHit();
-	if (Hit.IsValidBlockingHit())
+	if (NS_BeemHit)
 	{
-		FVector vec = end - start;
-		vec.Normalize();
-		FVector beem_range = Range + vec * radius;
-		FVector hit_serface = Hit.Location + vec * radius;
-		float beem_dist = beem_range.Size();
-		//DebugRange = beem_dist;
-		if (NS_Laser[WitchHand])
+		if (Hit.IsValidBlockingHit())
 		{
-			end = { 0.1f, 0.f, 0.f };
-			NS_Laser[WitchHand]->SetVectorParameter("LaserEnd", end * (beem_dist + 250.f));
-		}
+			FVector vec = end - start;
+			vec.Normalize();
+			FVector beem_range = Range + vec * radius;
+			FVector hit_serface = Hit.Location + vec * radius;
+			float beem_dist = beem_range.Size();
+			//DebugRange = beem_dist;
+			if (NS_Laser[WitchHand])
+			{
+				end = { 0.1f, 0.f, 0.f };
+				NS_Laser[WitchHand]->SetVectorParameter("LaserEnd", end * (beem_dist + 250.f));
+			}
 
-		NS_LaserHit[WitchHand]->SetVisibility(FX_Isburst);
-		NS_LaserHit[WitchHand]->SetWorldLocation(hit_serface);
-	}
-	else
-	{
-		if (NS_Laser[WitchHand])
+			NS_BeemHit->SetVisibility(FX_Isburst);
+			NS_BeemHit->SetWorldLocation(hit_serface);
+		}
+		else
 		{
-			end = { 1.f, 0.f, 0.f };
-			NS_Laser[WitchHand]->SetVectorParameter("LaserEnd", end * EndRange);
+			if (NS_Laser[WitchHand])
+			{
+				end = { 1.f, 0.f, 0.f };
+				NS_Laser[WitchHand]->SetVectorParameter("LaserEnd", end * EndRange);
+			}
+			NS_BeemHit->SetVisibility(FX_Isburst);
 		}
-		NS_LaserHit[WitchHand]->SetVisibility(FX_Isburst);
 	}
-
 }
 
 void ATestBoss_MK1::ModifyCollision()
@@ -263,6 +277,7 @@ void ATestBoss_MK1::ModifyCollision()
 	FTransform t;
 	float half_dist;
 	FVector OffsetArmPos;
+	FRotator CapRotator;
 	switch (WitchAtk)
 	{
 	case SLAM_ATK:
@@ -270,17 +285,17 @@ void ATestBoss_MK1::ModifyCollision()
 		t = GetMesh()->GetSocketTransform(SocketName[RIGHT_HAND]);
 		half_dist = 1200.f;
 		OffsetArmPos = GetMesh()->GetSocketLocation(SocketName[RIGHT_HAND]) + t.GetUnitAxis(EAxis::Z) * half_dist/2;
+		CapRotator = GetMesh()->GetSocketRotation(SocketName[RIGHT_HAND]); 
 		RFireCapsuleComp->SetCapsuleHalfHeight(half_dist);
 		RFireCapsuleComp->SetWorldLocation(OffsetArmPos);
+		RFireCapsuleComp->SetWorldRotation(CapRotator);
 		break;
 	case FLAME_FIRE:
-		LFireCapsuleComp->SetCapsuleRadius(400.f);
+		NS_COL_BeemBlock(LFireCapsuleComp, nullptr, LEFT_HAND, 400.f);
 		break;
 	case MISSILE_FIRE:
 		break;
 	case WIDERANGEBEEM:
-		LFireCapsuleComp->SetCapsuleRadius(100.f);
-		RFireCapsuleComp->SetCapsuleRadius(100.f);
 		break;
 	default:
 		break;

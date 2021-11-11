@@ -5,6 +5,11 @@
 #include "Math/UnrealMathVectorCommon.h"
 #include "TestBoss_MK1.h"
 
+float lerp(float begin, float end, float rate)
+{
+	return begin + (end - begin) * rate;
+}
+
 void UANS_UpdateLocation::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)
 {
 	boss = Cast<ATestBoss_MK1>(MeshComp->GetOwner());
@@ -12,8 +17,11 @@ void UANS_UpdateLocation::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSeq
 	if (boss)
 	{
 		prev = boss->GetActorLocation();
+		boss->GetActorForwardVector().X;
+		goal = { boss->GetActorForwardVector().X * ForwardOffset, boss->GetActorForwardVector().Y * ForwardOffset, UpOffset };
 	}
 
+	current_time = 0.f;
 	total_time = TotalDuration;
 }
 
@@ -21,10 +29,9 @@ void UANS_UpdateLocation::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequ
 {
 	if (!boss)return;
 
-	FTransform t = boss->GetActorTransform();
-	FVector goal = {t.GetUnitAxis(EAxis::X).X * ForwardOffset, t.GetUnitAxis(EAxis::X).X * ForwardOffset, UpOffset};
-
 	FVector NewVec = FMath::Lerp(prev, goal, current_time / total_time);
+
+	current_time += FrameDeltaTime;
 
 	boss->SetActorLocation(NewVec);
 }

@@ -51,7 +51,7 @@ public:
 	UPROPERTY(BlueprintAssignable)
 		FRFireColOFF RFireColOFF;
 
-	UPROPERTY(EditAnywhere, Category = Projectile)
+	UPROPERTY(EditAnywhere, Category = "Projectile")
 		TSubclassOf<class APrototypeMissile> ProjectileClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HP")
@@ -67,9 +67,9 @@ public:
 	//	FName LSocketName;
 
 	UPROPERTY(VisibleAnywhere, Category = "Niagara")
-		class UNiagaraComponent* NS_LaserHit[BOTH_HANDS];
-	//UPROPERTY(VisibleAnywhere, Category = "Niagara")
-	//	class UNiagaraComponent* NS_RightLaserHit;
+		class UNiagaraComponent* NS_LeftLaserHit;
+	UPROPERTY(VisibleAnywhere, Category = "Niagara")
+		class UNiagaraComponent* NS_RightLaserHit;
 	UPROPERTY()
 		class UNiagaraComponent* NS_Laser[BOTH_HANDS];
 	//UPROPERTY()
@@ -123,7 +123,7 @@ public:
 	UFUNCTION()
 		void OnRightFireOFF();
 
-	void NS_COL_BeemBlock(class UCapsuleComponent* FireCapComp, TEnumAsByte<WITCH_HAND> WitchHand);
+	void NS_COL_BeemBlock(class UCapsuleComponent* FireCapComp, class UNiagaraComponent* NS_BeemHit, TEnumAsByte<WITCH_HAND> WitchHand, float radius = 150.f);
 
 	void ModifyCollision();
 
