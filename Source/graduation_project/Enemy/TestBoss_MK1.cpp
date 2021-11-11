@@ -81,7 +81,25 @@ void ATestBoss_MK1::OnHit(class UPrimitiveComponent* HitComp, class AActor* Othe
 		return;
 	}
 
-	pl->Damage(20.f, SweepResult.Location);
+	float times = 1.f;
+	switch (WitchAtk)
+	{
+	case ATestBoss_MK1::SLAM_ATK:
+		times = 0.85f;
+		break;
+	case ATestBoss_MK1::FLAME_FIRE:
+		times = 0.65f;
+		break;
+	case ATestBoss_MK1::WIDERANGEBEEM:
+		times = 1.7f;
+		break;
+	case ATestBoss_MK1::IDLE:
+	case ATestBoss_MK1::MISSILE_FIRE:
+	default:
+		break;
+	}
+
+	pl->Damage(20.f * times, SweepResult.Location);
 
 	LFireColOFF.Broadcast();
 	RFireColOFF.Broadcast();
@@ -112,7 +130,7 @@ void ATestBoss_MK1::FireMissile()
 		FRotator RMuzzleRotation = UKismetMathLibrary::FindLookAtRotation(RMuzzleLocation, RFront);
 
 		//MuzzleRotation.Pitch += 10.0f;
-		
+
 
 		UWorld* World = GetWorld();
 		if (World)
@@ -156,13 +174,44 @@ void ATestBoss_MK1::OnRightFireOFF()
 
 void ATestBoss_MK1::Damage(float giveDamage)
 {
-	HealthPoint -= giveDamage;
+	float defence = 0.f;
+	switch (WitchAtk)
+	{
+	case ATestBoss_MK1::IDLE:
+		defence = giveDamage * 0.8f;
+		break;
+	case ATestBoss_MK1::SLAM_ATK:
+		defence = giveDamage * 0.5f;
+		break;
+	case ATestBoss_MK1::FLAME_FIRE:
+		defence = giveDamage * 0.3f;
+		break;
+	case ATestBoss_MK1::MISSILE_FIRE:
+		defence = giveDamage * 0.5f;
+		break;
+	case ATestBoss_MK1::WIDERANGEBEEM:
+		defence = giveDamage * 0.9f;
+		break;
+	default:
+		break;
+	}
+
+	if (ForceNextAtk == WIDERANGEBEEM)
+	{
+		defence = giveDamage * 0.99f;
+	}
+
+	HealthPoint -= (giveDamage - defence);
+
+	special_charge += giveDamage;
 }
 
 // Called when the game starts or when spawned
 void ATestBoss_MK1::BeginPlay()
 {
 	Super::BeginPlay();
+
+	special_charge = 0.f;
 
 	LFireCapsuleComp->SetVisibility(true);
 	LFireCapsuleComp->SetHiddenInGame(true);
@@ -203,10 +252,14 @@ void ATestBoss_MK1::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 
-	NS_COL_BeemBlock(LFireCapsuleComp, NS_LeftLaserHit, LEFT_HAND);
-	NS_COL_BeemBlock(RFireCapsuleComp, NS_RightLaserHit, RIGHT_HAND);
-	
+
 	ModifyCollision();
+
+	if (special_charge > 300.f)
+	{
+		if (WitchAtk != WIDERANGEBEEM) ForceNextAtk = WIDERANGEBEEM;
+		special_charge -= 300.f;
+	}
 
 }
 
@@ -214,7 +267,7 @@ void ATestBoss_MK1::NS_COL_BeemBlock(UCapsuleComponent* FireCapComp, UNiagaraCom
 {
 	FHitResult Hit;
 	TArray<AActor*> actors;
-	static float EndRange = 6000.f;
+	static float EndRange = 10000.f;
 	int Re;
 
 
@@ -227,7 +280,7 @@ void ATestBoss_MK1::NS_COL_BeemBlock(UCapsuleComponent* FireCapComp, UNiagaraCom
 
 
 	UKismetSystemLibrary::SphereTraceSingle(GetWorld(), start, end, radius,
-		ETraceTypeQuery::TraceTypeQuery1, true, actors, EDrawDebugTrace::Type::None, Hit, true, FLinearColor::Transparent, FLinearColor::Transparent);
+		ETraceTypeQuery::TraceTypeQuery1, true, actors, EDrawDebugTrace::Type::None, Hit, true, FLinearColor::Red, FLinearColor::Yellow);
 
 
 	FVector Range = Hit.Location - start;
@@ -240,34 +293,39 @@ void ATestBoss_MK1::NS_COL_BeemBlock(UCapsuleComponent* FireCapComp, UNiagaraCom
 	FireCapComp->SetWorldRotation(CapRotator);
 	FireCapComp->SetCapsuleRadius(radius);
 
-	bool FX_Isburst = FireCapComp->GetCollisionEnabled() && Hit.IsValidBlockingHit();
-	if (NS_BeemHit)
-	{
-		if (Hit.IsValidBlockingHit())
-		{
-			FVector vec = end - start;
-			vec.Normalize();
-			FVector beem_range = Range + vec * radius;
-			FVector hit_serface = Hit.Location + vec * radius;
-			float beem_dist = beem_range.Size();
-			//DebugRange = beem_dist;
-			if (NS_Laser[WitchHand])
-			{
-				end = { 0.1f, 0.f, 0.f };
-				NS_Laser[WitchHand]->SetVectorParameter("LaserEnd", end * (beem_dist + 250.f));
-			}
 
-			NS_BeemHit->SetVisibility(FX_Isburst);
-			NS_BeemHit->SetWorldLocation(hit_serface);
-		}
-		else
+
+	bool FX_Isburst = FireCapComp->GetCollisionEnabled() && Hit.IsValidBlockingHit();
+	if (WitchAtk == WIDERANGEBEEM)
+	{
+		if (NS_BeemHit)
 		{
-			if (NS_Laser[WitchHand])
+			if (Hit.IsValidBlockingHit())
 			{
-				end = { 1.f, 0.f, 0.f };
-				NS_Laser[WitchHand]->SetVectorParameter("LaserEnd", end * EndRange);
+				FVector vec = end - start;
+				vec.Normalize();
+				FVector beem_range = Range + vec * radius;
+				FVector hit_serface = Hit.Location + vec * radius;
+				float beem_dist = beem_range.Size();
+				//DebugRange = beem_dist;
+				if (NS_Laser[WitchHand])
+				{
+					end = { 0.1f, 0.f, 0.f };
+					NS_Laser[WitchHand]->SetVectorParameter("LaserEnd", end * (beem_dist + 250.f));
+				}
+
+				NS_BeemHit->SetVisibility(FX_Isburst);
+				NS_BeemHit->SetWorldLocation(hit_serface);
 			}
-			NS_BeemHit->SetVisibility(FX_Isburst);
+			else
+			{
+				if (NS_Laser[WitchHand])
+				{
+					end = { 1.f, 0.f, 0.f };
+					NS_Laser[WitchHand]->SetVectorParameter("LaserEnd", end * EndRange);
+				}
+				NS_BeemHit->SetVisibility(FX_Isburst);
+			}
 		}
 	}
 }
@@ -284,8 +342,8 @@ void ATestBoss_MK1::ModifyCollision()
 		RFireCapsuleComp->SetCapsuleRadius(400.f);
 		t = GetMesh()->GetSocketTransform(SocketName[RIGHT_HAND]);
 		half_dist = 1200.f;
-		OffsetArmPos = GetMesh()->GetSocketLocation(SocketName[RIGHT_HAND]) + t.GetUnitAxis(EAxis::Z) * half_dist/2;
-		CapRotator = GetMesh()->GetSocketRotation(SocketName[RIGHT_HAND]); 
+		OffsetArmPos = GetMesh()->GetSocketLocation(SocketName[RIGHT_HAND]) + t.GetUnitAxis(EAxis::Z) * half_dist / 2;
+		CapRotator = GetMesh()->GetSocketRotation(SocketName[RIGHT_HAND]);
 		RFireCapsuleComp->SetCapsuleHalfHeight(half_dist);
 		RFireCapsuleComp->SetWorldLocation(OffsetArmPos);
 		RFireCapsuleComp->SetWorldRotation(CapRotator);
@@ -296,6 +354,8 @@ void ATestBoss_MK1::ModifyCollision()
 	case MISSILE_FIRE:
 		break;
 	case WIDERANGEBEEM:
+		NS_COL_BeemBlock(LFireCapsuleComp, NS_LeftLaserHit, LEFT_HAND, 250.f);
+		NS_COL_BeemBlock(RFireCapsuleComp, NS_RightLaserHit, RIGHT_HAND, 250.f);
 		break;
 	default:
 		break;

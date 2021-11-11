@@ -51,6 +51,8 @@ public:
 	UPROPERTY(BlueprintAssignable)
 		FRFireColOFF RFireColOFF;
 
+	float special_charge;
+
 	UPROPERTY(EditAnywhere, Category = "Projectile")
 		TSubclassOf<class APrototypeMissile> ProjectileClass;
 

@@ -22,7 +22,11 @@ public:
 protected:
 	float StartHoming_Time;
 	float currentTime;
+	float non_homing_time;
+	class Agraduation_projectCharacter* player;
+	class AMissileTarget* marker;
 
+	UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
 	int missile_number;
 
 	// Called when the game starts or when spawned

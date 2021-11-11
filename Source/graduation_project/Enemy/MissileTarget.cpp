@@ -2,6 +2,7 @@
 
 
 #include "MissileTarget.h"
+#include "Components/StaticMeshComponent.h"
 
 // Sets default values
 AMissileTarget::AMissileTarget()
@@ -9,6 +10,14 @@ AMissileTarget::AMissileTarget()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
+
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshAsset(TEXT("/Game/Enemy/Boss/MDL_MissileTarget"));
+	UStaticMesh* asset = MeshAsset.Object;
+
+	MeshComp->SetStaticMesh(asset);
+
+	MeshComp->SetCollisionProfileName("NoCollision");
 }
 
 // Called when the game starts or when spawned

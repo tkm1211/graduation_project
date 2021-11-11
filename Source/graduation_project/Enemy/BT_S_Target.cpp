@@ -70,6 +70,7 @@ void UBT_S_Target::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory
 		else
 		{
 			Boss_mk1->WitchAtk = Boss_mk1->ForceNextAtk;
+			Boss_mk1->ForceNextAtk = ATestBoss_MK1::IDLE;
 		}
 		WitchATK = Boss_mk1->WitchAtk;
 	}
