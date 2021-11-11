@@ -227,7 +227,7 @@ void ATestBoss_MK1::NS_COL_BeemBlock(UCapsuleComponent* FireCapComp, UNiagaraCom
 
 
 	UKismetSystemLibrary::SphereTraceSingle(GetWorld(), start, end, radius,
-		ETraceTypeQuery::TraceTypeQuery1, true, actors, EDrawDebugTrace::Type::ForOneFrame, Hit, true, FLinearColor::Transparent, FLinearColor::Transparent);
+		ETraceTypeQuery::TraceTypeQuery1, true, actors, EDrawDebugTrace::Type::None, Hit, true, FLinearColor::Transparent, FLinearColor::Transparent);
 
 
 	FVector Range = Hit.Location - start;
