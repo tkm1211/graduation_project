@@ -358,12 +358,16 @@ void Agraduation_projectCharacter::Damage(float giveDamage, FVector hitPosition)
 void Agraduation_projectCharacter::CameraChange(float DeltaTime)
 {
 	float x = 0.0f, y = 0.0f, z = 0.0f;
+	float lagSpeed = 0.0f, lagDistance = 0.0f;
 	if (isAim)
 	{
 		
 		x = UKismetMathLibrary::Ease(NormalCameraLocation.X, AimCameraLocation.X, cameraChangeTimer, EEasingFunc::EaseIn) * -1.0f;
 		y = UKismetMathLibrary::Ease(NormalCameraLocation.Y, AimCameraLocation.Y, cameraChangeTimer, EEasingFunc::EaseIn);
 		z = UKismetMathLibrary::Ease(NormalCameraLocation.Z, AimCameraLocation.Z, cameraChangeTimer, EEasingFunc::EaseIn);
+
+		lagSpeed = UKismetMathLibrary::Ease(5.0f, 1000.0f, cameraChangeTimer, EEasingFunc::EaseIn);
+		lagDistance = UKismetMathLibrary::Ease(120.0f, 0.0f, cameraChangeTimer, EEasingFunc::EaseIn);
 		
 		cameraChangeTimer += 2.0f * DeltaTime;
 		if (cameraChangeTimer >= 1.0f) cameraChangeTimer = 1.0f;
@@ -376,6 +380,9 @@ void Agraduation_projectCharacter::CameraChange(float DeltaTime)
 		y = UKismetMathLibrary::Ease(NormalCameraLocation.Y, AimCameraLocation.Y, cameraChangeTimer, EEasingFunc::EaseIn);
 		z = UKismetMathLibrary::Ease(NormalCameraLocation.Z, AimCameraLocation.Z, cameraChangeTimer, EEasingFunc::EaseIn);
 
+		lagSpeed = UKismetMathLibrary::Ease(5.0f, 1000.0f, cameraChangeTimer, EEasingFunc::EaseIn);
+		lagDistance = UKismetMathLibrary::Ease(120.0f, 0.0f, cameraChangeTimer, EEasingFunc::EaseIn);
+
 		cameraChangeTimer -= 2.0f * DeltaTime;
 		if (cameraChangeTimer <= 0.0f) cameraChangeTimer = 0.0f;
 
@@ -385,6 +392,9 @@ void Agraduation_projectCharacter::CameraChange(float DeltaTime)
 	CameraBoom->TargetArmLength = x;
 	CameraBoom->SocketOffset.Y = y;
 	CameraBoom->SocketOffset.Z = z;
+
+	CameraBoom->CameraLagSpeed = lagSpeed;
+	CameraBoom->CameraLagMaxDistance = lagDistance;
 }
 
 
