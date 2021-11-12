@@ -342,7 +342,6 @@ void Agraduation_projectCharacter::Damage(float giveDamage, FVector hitPosition)
 	{
 		isDead = true;
 		isAim = false;
-		isDead = false;
 		hp = 0.0f;
 		// 死ぬアニメーションを再生
 		if (!animInstance->Montage_IsPlaying(deadMontages))

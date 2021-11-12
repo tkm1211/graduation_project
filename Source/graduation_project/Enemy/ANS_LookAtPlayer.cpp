@@ -7,7 +7,10 @@
 
 void UANS_LookAtPlayer::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)
 {
-	boss = Cast<ATestBoss_MK1>(MeshComp->GetOwner());
+	if (MeshComp)
+	{
+		boss = Cast<ATestBoss_MK1>(MeshComp);
+	}
 
 	//if (!MeshComp->GetOwner()->GetWorld())
 	//{
@@ -21,12 +24,11 @@ void UANS_LookAtPlayer::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSeque
 
 void UANS_LookAtPlayer::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime)
 {
-
-	if (!boss)
-	{
-		return;
-	}
-	boss->lookAtPlayer.Broadcast();
+	//if (!boss)
+	//{
+	//	return;
+	//}
+	//boss->lookAtPlayer.Broadcast();
 
 }
 
