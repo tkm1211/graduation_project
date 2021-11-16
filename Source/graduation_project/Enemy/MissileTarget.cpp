@@ -12,6 +12,8 @@ AMissileTarget::AMissileTarget()
 
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 
+	RootComponent = MeshComp;
+
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshAsset(TEXT("/Game/Enemy/Boss/MDL_MissileTarget"));
 	UStaticMesh* asset = MeshAsset.Object;
 

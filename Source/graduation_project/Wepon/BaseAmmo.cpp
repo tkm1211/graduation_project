@@ -81,7 +81,7 @@ void ABaseAmmo::OnHit(
 			{
 				ATestBoss_MK1* bossCharacter = Cast<ATestBoss_MK1>(OtherActor);
 
-				UE_LOG(LogTemp, Warning, TEXT("Boss"));
+				//UE_LOG(LogTemp, Warning, TEXT("Boss"));
 
 				bossCharacter->Damage(hitDamage);
 				hitdam = hitDamage;
