@@ -12,7 +12,7 @@ float lerp(float begin, float end, float rate)
 
 void UANS_UpdateLocation::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)
 {
-	boss = Cast<ATestBoss_MK1>(MeshComp->GetOwner());
+	boss = Cast<ATestBoss_MK1>(MeshComp);
 
 	if (boss)
 	{

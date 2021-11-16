@@ -7,7 +7,7 @@
 void UAN_StopToLookAtPlayer::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
 
-	ATestBoss_MK1* boss = Cast<ATestBoss_MK1>(MeshComp->GetOwner());
+	ATestBoss_MK1* boss = Cast<ATestBoss_MK1>(MeshComp);
 
 	boss->IsFocusToPlayer = false;
 
