@@ -257,6 +257,13 @@ void ATestBoss_MK1::Tick(float DeltaTime)
 
 	ModifyCollision();
 
+	if (HealthPoint < 0)
+	{
+
+		UGameplayStatics::OpenLevel(GetWorld(), FName("BossDead"));
+		return;
+	}
+
 	if (special_charge > 300.f)
 	{
 		special_charge -= 300.f;
