@@ -112,9 +112,11 @@ void APrototypeMissile::Tick(float DeltaTime)
 			marker = GetWorld()->SpawnActor<AMissileTarget>(target_pos, target_rot, SpawnParams);
 
 			ProjectileMovementComponent->HomingTargetComponent = marker->GetMesh();
-			ProjectileMovementComponent->bIsHomingProjectile = true;
+			ProjectileMovementComponent->bIsHomingProjectile = true;	
 			ProjectileMovementComponent->MaxSpeed = 2000.f;
 			ProjectileMovementComponent->HomingAccelerationMagnitude = 8000.f;
+
+			//RootComponent = marker->GetMesh();
 		}
 	}
 	currentTime += DeltaTime;

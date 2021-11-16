@@ -25,6 +25,8 @@ ATestBoss_MK1::ATestBoss_MK1(const class FObjectInitializer& ObjectInitializer)
 	AIControllerClass = ATestBoss_MK1AIController::StaticClass();
 	//ProjectileClass = APrototypeMissile::StaticClass();
 
+	RootComponent = GetCapsuleComponent();
+
 	lookAtPlayer.AddDynamic(this, &ATestBoss_MK1::OnSeePlayer);
 	LFireColON.AddDynamic(this, &ATestBoss_MK1::OnLeftFireON);
 	LFireColOFF.AddDynamic(this, &ATestBoss_MK1::OnLeftFireOFF);
@@ -190,7 +192,7 @@ void ATestBoss_MK1::Damage(float giveDamage)
 		defence = giveDamage * 0.5f;
 		break;
 	case ATestBoss_MK1::WIDERANGEBEEM:
-		defence = giveDamage * 0.9f;
+		defence = giveDamage * 0.7f;
 		break;
 	default:
 		break;
