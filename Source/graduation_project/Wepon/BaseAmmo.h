@@ -22,18 +22,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	UStaticMeshComponent* mesh;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ProjectileMovementComponent")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ProjectileMovementComponent", meta = (ExposeOnSpawn = true))
 	UProjectileMovementComponent* movement;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ProjectileMovementComponent")
-		float hitdam;
+	float hitdam;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Niagara")
 	UNiagaraComponent* naiagaraTrail;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Niagara")
 	UNiagaraComponent* explosion;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Niagara")
-	UNiagaraSystem* explosionSystem;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ammo")

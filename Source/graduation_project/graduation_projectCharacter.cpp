@@ -305,7 +305,6 @@ void Agraduation_projectCharacter::Pause()
 	if (changePlayerInput) changePlayerInput = false;
 	else changePlayerInput = true;
 
-	Damage(10.0f, FVector(0,0,0));
 }
 
 // ポーズのトリガー処理
