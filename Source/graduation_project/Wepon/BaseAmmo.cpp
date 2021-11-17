@@ -15,12 +15,12 @@ ABaseAmmo::ABaseAmmo()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-
+	RootComponent = CreateDefaultSubobject<USceneComponent>("Ammo");
 	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	RootComponent = mesh;
 
 	movement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
-	
+
 	mesh->OnComponentHit.AddDynamic(this, &ABaseAmmo::OnHit);
 
 	naiagaraTrail = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Trail"));
@@ -94,9 +94,9 @@ void ABaseAmmo::OnHit(
 void ABaseAmmo::AmmoDestroy()
 {
 
-	Destroy();
-	if (explosion && explosionSystem)
+	if (explosion)
 	{
-		UNiagaraFunctionLibrary::SpawnSystemAttached(explosionSystem, explosion, FName("None"), GetActorLocation(), FRotator(0, 0, 0), EAttachLocation::Type::KeepRelativeOffset, false);
+		explosion->Activate(true);
 	}
+	Destroy();
 }

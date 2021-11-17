@@ -13,7 +13,10 @@ UCLASS()
 class GRADUATION_PROJECT_API AGimmickPuzzle : public APuzzleOrigin
 {
 	GENERATED_BODY()
-	
+
+private:
+	const float AdjustCameraZ = 5.0f;
+
 public:	
 	// Sets default values for this actor's properties
 	AGimmickPuzzle();
@@ -25,4 +28,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+private:
+	void UpdateCamera();
 };

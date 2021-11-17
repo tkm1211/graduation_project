@@ -11,15 +11,19 @@
 #include "PieceResourceManager.h"
 #include "PaperSpriteComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "../../FileStream/JsonFunctionLibrary.h"
 
 
 // Sets default values
-AGrid::AGrid()
+AGrid::AGrid(const FObjectInitializer& ObjectInitializer) : AActor(ObjectInitializer)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	GridMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GridMesh"));
+	GridMesh->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -33,6 +37,10 @@ void AGrid::Initialize()
 	// 変数初期化
 	{
 		selectPieceNum = 0;
+		panelNumAtOriginPiece = 0;
+		panelNumAtBackUp = 0;
+		slotLeftNum = 0;
+		slotRightNum = 0;
 		widthNum = 0;
 		heightNum = 0;
 
@@ -58,8 +66,9 @@ void AGrid::Initialize()
 		onPieceInPiece = false;
 		canPieceDecision = false;
 
-		panelSize = OriginPanelSize * GetActorScale3D().X;
+		panelSize = OriginPanelSize * gridScale.X;
 		originPiecePos = FVector(0.0f, 0.0f, 0.0f);
+		forwardVec = GetActorRightVector();
 		rightVec = GetActorForwardVector();
 		upVec = GetActorUpVector();
 	}
@@ -71,25 +80,15 @@ void AGrid::Initialize()
 
 	// パネル生成
 	{
-		FVector SpawnLocation = GetActorLocation();
+		FVector SpawnLocation = GetLocation();
 		CreatePanels(SpawnLocation);
 	}
 
 	// ピース生成
 	{
-		FVector SpawnLocation = GetActorLocation();
+		FVector SpawnLocation = GetLocation();
 
-		originPiecePos = SpawnLocation;
-		{
-			if (widthNum % 2 == 0)
-			{
-				originPiecePos -= rightVec * (panelSize * 0.5f);
-			}
-			if (heightNum % 2 == 0)
-			{
-				originPiecePos += upVec * (panelSize * 0.5f);
-			}
-		}
+		SetPanelNumAtOriginPiece(panelPositions.Num() / 2);
 
 		UGameInstance* instance = GetWorld()->GetGameInstance();
 		auto resourceManager = instance->GetSubsystem<UPieceResourceManager>();
@@ -115,7 +114,7 @@ void AGrid::Initialize()
 		{
 			InputComponent = PlayerController->InputComponent;
 			check(InputComponent);
-			InputComponent->BindAction("Puzzle", IE_Pressed, this, &AGrid::OnPuzzle).bConsumeInput = false;
+			//InputComponent->BindAction("Puzzle", IE_Pressed, this, &AGrid::OnPuzzle).bConsumeInput = false;
 			InputComponent->BindAction("PieceUp", IE_Pressed, this, &AGrid::OnPieceUp).bConsumeInput = false;
 			InputComponent->BindAction("PieceDown", IE_Pressed, this, &AGrid::OnPieceDown).bConsumeInput = false;
 			InputComponent->BindAction("PieceLeft", IE_Pressed, this, &AGrid::OnPieceLeft).bConsumeInput = false;
@@ -135,20 +134,35 @@ void AGrid::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	forwardVec = GetActorRightVector();
+	rightVec = GetActorForwardVector();
+	upVec = GetActorUpVector();
+
+#if 1
+	// グリッド移動
+	MoveGrid(DeltaTime);
+
+	// ピース移動
+	MovePiece(DeltaTime);
+
+	// スロット移動
+	MoveSlot(DeltaTime);
+#endif
+
 	// パズルシーン以外、早期リターン
 	if (!onPuzzle) return;
 
 	// パズル更新
-	PuzzleUpdate(DeltaTime);
+	UpdatePuzzle(DeltaTime);
 
 	// ピーススロット更新
-	SlotUpdate(DeltaTime);
+	UpdateSlot(DeltaTime);
 
 	// フラグのリセット
 	ResetFlags();
 }
 
-void AGrid::PuzzleUpdate(float DeltaTime)
+void AGrid::UpdatePuzzle(float DeltaTime)
 {
 	if (0 < pieces.Num() && -1 < selectPieceNum && selectPieceNum < pieces.Num())
 	{
@@ -187,8 +201,10 @@ void AGrid::PuzzleUpdate(float DeltaTime)
 	}
 }
 
-void AGrid::SlotUpdate(float DeltaTime)
+void AGrid::UpdateSlot(float DeltaTime)
 {
+	if (selectPieceNum == -1 || pieces.Num() < selectPieceNum) return;
+
 	int pastSelectPieceNum = selectPieceNum;
 
 	if (onPieceSlotLeft)
@@ -214,6 +230,131 @@ void AGrid::SlotUpdate(float DeltaTime)
 	{
 		SetVisiblePiece(pastSelectPieceNum, false, FVector(0.0f, 0.0f, 0.0f));
 		SetVisiblePiece(selectPieceNum, true, pieces[pastSelectPieceNum]->GetActorLocation());
+	}
+}
+
+void AGrid::MoveGrid(float DeltaTime)
+{
+	FVector Location = GetLocation();
+	FVector SpawnOriginLocation = Location;
+
+	float adjustY = panelSize * (static_cast<float>(widthNum - 1) * 0.5f);
+	float adjustZ = panelSize * (static_cast<float>(heightNum - 1) * 0.5f);
+
+	Location -= rightVec * adjustY;
+	Location += upVec * adjustZ;
+
+	panelMinXPos = (SpawnOriginLocation - rightVec * adjustY);
+	panelMaxXPos = (SpawnOriginLocation + rightVec * adjustY);
+	panelMinYPos = (SpawnOriginLocation + upVec * adjustZ);
+	panelMaxYPos = (SpawnOriginLocation - upVec * adjustZ);
+
+	panelMinX = (panelMinXPos - SpawnOriginLocation).Size();
+	panelMaxX = (panelMaxXPos - SpawnOriginLocation).Size();
+	panelMinY = (panelMinYPos - SpawnOriginLocation).Size();
+	panelMaxY = (panelMaxYPos - SpawnOriginLocation).Size();
+
+	int cnt = 0;
+	int panelCnt = 0;
+	for (int i = 0; i < heightNum; ++i)
+	{
+		for (int j = 0; j < widthNum; ++j)
+		{
+			panelPositions[cnt] = Location;
+
+			if (onPanel[cnt])
+			{
+				auto panel = panels[panelCnt];
+				panel->SetActorLocation(Location);
+				panel->SetActorRotation(GetActorRotation());
+				++panelCnt;
+			}
+			// else if (onPieceOrigin) CreatePieceOrigin(Location); //TODO : デバッグように必要なら変更
+			Location += rightVec * panelSize;
+			++cnt;
+		}
+		Location = GetLocation();
+		Location -= rightVec * adjustY;
+		Location += upVec * adjustZ;
+		Location -= upVec * (panelSize * (i + 1));
+	}
+}
+
+void AGrid::MovePiece(float DeltaTime)
+{
+	// OriginPieceからPanelNumを設定
+	//SetPanelNumToOriginPiece();
+
+	//originPiecePos = panelPositions[panelNumAtOriginPiece];
+
+	auto MovePiece = [&](int pieceNum, int panelNum, bool onAdjust)
+	{
+		if (pieceNum == -1 || pieces.Num() < pieceNum) return;
+		if (panelNum == -1 || panelPositions.Num() < panelNum) return;
+
+		auto piecePos = panelPositions[panelNum];
+		auto piece = pieces[pieceNum];
+
+		auto location = GetLocation();
+		if (onAdjust) location += forwardVec * AdjustPiece;
+
+		AdjustPiecePosFromOrigin(piecePos, pieceDatas[pieceNum].type, piece->GetTurnCnt());
+		piece->PieceMove(piecePos, location, rightVec, upVec);
+
+		FRotator rotate;
+		FVector rotateVec;
+		float rotateX = 0.0f;
+
+		rotateVec = GetActorRotation().Euler();
+		rotateX = 90.0f * piece->GetTurnCnt() * -1.0f;
+		rotate = FRotator(rotateX, rotateVec.Z, 0.0f);
+		piece->SetActorRotation(rotate);
+	};
+
+	SetPanelNumAtOriginPiece(panelNumAtOriginPiece);
+	{
+		MovePiece(selectPieceNum, panelNumAtOriginPiece, true);
+	}
+
+	for (auto decisionPiece : decisionPieces)
+	{
+		MovePiece(decisionPiece.pieceNum, decisionPiece.panelNum, false);
+	}
+}
+
+void AGrid::MoveSlot(float DeltaTime)
+{
+	if (selectPieceNum == -1 || pieces.Num() < selectPieceNum) return;
+
+	float adjust = panelSize * AdjustSlotPieceNum;
+	auto piecePos = GetLocation() - upVec * adjust;
+	//auto pieceScale = gridScale;
+
+	auto slotPiece = slotPieces[selectPieceNum];
+	{
+		slotPiece->SetActorLocation(piecePos);
+		slotPiece->SetActorRotation(GetActorRotation());
+		//slotPiece->SetActorScale3D(pieceScale * 0.75f);
+	}
+
+	if (selectPieceNum != slotLeftNum)
+	{
+		auto slotLeftPiece = slotPieces[slotLeftNum];
+		{
+			slotLeftPiece->SetActorLocation(piecePos - rightVec * (adjust * 0.5f));
+			slotLeftPiece->SetActorRotation(GetActorRotation());
+			//slotLeftPiece->SetActorScale3D(pieceScale * 0.5f);
+		}
+	}
+
+	if (selectPieceNum != slotRightNum)
+	{
+		auto slotRightPiece = slotPieces[slotRightNum];
+		{
+			slotRightPiece->SetActorLocation(piecePos + rightVec * (adjust * 0.5f));
+			slotRightPiece->SetActorRotation(GetActorRotation());
+			//slotRightPiece->SetActorScale3D(pieceScale * 0.5f);
+		}
 	}
 }
 
@@ -314,6 +455,7 @@ void AGrid::PieceUpdateEnd(APieceOrigin* piece)
 
 void AGrid::PieceMove(APieceOrigin* piece)
 {
+	panelNumAtBackUp = panelNumAtOriginPiece;
 	originPiecePosAtBackUp = originPiecePos;
 
 	auto pieceNums = piece->GetPieceNums();
@@ -443,25 +585,29 @@ void AGrid::PieceMove(APieceOrigin* piece)
 
 	if (onPieceUp && JudgeMoveUp())
 	{
-		originPiecePos += upVec * panelSize;
+		// originPiecePos += upVec * panelSize;
+		AddPanelNumAtOriginPiece(-widthNum);
 	}
 	if (onPieceDown && JudgeMoveDown())
 	{
-		originPiecePos -= upVec * panelSize;
+		// originPiecePos -= upVec * panelSize;
+		AddPanelNumAtOriginPiece(widthNum);
 	}
 	if (onPieceLeft && JudgeMoveLeft())
 	{
-		originPiecePos -= rightVec * panelSize;
+		// originPiecePos -= rightVec * panelSize;
+		AddPanelNumAtOriginPiece(-1);
 	}
 	if (onPieceRight && JudgeMoveRight())
 	{
-		originPiecePos += rightVec * panelSize;
+		// originPiecePos += rightVec * panelSize;
+		AddPanelNumAtOriginPiece(1);
 	}
 
 	auto piecePos = originPiecePos;
 	{
 		AdjustPiecePosFromOrigin(piecePos, pieceDatas[selectPieceNum].type, piece->GetTurnCnt());
-		piece->PieceMove(piecePos, GetActorLocation(), rightVec, upVec);
+		piece->PieceMove(piecePos, GetLocation(), rightVec, upVec);
 	}
 }
 
@@ -487,6 +633,13 @@ void AGrid::PieceDecision(APieceOrigin* piece)
 		// ピース セットアップ
 		if (pastSelectPieceNum != selectPieceNum)
 		{
+			FDecisionPiece tempDecisionPiece;
+			{
+				tempDecisionPiece.pieceNum = pastSelectPieceNum;
+				tempDecisionPiece.panelNum = panelNumAtOriginPiece;
+			}
+			decisionPieces.Add(tempDecisionPiece);
+
 			AdjustPiecePos(pastSelectPieceNum);
 			SetVisiblePiece(selectPieceNum, true, pieces[pastSelectPieceNum]->GetActorLocation());
 			SetUpPiece(pieces[selectPieceNum]);
@@ -543,11 +696,12 @@ void AGrid::MoveCantBeDecision(APieceOrigin* piece, bool atInitialize)
 
 			for (int j = pieceNum + 1; j < max; ++j)
 			{
-				originPiecePos = panelPositions[j];
+				//originPiecePos = panelPositions[j];
+				SetPanelNumAtOriginPiece(j);
 				auto piecePos = originPiecePos;
 				{
 					AdjustPiecePosFromOrigin(piecePos, pieceDatas[selectPieceNum].type, piece->GetTurnCnt());
-					piece->PieceMove(piecePos, GetActorLocation(), rightVec, upVec);
+					piece->PieceMove(piecePos, GetLocation(), rightVec, upVec);
 
 					// 範囲制限
 					RangeLimit(piece); // TODO : 当たった場合ずらすように変更
@@ -565,7 +719,7 @@ void AGrid::MoveCantBeDecision(APieceOrigin* piece, bool atInitialize)
 	else /*if (!onPieceInPiece)*/
 	{
 		piece->UndoData();
-		originPiecePos = originPiecePosAtBackUp;
+		SetPanelNumAtOriginPiece(panelNumAtBackUp);
 
 		auto color = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		auto renderComponent = piece->GetRenderComponent();
@@ -591,13 +745,53 @@ void AGrid::SetVisiblePiece(int currentPieceNum, bool isVisible, FVector currntP
 		{
 			AdjustPiecePosFromOrigin(piecePos, data.type, piece->GetTurnCnt());
 
-			piecePos += (GetActorRightVector() * AdjustPiece);
+			piecePos += (forwardVec * AdjustPiece);
 			piece->SetActorLocation(piecePos);
 		}
 
 		SelectSlotPiece(currentPieceNum);
 	}
 }
+
+void AGrid::SetPanelNumAtOriginPiece(int newPanelNum)
+{
+	int pastPanelNum = panelNumAtOriginPiece;
+	panelNumAtOriginPiece = newPanelNum;
+
+	if (panelNumAtOriginPiece < 0 || onPanel.Num() < panelNumAtOriginPiece)
+	{
+		panelNumAtOriginPiece = pastPanelNum;
+	}
+
+	originPiecePos = panelPositions[panelNumAtOriginPiece];
+}
+
+void AGrid::AddPanelNumAtOriginPiece(int addPanelNum)
+{
+	int pastPanelNum = panelNumAtOriginPiece;
+	panelNumAtOriginPiece += addPanelNum;
+
+	if (panelNumAtOriginPiece < 0 || onPanel.Num() < panelNumAtOriginPiece)
+	{
+		panelNumAtOriginPiece = pastPanelNum;
+	}
+
+	originPiecePos = panelPositions[panelNumAtOriginPiece];
+}
+
+//void AGrid::SetPanelNumToOriginPiece()
+//{
+//	for (int i = 0; i < widthNum * heightNum; ++i)
+//	{
+//		auto panelPos = panelPositions[i];
+//		float len = (originPiecePos - panelPos).Size();
+//
+//		if (panelSize * 0.5f < len) continue;
+//
+//		panelNumAtOriginPiece = i;
+//		break;
+//	}
+//}
 
 void AGrid::SelectSlotPiece(int currentPieceNum)
 {
@@ -609,23 +803,23 @@ void AGrid::SelectSlotPiece(int currentPieceNum)
 	if (currentPieceNum == -1) return;
 
 	float adjust = panelSize * AdjustSlotPieceNum;
-	auto piecePos = GetActorLocation() - upVec * adjust;
-	auto pieceScale = GetActorScale3D();
+	auto piecePos = GetLocation() - upVec * adjust;
+	auto pieceScale = gridScale;
 
-	int leftPieceNum = currentPieceNum;
+	slotLeftNum = currentPieceNum;
 	for (int i = 0; i < slotPieces.Num(); ++i)
 	{
-		--leftPieceNum;
-		if (leftPieceNum < 0) leftPieceNum = slotPieces.Num() - 1;
-		if (!pieceDatas[leftPieceNum].isPlacement) break;
+		--slotLeftNum;
+		if (slotLeftNum < 0) slotLeftNum = slotPieces.Num() - 1;
+		if (!pieceDatas[slotLeftNum].isPlacement) break;
 	}
 
-	int rightPieceNum = currentPieceNum;
+	slotRightNum = currentPieceNum;
 	for (int i = 0; i < slotPieces.Num(); ++i)
 	{
-		++rightPieceNum;
-		if (slotPieces.Num() - 1 < rightPieceNum) rightPieceNum = 0;
-		if (!pieceDatas[rightPieceNum].isPlacement) break;
+		++slotRightNum;
+		if (slotPieces.Num() - 1 < slotRightNum) slotRightNum = 0;
+		if (!pieceDatas[slotRightNum].isPlacement) break;
 	}
 
 	auto slotPiece = slotPieces[currentPieceNum];
@@ -635,9 +829,9 @@ void AGrid::SelectSlotPiece(int currentPieceNum)
 		slotPiece->SetActorScale3D(pieceScale * 0.75f);
 	}
 
-	if (currentPieceNum != leftPieceNum)
+	if (currentPieceNum != slotLeftNum)
 	{
-		auto slotLeftPiece = slotPieces[leftPieceNum];
+		auto slotLeftPiece = slotPieces[slotLeftNum];
 		{
 			slotLeftPiece->GetRenderComponent()->SetVisibility(true);
 			slotLeftPiece->SetActorLocation(piecePos - rightVec * (adjust * 0.5f));
@@ -645,9 +839,9 @@ void AGrid::SelectSlotPiece(int currentPieceNum)
 		}
 	}
 
-	if (currentPieceNum != rightPieceNum)
+	if (currentPieceNum != slotRightNum)
 	{
-		auto slotRightPiece = slotPieces[rightPieceNum];
+		auto slotRightPiece = slotPieces[slotRightNum];
 		{
 			slotRightPiece->GetRenderComponent()->SetVisibility(true);
 			slotRightPiece->SetActorLocation(piecePos + rightVec * (adjust * 0.5f));
@@ -667,7 +861,7 @@ void AGrid::AdjustPiecePos(int currentPieceNum)
 	auto piece = pieces[currentPieceNum];
 	auto piecePos = piece->GetActorLocation();
 	{
-		piecePos -= (GetActorRightVector() * AdjustPiece);
+		piecePos -= (forwardVec * AdjustPiece);
 		piece->SetActorLocation(piecePos);
 	}
 }
@@ -887,7 +1081,7 @@ void AGrid::AdjustOriginPos(FVector& originPos, int panelNum, TArray<int> pieceN
 
 void AGrid::RangeLimit(APieceOrigin* piece)
 {
-	FVector gridPos = GetActorLocation();
+	FVector gridPos = GetLocation();
 
 	float adjustX = 0.0f;
 	float adjustY = 0.0f;
@@ -954,6 +1148,7 @@ void AGrid::RangeLimit(APieceOrigin* piece)
 		adjustY = (productionVector - pieceMaxYPos).Size();
 	}
 
+	// TODO : うまくいかないときは番号での修正
 	originPiecePos += rightVec * adjustX;
 	originPiecePos += upVec * adjustY;
 
@@ -964,7 +1159,8 @@ void AGrid::RangeLimit(APieceOrigin* piece)
 
 		if (panelSize * 0.5f < len) continue;
 
-		originPiecePos = panelPos;
+		//originPiecePos = panelPos;
+		SetPanelNumAtOriginPiece(i);
 
 		break;
 	}
@@ -972,7 +1168,7 @@ void AGrid::RangeLimit(APieceOrigin* piece)
 	auto piecePos = originPiecePos;
 	{
 		AdjustPiecePosFromOrigin(piecePos, pieceDatas[selectPieceNum].type, piece->GetTurnCnt());
-		piece->PieceMove(piecePos, GetActorLocation(), rightVec, upVec);
+		piece->PieceMove(piecePos, GetLocation(), rightVec, upVec);
 	}
 }
 
@@ -1036,7 +1232,7 @@ void AGrid::CreatePieceOrigin(FVector SpawnLocation)
 	{
 		FVector Location = SpawnLocation;
 		FRotator Rotation = GetActorRotation();
-		FVector Scale = GetActorScale3D();
+		FVector Scale = gridScale;
 
 		APieceOrigin* TempPieceOrigin = GetWorld()->SpawnActor<APieceOrigin>(PieceOrigin, Location, Rotation);
 		TempPieceOrigin->SetActorScale3D(Scale);
@@ -1049,7 +1245,7 @@ bool AGrid::CreatePieceO(FVector SpawnLocation)
 	{
 		FVector Location = SpawnLocation;
 		FRotator Rotation = GetActorRotation();
-		FVector Scale = GetActorScale3D();
+		FVector Scale = gridScale;
 
 		/*if (widthNum % 2 != 0)
 		{
@@ -1097,7 +1293,7 @@ bool AGrid::CreatePieceL(FVector SpawnLocation)
 	{
 		FVector Location = SpawnLocation;
 		FRotator Rotation = GetActorRotation();
-		FVector Scale = GetActorScale3D();
+		FVector Scale = gridScale;
 
 		/*if (heightNum % 2 != 0)
 		{
@@ -1141,7 +1337,7 @@ bool AGrid::CreatePieceI(FVector SpawnLocation)
 	{
 		FVector Location = SpawnLocation;
 		FRotator Rotation = GetActorRotation();
-		FVector Scale = GetActorScale3D();
+		FVector Scale = gridScale;
 
 		/*if (widthNum % 2 != 0)
 		{
@@ -1185,7 +1381,7 @@ bool AGrid::CreatePieceT(FVector SpawnLocation)
 	{
 		FVector Location = SpawnLocation;
 		FRotator Rotation = GetActorRotation();
-		FVector Scale = GetActorScale3D();
+		FVector Scale = gridScale;
 
 		auto TempAPieceT = GetWorld()->SpawnActor<APieceT>(PieceT, Location, Rotation);
 		{
@@ -1224,7 +1420,7 @@ void AGrid::CreatePiecePanel(FVector SpawnLocation)
 	{
 		FVector Location = SpawnLocation;
 		FRotator Rotation = GetActorRotation();
-		FVector Scale = GetActorScale3D();
+		FVector Scale = gridScale;
 
 		APiecePanel* TempPiecePanel = GetWorld()->SpawnActor<APiecePanel>(PiecePanel, Location, Rotation);
 		TempPiecePanel->SetActorScale3D(Scale);
@@ -1273,7 +1469,7 @@ bool AGrid::LoadJson(const FString& Path)
 void AGrid::CreatePanels(FVector SpawnLocation)
 {
 	FVector Location = SpawnLocation;
-	FVector SpawnOriginLocation = GetActorLocation();
+	FVector SpawnOriginLocation = GetLocation();
 
 	float adjustY = panelSize * (static_cast<float>(widthNum - 1) * 0.5f);
 	float adjustZ = panelSize * (static_cast<float>(heightNum - 1) * 0.5f);
@@ -1303,7 +1499,7 @@ void AGrid::CreatePanels(FVector SpawnLocation)
 			Location += rightVec * panelSize;
 			++cnt;
 		}
-		Location = GetActorLocation();
+		Location = GetLocation();
 		Location -= rightVec * adjustY;
 		Location += upVec * adjustZ;
 		Location -= upVec * (panelSize * (i + 1));
@@ -1383,4 +1579,37 @@ void AGrid::OnPieceSlotRight()
 	if (!onPuzzle) return;
 
 	onPieceSlotRight = true;
+}
+
+void AGrid::VisibleGridMesh(bool visible)
+{
+	GridMesh->SetVisibility(visible);
+}
+
+void AGrid::SetGridScale(FVector scale)
+{
+	gridScale = scale;
+}
+
+void AGrid::SetAdjustHeight(float height)
+{
+	adjustHeight = height;
+}
+
+void AGrid::SetAdjustLen(float len)
+{
+	adjustLen = len;
+}
+
+FVector AGrid::GetLocation()
+{
+	FVector SpawnLocation = GetActorLocation();
+	SpawnLocation += forwardVec * adjustLen;
+
+	return SpawnLocation;
+}
+
+void AGrid::SetPuzzle(bool puzzle)
+{
+	onPuzzle = puzzle;
 }

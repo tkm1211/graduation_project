@@ -30,6 +30,18 @@ struct FPieceData
 	PieceShape type = PieceShape::T;
 };
 
+USTRUCT(BlueprintType)
+struct FDecisionPiece
+{
+	GENERATED_USTRUCT_BODY();
+
+	// ピース番号
+	int pieceNum = 0;
+
+	// パネル番号
+	int panelNum = 0;
+};
+
 UCLASS()
 class GRADUATION_PROJECT_API AGrid : public AActor
 {
@@ -44,6 +56,9 @@ private:
 	const int MaxHeightNum = 20;
 
 private:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Puzzle", meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* GridMesh;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<APieceOrigin> PieceOrigin; // 元のピース（エディタで設定）
 
@@ -91,13 +106,21 @@ private:
 	TArray<APieceOrigin*> slotPieces;
 	TArray<FPieceData> pieceDatas;
 	TArray<APiecePanel*> panels;
+	TArray<FDecisionPiece> decisionPieces;
 
 	FVector originPiecePosAtBackUp;
 
+	FVector forwardVec;
 	FVector rightVec;
 	FVector upVec;
+
+	FVector gridScale;
 	
 	int selectPieceNum = 0;
+	int panelNumAtOriginPiece = 0;
+	int panelNumAtBackUp = 0;
+	int slotLeftNum = 0;
+	int slotRightNum = 0;
 	int widthNum = 0;
 	int heightNum = 0;
 
@@ -107,6 +130,9 @@ private:
 	float panelMaxX = 0.0f;
 	float panelMinY = 0.0f;
 	float panelMaxY = 0.0f;
+
+	float adjustHeight = 0.0f;
+	float adjustLen = 0.0f;
 
 	bool onPuzzle = false;
 	bool onPieceUp = false;
@@ -125,7 +151,7 @@ private:
 
 public:	
 	// Sets default values for this actor's properties
-	AGrid();
+	AGrid(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 protected:
 	// Called when the game starts or when spawned
@@ -137,10 +163,18 @@ public:
 
 public:
 	void Initialize();
+	void VisibleGridMesh(bool visible);
+	void SetGridScale(FVector scale);
+	void SetAdjustHeight(float height);
+	void SetAdjustLen(float len);
+	void SetPuzzle(bool puzzle);
 
 private:
-	void PuzzleUpdate(float DeltaTime);
-	void SlotUpdate(float DeltaTime);
+	void UpdatePuzzle(float DeltaTime);
+	void UpdateSlot(float DeltaTime);
+	void MoveGrid(float DeltaTime);
+	void MovePiece(float DeltaTime);
+	void MoveSlot(float DeltaTime);
 
 	void CreatePanels(FVector SpawnLocation);
 	void CreatePiece(PieceShape pieceShape, FVector SpawnLocation);
@@ -163,6 +197,8 @@ private:
 	void PieceDecision(APieceOrigin* piece);
 	void MoveCantBeDecision(APieceOrigin* piece, bool atInitialize);
 	void SetVisiblePiece(int currentPieceNum, bool isVisible, FVector currntPiecePos);
+	void SetPanelNumAtOriginPiece(int newPanelNum);
+	void AddPanelNumAtOriginPiece(int addPanelNum);
 	void SelectSlotPiece(int currentPieceNum);
 	void SelectPieceNum(APieceOrigin* piece);
 	void AdjustPiecePos(int currentPieceNum);
@@ -185,4 +221,6 @@ private:
 	void OnPieceCancel();
 	void OnPieceSlotLeft();
 	void OnPieceSlotRight();
+
+	FVector GetLocation();
 };

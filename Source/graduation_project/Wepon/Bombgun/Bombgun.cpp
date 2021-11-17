@@ -7,10 +7,12 @@
 #include "Kismet/GameplayStatics.h"
 #include "../../graduation_projectCharacter.h"
 #include "../BaseAmmo.h"
-#include "Bombgun.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "UObject/NameTypes.h"
+#include "Bombgun.h"
+#include "NiagaraComponent.h"
 
 ABombgun::ABombgun()
 {
@@ -25,10 +27,18 @@ void ABombgun::BeginPlay()
 
 void ABombgun::Tick(float DeltaTime)
 {
+	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
+
+	if (_playerCharacter && _playerCharacter->isDead) return;
+
 	Super::Tick(DeltaTime);
 
 	// 弾発射
 	ShotFire(DeltaTime);
+	fireTimer -= 1.0f * DeltaTime;
+
+	if (fireTimer < 0.0f) fireTimer = -1.0f;
 }
 
 void ABombgun::Fire()
@@ -55,10 +65,18 @@ void ABombgun::FirstFire()
 	if (!_playerCharacter) return;
 
 	// エイム中かどうか
-	if (ammoClass && _playerCharacter->isAim && fireDelayTime == fireTimer)
+	if (ammoClass && _playerCharacter->isAim)
 	{
-		Super::Fire();
-		SpawnShot();
+		if (Super::FirstShotEnable())
+		{
+			firstFireTimer = fireDelayTime;
+			Super::Fire();
+			SpawnShot();
+		}
+		else
+		{
+			onFire = true;
+		}
 	}
 	else
 	{
@@ -79,7 +97,10 @@ void ABombgun::ShotFire(float DeltaTime)
 	}
 	else
 	{
-		fireTimer -= 1.0f * DeltaTime;
+		if (muzzleFlash)
+		{
+			muzzleFlash->Activate(false);
+		}
 	}
 }
 
@@ -93,5 +114,6 @@ void ABombgun::SpawnShot()
 	//　スポーンさせる
 	ABaseAmmo* _tempAmmoBase = GetWorld()->SpawnActor<ABaseAmmo>(ammoClass, _fireLoc, _newRotator);
 	_tempAmmoBase->SetOwner(this);
+	_tempAmmoBase->SetParameter(damage, effectiveRange, rangeMag, lifeTime);
 }
 
