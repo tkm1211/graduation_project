@@ -167,6 +167,7 @@ public:
 	void SetGridScale(FVector scale);
 	void SetAdjustHeight(float height);
 	void SetAdjustLen(float len);
+	void SetPuzzle(bool puzzle);
 
 private:
 	void UpdatePuzzle(float DeltaTime);

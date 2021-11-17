@@ -26,6 +26,9 @@ protected:
 	FVector GridScale; // グリッドサイズ（エディタで設定）
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle", meta = (AllowPrivateAccess = "true"))
+	class USphereComponent* InJudge; // プレイヤー当たり判定用
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle", meta = (AllowPrivateAccess = "true"))
 	float GridLen = 15.0f; // ターミナルとパズルの距離（エディタで設定）
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle", meta = (AllowPrivateAccess = "true"))
@@ -44,7 +47,7 @@ protected:
 	
 public:	
 	// Sets default values for this actor's properties
-	APuzzleOrigin();
+	APuzzleOrigin(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 protected:
 	// Called when the game starts or when spawned
@@ -61,4 +64,9 @@ private:
 public:
 	UFUNCTION(BlueprintCallable, Category = "Puzzle")
 	APuzzleCamera* GetPuzzleCamera() { return puzzleCamera; }
+
+	USphereComponent* GetInJudge() { return InJudge; }
+
+	void BeginPuzzle();
+	void EndPuzzle();
 };
