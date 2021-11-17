@@ -114,7 +114,7 @@ void AGrid::Initialize()
 		{
 			InputComponent = PlayerController->InputComponent;
 			check(InputComponent);
-			InputComponent->BindAction("Puzzle", IE_Pressed, this, &AGrid::OnPuzzle).bConsumeInput = false;
+			//InputComponent->BindAction("Puzzle", IE_Pressed, this, &AGrid::OnPuzzle).bConsumeInput = false;
 			InputComponent->BindAction("PieceUp", IE_Pressed, this, &AGrid::OnPieceUp).bConsumeInput = false;
 			InputComponent->BindAction("PieceDown", IE_Pressed, this, &AGrid::OnPieceDown).bConsumeInput = false;
 			InputComponent->BindAction("PieceLeft", IE_Pressed, this, &AGrid::OnPieceLeft).bConsumeInput = false;
@@ -1607,4 +1607,9 @@ FVector AGrid::GetLocation()
 	SpawnLocation += forwardVec * adjustLen;
 
 	return SpawnLocation;
+}
+
+void AGrid::SetPuzzle(bool puzzle)
+{
+	onPuzzle = puzzle;
 }
