@@ -4,31 +4,25 @@
 
 #include "CoreMinimal.h"
 #include "PuzzleOrigin.h"
-#include "GimmickPuzzle.generated.h"
+#include "WeponPuzzle.generated.h"
 
-
-class AGrid;
-
+/**
+ * 
+ */
 UCLASS()
-class GRADUATION_PROJECT_API AGimmickPuzzle : public APuzzleOrigin
+class GRADUATION_PROJECT_API AWeponPuzzle : public APuzzleOrigin
 {
 	GENERATED_BODY()
 
-private:
-	const float AdjustCameraZ = 5.0f;
-
-public:	
+public:
 	// Sets default values for this actor's properties
-	AGimmickPuzzle();
+	AWeponPuzzle();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-private:
-	void UpdateCamera();
 };

@@ -3,23 +3,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PuzzleOrigin.h"
-#include "GimmickPuzzle.generated.h"
-
-
-class AGrid;
+#include "GameFramework/Actor.h"
+#include "PuzzleCamera.generated.h"
 
 UCLASS()
-class GRADUATION_PROJECT_API AGimmickPuzzle : public APuzzleOrigin
+class GRADUATION_PROJECT_API APuzzleCamera : public AActor
 {
 	GENERATED_BODY()
 
 private:
-	const float AdjustCameraZ = 5.0f;
-
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	//UCameraComponent* PuzzleCamera;
+	
 public:	
 	// Sets default values for this actor's properties
-	AGimmickPuzzle();
+	APuzzleCamera();
 
 protected:
 	// Called when the game starts or when spawned
@@ -30,5 +28,5 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	void UpdateCamera();
+	void CreateCamera();
 };
