@@ -18,9 +18,11 @@ ABaseWepon::ABaseWepon()
 
 	capsuleComp = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleCollider"));
 	capsuleComp->SetupAttachment(RootComponent);
+	capsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	mesh->SetupAttachment(capsuleComp);
+	mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	firePoint = CreateDefaultSubobject<USceneComponent>(TEXT("firePoint"));
 	firePoint->SetupAttachment(mesh);
@@ -36,6 +38,9 @@ void ABaseWepon::BeginPlay()
 {
 	Super::BeginPlay();
 	firstFireTimer = 0.0f;
+
+	capsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 // Called every frame
