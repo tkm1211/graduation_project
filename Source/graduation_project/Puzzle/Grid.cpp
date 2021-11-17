@@ -12,7 +12,7 @@
 #include "PaperSpriteComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "../../FileStream/JsonFunctionLibrary.h"
+#include "../FileStream/JsonFunctionLibrary.h"
 
 
 // Sets default values
