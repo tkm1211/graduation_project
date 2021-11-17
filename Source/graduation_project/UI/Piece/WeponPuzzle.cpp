@@ -2,6 +2,7 @@
 
 
 #include "WeponPuzzle.h"
+#include "Grid.h"
 
 
 // Sets default values
@@ -17,7 +18,7 @@ void AWeponPuzzle::BeginPlay()
 {
 	Super::BeginPlay();
 
-
+	grid->VisibleGridMesh(false);
 }
 
 // Called every frame
