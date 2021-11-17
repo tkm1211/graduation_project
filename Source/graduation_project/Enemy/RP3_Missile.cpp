@@ -1,16 +1,21 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "PrototypeMissile.h"
+#include "RP3_Missile.h"
+#include "RP3_MissileTarget.h"
+#include "GameFramework/ProjectileMovementComponent.h"
+#include "../graduation_projectCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "../graduation_projectCharacter.h"
-#include "MissileTarget.h"
+#include "UObject/ConstructorHelpers.h"
+#include "Components/SphereComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "NiagaraComponent.h"
 #include "NiagaraSystem.h"
-#include "UObject/ConstructorHelpers.h"
 
-static FVector target_offsets[] = {
+
+// Sets default values
+static FVector target_offset[] = {
 	{ 250.f, 250.f, 0.f },
 	{ 150.f, 150.f, 0.f },
 	{ 50.f,  50.f, 0.f },
@@ -26,7 +31,7 @@ static FVector target_offsets[] = {
 };
 
 // Sets default values
-APrototypeMissile::APrototypeMissile()
+ARP3_Missile::ARP3_Missile()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -35,6 +40,18 @@ APrototypeMissile::APrototypeMissile()
 	if (!RootComponent)
 	{
 		RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("ProjectileSceneComponent"));
+	}
+
+	if (!MeshComp)
+	{
+		MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
+
+		static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshAsset(TEXT("/Game/Enemy/Boss/RP3/Meshes/Missile/MDL_Boss_MissileAmmo"));
+		UStaticMesh* asset = MeshAsset.Object;
+
+		MeshComp->SetStaticMesh(asset);
+
+
 	}
 
 	if (!CollisionComponent)
@@ -46,6 +63,8 @@ APrototypeMissile::APrototypeMissile()
 		// Set the root component to be the collision component.
 		RootComponent = CollisionComponent;
 	}
+
+
 
 	if (!ProjectileMovementComponent)
 	{
@@ -63,12 +82,12 @@ APrototypeMissile::APrototypeMissile()
 
 	//target = CreateDefaultSubobject<AMissileTarget>(TEXT("TargetMark"));
 
-	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &APrototypeMissile::OnHit);
+	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ARP3_Missile::OnHit);
 
 }
 
 // Called when the game starts or when spawned
-void APrototypeMissile::BeginPlay()
+void ARP3_Missile::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -91,7 +110,7 @@ void APrototypeMissile::BeginPlay()
 }
 
 // Called every frame
-void APrototypeMissile::Tick(float DeltaTime)
+void ARP3_Missile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
@@ -106,13 +125,13 @@ void APrototypeMissile::Tick(float DeltaTime)
 			SpawnParams.Owner = this;
 			SpawnParams.Instigator = GetInstigator();
 
-			FVector target_pos = target_offsets[missile_number] + player->GetActorLocation();
+			FVector target_pos = target_offset[missile_number] + player->GetActorLocation();
 			target_pos.Z = 60.f;
 			FRotator target_rot = { 0.f, 0.f, 0.f };
-			marker = GetWorld()->SpawnActor<AMissileTarget>(target_pos, target_rot, SpawnParams);
+			marker = GetWorld()->SpawnActor<ARP3_MissileTarget>(target_pos, target_rot, SpawnParams);
 
 			ProjectileMovementComponent->HomingTargetComponent = marker->GetMesh();
-			ProjectileMovementComponent->bIsHomingProjectile = true;	
+			ProjectileMovementComponent->bIsHomingProjectile = true;
 			ProjectileMovementComponent->MaxSpeed = 2000.f;
 			ProjectileMovementComponent->HomingAccelerationMagnitude = 8000.f;
 
@@ -123,7 +142,7 @@ void APrototypeMissile::Tick(float DeltaTime)
 
 }
 
-void APrototypeMissile::OnHit(class UPrimitiveComponent* HitComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ARP3_Missile::OnHit(class UPrimitiveComponent* HitComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	Agraduation_projectCharacter* pl = Cast<Agraduation_projectCharacter>(OtherActor);
 

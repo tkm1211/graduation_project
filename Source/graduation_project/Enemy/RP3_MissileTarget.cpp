@@ -1,13 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "MissileTarget.h"
+#include "RP3_MissileTarget.h"
 #include "Components/StaticMeshComponent.h"
 
 // Sets default values
-AMissileTarget::AMissileTarget()
+ARP3_MissileTarget::ARP3_MissileTarget()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
@@ -23,10 +23,10 @@ AMissileTarget::AMissileTarget()
 }
 
 // Called when the game starts or when spawned
-void AMissileTarget::BeginPlay()
+void ARP3_MissileTarget::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	IsDestroy = false;
 	timer = 0.f;
 	rad = 0.f;
@@ -34,7 +34,7 @@ void AMissileTarget::BeginPlay()
 }
 
 // Called every frame
-void AMissileTarget::Tick(float DeltaTime)
+void ARP3_MissileTarget::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
