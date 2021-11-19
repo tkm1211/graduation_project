@@ -15,6 +15,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "../../Camera/CameraManager.h"
 #include "NiagaraComponent.h"
+#include "Components/SphereComponent.h"
 
 AShotgun::AShotgun()
 {
@@ -105,17 +106,6 @@ void AShotgun::SpawnShot()
 {
 	for (int i = 0; i < 8; i++)
 	{
-		float rad = 45.0f * i;
-		float adjustX = FMath::Cos(rad * (3.14f / 180.0f)) * spawnAmmoSpace;
-		float adjustY = FMath::Sin(rad * (3.14f / 180.0f)) * spawnAmmoSpace;
-
-		FVector right = firePoint->GetRightVector();
-		FVector up = firePoint->GetUpVector();
-
-		right = FVector(right.X * adjustX, right.Y * adjustX, right.Z * adjustX);
-		up = FVector(up.X * adjustY, up.Y * adjustY, up.Z * adjustY);
-
-
 		TArray<AActor*> foundActors;
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACameraManager::StaticClass(), foundActors);
 		FVector _rayForward = firePoint->GetForwardVector();
@@ -126,9 +116,30 @@ void AShotgun::SpawnShot()
 			_rayForward = cameraM->cameraPoint->GetForwardVector();
 		}
 
+		float rad = 45.0f * i;
+		rad = FMath::DegreesToRadians(rad);
+		float adjustX = FMath::Cos(rad) * 10.0f;
+		float adjustY = FMath::Sin(rad) * 10.0f;
+
+		FVector right = firePoint->GetForwardVector();
+		FVector up = firePoint->GetUpVector();
+
+		right = FVector(right.X * adjustX, right.Y * adjustX, right.Z * adjustX);
+		up = FVector(up.X * adjustY, up.Y * adjustY, up.Z * adjustY);
+
 		// レイのスタート位置取得(ホーミング用)
-		FVector _rayStart = firePoint->GetComponentLocation();
-		FVector _rayEnd = (firePoint->GetComponentLocation() + right + up) + (_rayForward * ammoRayCastRange) ;
+		FVector _rayStart = firePoint->GetComponentLocation() + _rayForward+ right + up;
+
+		adjustX = FMath::Cos(rad) * spawnAmmoSpace;
+		adjustY = FMath::Sin(rad) * spawnAmmoSpace;
+
+		right = firePoint->GetForwardVector();
+		up = firePoint->GetUpVector();
+
+		right = FVector(right.X * adjustX, right.Y * adjustX, right.Z * adjustX);
+		up = FVector(up.X * adjustY, up.Y * adjustY, up.Z * adjustY);
+
+		FVector _rayEnd = (firePoint->GetComponentLocation()) + (_rayForward * ammoRayCastRange) + right + up;
 
 		// レイのヒットしたアクター保存用
 		TArray<AActor*> IngoreActors;
@@ -138,23 +149,17 @@ void AShotgun::SpawnShot()
 		// SphereCast
 		//bool isHit = UKismetSystemLibrary::LineTraceMulti(GetWorld(), _rayStart, _rayEnd, UEngineTypes::ConvertToTraceType(ECC_WorldStatic), false, IngoreActors, EDrawDebugTrace::Type::ForDuration, HitRetArray, true);
 		
-			// プレイヤーの向きと発射位置取得
-		//　スポーンさせる
-		//FVector velocity = _rayEnd - _rayStart;
-		//velocity.Normalize();
-			// プレイヤーの向きと発射位置取得
+		// プレイヤーの向きと発射位置取得
+		// プレイヤーの向きと発射位置取得
 		FRotator _newRotator = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
 		FVector _fireLoc = firePoint->GetComponentLocation();
 
-		UKismetMathLibrary::FindLookAtRotation(_rayStart, _rayEnd);
+		_newRotator = UKismetMathLibrary::FindLookAtRotation(_rayStart, _rayEnd);
+
 		ABaseAmmo* _tempAmmoBase = GetWorld()->SpawnActor<ABaseAmmo>(ammoClass, _fireLoc, _newRotator);
-		//ABaseAmmo* _tempAmmoBase = GetWorld()->SpawnActorDeferred<ABaseAmmo>(ammoClass, firePoint->GetComponentTransform());
 		_tempAmmoBase->SetOwner(this);
 		_tempAmmoBase->SetParameter(damage, effectiveRange, rangeMag, lifeTime);
-		//_tempAmmoBase->movement->Velocity = velocity;
-		// _tempAmmoBase->FinishSpawning(firePoint->GetComponentTransform());
 		firePoint->GetComponentTransform();
-		//FTransform::
 	}
 
 
