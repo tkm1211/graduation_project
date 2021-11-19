@@ -25,12 +25,18 @@ void APuzzleOrigin::BeginPlay()
 {
 	Super::BeginPlay();
 
-	/*auto transform = InJudge->GetComponentTransform();
+	onPuzzle = false;
+
+	// 入力バインド
 	{
-		auto scale = transform.GetScale3D();
-		scale.Z = 0.1f;
+		APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+		if (PlayerController)
+		{
+			InputComponent = PlayerController->InputComponent;
+			check(InputComponent);
+			InputComponent->BindAction("Puzzle", IE_Pressed, this, &APuzzleOrigin::OnPuzzle).bConsumeInput = false;
+		}
 	}
-	InJudge->SetWorldTransform(transform);*/
 
 	// カメラ生成
 	{
@@ -81,12 +87,18 @@ void APuzzleOrigin::CreateGrid()
 	}
 }
 
+void APuzzleOrigin::OnPuzzle()
+{
+	onPuzzle = !onPuzzle;
+	onPuzzle ? BeginPuzzle() : EndPuzzle();
+}
+
 void APuzzleOrigin::BeginPuzzle()
 {
 	APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
 	playerController->SetViewTargetWithBlend(puzzleCamera, 1.0f, VTBlend_Linear, 10.0f);
 
-	grid->SetPuzzle(true);
+	grid->SetPuzzle(false);
 }
 
 void APuzzleOrigin::EndPuzzle()
@@ -95,5 +107,5 @@ void APuzzleOrigin::EndPuzzle()
 	ACharacter* playerCharacter = UGameplayStatics::GetPlayerCharacter(this, 0);
 	playerController->SetViewTargetWithBlend(playerCharacter, 1.0f, VTBlend_Linear, 1.0f);
 
-	grid->SetPuzzle(false);
+	grid->SetPuzzle(true);
 }

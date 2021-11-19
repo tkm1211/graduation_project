@@ -17,6 +17,10 @@ class GRADUATION_PROJECT_API AGimmickPuzzle : public APuzzleOrigin
 private:
 	const float AdjustCameraZ = 5.0f;
 
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Gimmick", meta = (AllowPrivateAccess = "true"))
+	int GroupID = -1; // StageGimmickと紐づけるための番号（エディタで設定）
+
 public:	
 	// Sets default values for this actor's properties
 	AGimmickPuzzle();
@@ -30,5 +34,11 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
+	void UpdateGrid();
+	void MoveGrid();
+	void RotateGrid();
+
 	void UpdateCamera();
+
+	void PlacePieceBlock();
 };

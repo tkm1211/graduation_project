@@ -114,7 +114,7 @@ void AGrid::Initialize()
 		{
 			InputComponent = PlayerController->InputComponent;
 			check(InputComponent);
-			//InputComponent->BindAction("Puzzle", IE_Pressed, this, &AGrid::OnPuzzle).bConsumeInput = false;
+			InputComponent->BindAction("Puzzle", IE_Pressed, this, &AGrid::OnPuzzle).bConsumeInput = false;
 			InputComponent->BindAction("PieceUp", IE_Pressed, this, &AGrid::OnPieceUp).bConsumeInput = false;
 			InputComponent->BindAction("PieceDown", IE_Pressed, this, &AGrid::OnPieceDown).bConsumeInput = false;
 			InputComponent->BindAction("PieceLeft", IE_Pressed, this, &AGrid::OnPieceLeft).bConsumeInput = false;
@@ -298,7 +298,7 @@ void AGrid::MovePiece(float DeltaTime)
 		auto location = GetLocation();
 		if (onAdjust) location += forwardVec * AdjustPiece;
 
-		AdjustPiecePosFromOrigin(piecePos, pieceDatas[pieceNum].type, piece->GetTurnCnt());
+		AdjustPiecePosFromOrigin(piecePos, pieceDatas[pieceNum].shape, piece->GetTurnCnt());
 		piece->PieceMove(piecePos, location, rightVec, upVec);
 
 		FRotator rotate;
@@ -606,7 +606,7 @@ void AGrid::PieceMove(APieceOrigin* piece)
 
 	auto piecePos = originPiecePos;
 	{
-		AdjustPiecePosFromOrigin(piecePos, pieceDatas[selectPieceNum].type, piece->GetTurnCnt());
+		AdjustPiecePosFromOrigin(piecePos, pieceDatas[selectPieceNum].shape, piece->GetTurnCnt());
 		piece->PieceMove(piecePos, GetLocation(), rightVec, upVec);
 	}
 }
@@ -615,6 +615,15 @@ void AGrid::PieceDecision(APieceOrigin* piece)
 {
 	if (onPieceDecision && canPieceDecision && !onPieceInPiece)
 	{
+		didPlacePiece = true;
+		{
+			placedPieceData.widthNum = widthNum;
+			placedPieceData.heightNum = heightNum;
+			placedPieceData.placedPanelNum = panelNumAtOriginPiece;
+			placedPieceData.turnCnt = piece->GetTurnCnt();
+			placedPieceData.shape = pieceDatas[selectPieceNum].shape;
+		}
+
 		piece->PieceDecision();
 		pieceDatas[selectPieceNum].isPlacement = true;
 
@@ -700,7 +709,7 @@ void AGrid::MoveCantBeDecision(APieceOrigin* piece, bool atInitialize)
 				SetPanelNumAtOriginPiece(j);
 				auto piecePos = originPiecePos;
 				{
-					AdjustPiecePosFromOrigin(piecePos, pieceDatas[selectPieceNum].type, piece->GetTurnCnt());
+					AdjustPiecePosFromOrigin(piecePos, pieceDatas[selectPieceNum].shape, piece->GetTurnCnt());
 					piece->PieceMove(piecePos, GetLocation(), rightVec, upVec);
 
 					// îÕàÕêßå¿
@@ -743,7 +752,7 @@ void AGrid::SetVisiblePiece(int currentPieceNum, bool isVisible, FVector currntP
 	{
 		auto piecePos = originPiecePos;
 		{
-			AdjustPiecePosFromOrigin(piecePos, data.type, piece->GetTurnCnt());
+			AdjustPiecePosFromOrigin(piecePos, data.shape, piece->GetTurnCnt());
 
 			piecePos += (forwardVec * AdjustPiece);
 			piece->SetActorLocation(piecePos);
@@ -871,7 +880,7 @@ int AGrid::JudgePieceInPanel(APieceOrigin* piece)
 	auto piecePos = piece->GetActorLocation();
 	auto data = pieceDatas[selectPieceNum];
 	
-	AdjustPiecePos(piecePos, data.type, piece->GetTurnCnt());
+	AdjustPiecePos(piecePos, data.shape, piece->GetTurnCnt());
 
 	for (int i = 0; i < widthNum * heightNum; ++i)
 	{
@@ -1167,7 +1176,7 @@ void AGrid::RangeLimit(APieceOrigin* piece)
 
 	auto piecePos = originPiecePos;
 	{
-		AdjustPiecePosFromOrigin(piecePos, pieceDatas[selectPieceNum].type, piece->GetTurnCnt());
+		AdjustPiecePosFromOrigin(piecePos, pieceDatas[selectPieceNum].shape, piece->GetTurnCnt());
 		piece->PieceMove(piecePos, GetLocation(), rightVec, upVec);
 	}
 }
@@ -1205,7 +1214,7 @@ void AGrid::CreatePiece(PieceShape pieceShape, FVector SpawnLocation)
 		{
 			data.isVisible = false;
 			data.isPlacement = false;
-			data.type = pieceShape;
+			data.shape = pieceShape;
 		}
 
 		pieceDatas.Add(data);
@@ -1612,4 +1621,17 @@ FVector AGrid::GetLocation()
 void AGrid::SetPuzzle(bool puzzle)
 {
 	onPuzzle = puzzle;
+}
+
+bool AGrid::DidPlacePiece()
+{
+	bool result = didPlacePiece;
+	didPlacePiece = false; // trueéûÇÃåƒÇ—èoÇµå„ÅAfalseÇ…ñﬂÇµñYÇÍÇ™Ç»Ç¢ÇÊÇ§Ç…Ç∑ÇÈÇΩÇﬂÇ…Ç±Ç±Ç≈èâä˙âª
+
+	return result;
+}
+
+FPlacedPieceData AGrid::GetPlacedPieceData()
+{
+	return placedPieceData;
 }

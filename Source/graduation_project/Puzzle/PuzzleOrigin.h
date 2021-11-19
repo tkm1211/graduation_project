@@ -45,6 +45,9 @@ protected:
 	// パズル撮影用カメラ
 	APuzzleCamera* puzzleCamera;
 	
+private:
+	bool onPuzzle = false;
+
 public:	
 	// Sets default values for this actor's properties
 	APuzzleOrigin(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
@@ -67,6 +70,7 @@ public:
 
 	USphereComponent* GetInJudge() { return InJudge; }
 
+	void OnPuzzle();
 	void BeginPuzzle();
 	void EndPuzzle();
 };

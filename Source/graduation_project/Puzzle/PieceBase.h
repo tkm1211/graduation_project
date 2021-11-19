@@ -25,6 +25,23 @@ enum PieceType
 	Attribute // “ÁŽêŒø‰Ê
 };
 
+USTRUCT(BlueprintType)
+struct FPlacedPieceData
+{
+	GENERATED_USTRUCT_BODY();
+
+	int widthNum = 0;
+
+	int heightNum = 0;
+
+	int placedPanelNum = 0;
+
+	int turnCnt = 0;
+
+	// Œ`
+	PieceShape shape = PieceShape::T;
+};
+
 UCLASS()
 class GRADUATION_PROJECT_API APieceBase : public AActor
 {

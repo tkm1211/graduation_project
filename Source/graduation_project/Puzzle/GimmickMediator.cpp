@@ -4,30 +4,28 @@
 #include "GimmickMediator.h"
 
 
-void UGimmickMediator::AddPlacePiece(PieceShape shape)
+void UGimmickMediator::AddPlacePiece(int groupID, const FPlacedPieceData& data)
 {
-	placedPiece = true;
-	shapePlacedPiece = shape;
+	didPlacePiece = true;
+	placedPieceGroupID = groupID;
 
-	placePieces.Add(shape);
+	placedPieceDatas.Add(groupID, data);
 }
 
-PieceShape UGimmickMediator::GetPlacePiece(int index)
+bool UGimmickMediator::DidPlacePiece()
 {
-	return placePieces[index];
+	bool result = didPlacePiece;
+	didPlacePiece = false; // trueéûÇÃåƒÇ—èoÇµå„ÅAfalseÇ…ñﬂÇµñYÇÍÇ™Ç»Ç¢ÇÊÇ§Ç…Ç∑ÇÈÇΩÇﬂÇ…Ç±Ç±Ç≈èâä˙âª
+
+	return result;
 }
 
-TArray<PieceShape> UGimmickMediator::GetPlacePieces()
+int UGimmickMediator::GetGroupID()
 {
-	return placePieces;
+	return placedPieceGroupID;
 }
 
-bool UGimmickMediator::PlacedPiece()
+FPlacedPieceData UGimmickMediator::GetPlacedPieceData(int groupID)
 {
-	return placedPiece;
-}
-
-PieceShape UGimmickMediator::GetPlaceedPiece()
-{
-	return shapePlacedPiece;
+	return *placedPieceDatas.Find(groupID);
 }

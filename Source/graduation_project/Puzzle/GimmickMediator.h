@@ -14,18 +14,17 @@ UCLASS()
 class GRADUATION_PROJECT_API UGimmickMediator : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
-	
-private:
-	TArray<PieceShape> placePieces;
 
-	bool placedPiece = false;
-	PieceShape shapePlacedPiece = PieceShape::T;
+private:
+	bool didPlacePiece = false;
+	int placedPieceGroupID = -1;
+	TMap<int, FPlacedPieceData> placedPieceDatas;
+	
+public:
+	void AddPlacePiece(int groupID, const FPlacedPieceData& data);
 
 public:
-	void AddPlacePiece(PieceShape shape);
-	PieceShape GetPlacePiece(int index);
-	TArray<PieceShape> GetPlacePieces();
-
-	bool PlacedPiece();
-	PieceShape GetPlaceedPiece();
+	bool DidPlacePiece();
+	int GetGroupID();
+	FPlacedPieceData GetPlacedPieceData(int groupID);
 };

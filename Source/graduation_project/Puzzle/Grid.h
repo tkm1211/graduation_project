@@ -26,8 +26,8 @@ struct FPieceData
 	// ”z’u
 	bool isPlacement = false;
 
-	// Ží—Þ
-	PieceShape type = PieceShape::T;
+	// Œ`
+	PieceShape shape = PieceShape::T;
 };
 
 USTRUCT(BlueprintType)
@@ -115,6 +115,8 @@ private:
 	FVector upVec;
 
 	FVector gridScale;
+
+	FPlacedPieceData placedPieceData;
 	
 	int selectPieceNum = 0;
 	int panelNumAtOriginPiece = 0;
@@ -148,6 +150,7 @@ private:
 
 	bool onPieceInPiece = false;
 	bool canPieceDecision = false;
+	bool didPlacePiece = false;
 
 public:	
 	// Sets default values for this actor's properties
@@ -168,6 +171,8 @@ public:
 	void SetAdjustHeight(float height);
 	void SetAdjustLen(float len);
 	void SetPuzzle(bool puzzle);
+	bool DidPlacePiece();
+	FPlacedPieceData GetPlacedPieceData();
 
 private:
 	void UpdatePuzzle(float DeltaTime);
