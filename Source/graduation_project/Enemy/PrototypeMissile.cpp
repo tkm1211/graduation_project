@@ -10,7 +10,7 @@
 #include "NiagaraSystem.h"
 #include "UObject/ConstructorHelpers.h"
 
-static FVector target_offset[] = {
+static FVector target_offsets[] = {
 	{ 250.f, 250.f, 0.f },
 	{ 150.f, 150.f, 0.f },
 	{ 50.f,  50.f, 0.f },
@@ -95,8 +95,8 @@ void APrototypeMissile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	FRotator rot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), GetActorLocation() + ProjectileMovementComponent->Velocity);
-	SetActorRotation(rot);
+	//FRotator rot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), GetActorLocation() + ProjectileMovementComponent->Velocity);
+	//SetActorRotation(rot);
 
 	if (!marker)
 	{
@@ -106,7 +106,7 @@ void APrototypeMissile::Tick(float DeltaTime)
 			SpawnParams.Owner = this;
 			SpawnParams.Instigator = GetInstigator();
 
-			FVector target_pos = target_offset[missile_number] + player->GetActorLocation();
+			FVector target_pos = target_offsets[missile_number] + player->GetActorLocation();
 			target_pos.Z = 60.f;
 			FRotator target_rot = { 0.f, 0.f, 0.f };
 			marker = GetWorld()->SpawnActor<AMissileTarget>(target_pos, target_rot, SpawnParams);

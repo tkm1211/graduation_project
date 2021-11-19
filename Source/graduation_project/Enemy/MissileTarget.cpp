@@ -14,7 +14,7 @@ AMissileTarget::AMissileTarget()
 
 	RootComponent = MeshComp;
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshAsset(TEXT("/Game/Enemy/Boss/MDL_MissileTarget"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshAsset(TEXT("/Game/Enemy/Boss/RP3/Meshes/Target/MDL_MissileTarget"));
 	UStaticMesh* asset = MeshAsset.Object;
 
 	MeshComp->SetStaticMesh(asset);

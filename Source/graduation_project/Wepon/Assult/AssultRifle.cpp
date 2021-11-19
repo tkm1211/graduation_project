@@ -12,6 +12,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "UObject/NameTypes.h"
+#include "NiagaraComponent.h"
 
 AAssultRifle::AAssultRifle()
 {
@@ -96,7 +97,10 @@ void AAssultRifle::ShotFire(float DeltaTime)
 	}
 	else
 	{
-		
+		if (muzzleFlash)
+		{
+			muzzleFlash->Activate(false);
+		}
 	}
 }
 
