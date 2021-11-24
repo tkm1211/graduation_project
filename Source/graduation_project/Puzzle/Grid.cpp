@@ -114,7 +114,7 @@ void AGrid::Initialize()
 		{
 			InputComponent = PlayerController->InputComponent;
 			check(InputComponent);
-			InputComponent->BindAction("Puzzle", IE_Pressed, this, &AGrid::OnPuzzle).bConsumeInput = false;
+			//InputComponent->BindAction("Puzzle", IE_Pressed, this, &AGrid::OnPuzzle).bConsumeInput = false;
 			InputComponent->BindAction("PieceUp", IE_Pressed, this, &AGrid::OnPieceUp).bConsumeInput = false;
 			InputComponent->BindAction("PieceDown", IE_Pressed, this, &AGrid::OnPieceDown).bConsumeInput = false;
 			InputComponent->BindAction("PieceLeft", IE_Pressed, this, &AGrid::OnPieceLeft).bConsumeInput = false;
@@ -641,16 +641,16 @@ void AGrid::PieceDecision(APieceOrigin* piece)
 			}
 		}
 
+		FDecisionPiece tempDecisionPiece;
+		{
+			tempDecisionPiece.pieceNum = pastSelectPieceNum;
+			tempDecisionPiece.panelNum = panelNumAtOriginPiece;
+		}
+		decisionPieces.Add(tempDecisionPiece);
+
 		// ピース セットアップ
 		if (pastSelectPieceNum != selectPieceNum)
 		{
-			FDecisionPiece tempDecisionPiece;
-			{
-				tempDecisionPiece.pieceNum = pastSelectPieceNum;
-				tempDecisionPiece.panelNum = panelNumAtOriginPiece;
-			}
-			decisionPieces.Add(tempDecisionPiece);
-
 			AdjustPiecePos(pastSelectPieceNum);
 			SetVisiblePiece(selectPieceNum, true, pieces[pastSelectPieceNum]->GetActorLocation());
 			SetUpPiece(pieces[selectPieceNum]);

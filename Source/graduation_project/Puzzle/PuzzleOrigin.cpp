@@ -98,7 +98,7 @@ void APuzzleOrigin::BeginPuzzle()
 	APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
 	playerController->SetViewTargetWithBlend(puzzleCamera, 1.0f, VTBlend_Linear, 10.0f);
 
-	grid->SetPuzzle(false);
+	grid->SetPuzzle(true);
 }
 
 void APuzzleOrigin::EndPuzzle()
@@ -107,5 +107,5 @@ void APuzzleOrigin::EndPuzzle()
 	ACharacter* playerCharacter = UGameplayStatics::GetPlayerCharacter(this, 0);
 	playerController->SetViewTargetWithBlend(playerCharacter, 1.0f, VTBlend_Linear, 1.0f);
 
-	grid->SetPuzzle(true);
+	grid->SetPuzzle(false);
 }
