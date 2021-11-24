@@ -44,6 +44,8 @@ void AGrid::Initialize()
 		widthNum = 0;
 		heightNum = 0;
 
+		backUpNum = -1;
+
 		panelSize = 0.0f;
 
 		panelMinX = 0.0f;
@@ -197,6 +199,9 @@ void AGrid::UpdatePuzzle(float DeltaTime)
 
 			// 配置
 			PieceDecision(piece);
+
+			// 戻る
+			PieceCancel(piece);
 		}
 	}
 }
@@ -648,6 +653,8 @@ void AGrid::PieceDecision(APieceOrigin* piece)
 		}
 		decisionPieces.Add(tempDecisionPiece);
 
+		++backUpNum;
+
 		// ピース セットアップ
 		if (pastSelectPieceNum != selectPieceNum)
 		{
@@ -673,6 +680,28 @@ void AGrid::PieceDecision(APieceOrigin* piece)
 			SelectSlotPiece(selectPieceNum);
 		}
 	}
+}
+
+void AGrid::PieceCancel(APieceOrigin* piece)
+{
+	if (!onPieceCancel) return;
+	if (backUpNum < 0) return;
+
+	auto render = piece->GetRenderComponent();
+	render->SetVisibility(false);
+
+	selectPieceNum = decisionPieces[backUpNum].pieceNum;
+	panelNumAtOriginPiece = decisionPieces[backUpNum].panelNum;
+
+	auto pieceNums = pieces[selectPieceNum]->GetPieceNums();
+	for (auto pieceNum : pieceNums)
+	{
+		onPiece[pieceNum] = false;
+	}
+
+	// TODO : 最初のピースまで戻すと最初のピースが出てこない
+	// TODO : 最後のピース配置後に戻せない
+	// TODO : 戻したピースをスロットに戻せていない。
 }
 
 void AGrid::MoveCantBeDecision(APieceOrigin* piece, bool atInitialize)

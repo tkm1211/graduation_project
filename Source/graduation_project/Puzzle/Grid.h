@@ -126,6 +126,8 @@ private:
 	int widthNum = 0;
 	int heightNum = 0;
 
+	int backUpNum = 0;
+
 	float panelSize = 0.0f;
 
 	float panelMinX = 0.0f;
@@ -200,6 +202,7 @@ private:
 	void PieceUpdateEnd(APieceOrigin* piece);
 	void PieceMove(APieceOrigin* piece);
 	void PieceDecision(APieceOrigin* piece);
+	void PieceCancel(APieceOrigin* piece);
 	void MoveCantBeDecision(APieceOrigin* piece, bool atInitialize);
 	void SetVisiblePiece(int currentPieceNum, bool isVisible, FVector currntPiecePos);
 	void SetPanelNumAtOriginPiece(int newPanelNum);
