@@ -14,30 +14,32 @@ UCLASS()
 class GRADUATION_PROJECT_API ABaseAmmo : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	ABaseAmmo();
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
-	UStaticMeshComponent* mesh;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ProjectileMovementComponent", meta = (ExposeOnSpawn = true))
-	UProjectileMovementComponent* movement;
+		UStaticMeshComponent* mesh;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ProjectileMovementComponent")
-	float hitdam;
+		UProjectileMovementComponent* movement;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ProjectileMovementComponent")
+		float hitdam;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Niagara")
-	UNiagaraComponent* naiagaraTrail;
+		UNiagaraComponent* naiagaraTrail;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Niagara")
-	UNiagaraComponent* explosion;
+		UNiagaraComponent* explosion;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Niagara")
+		UNiagaraSystem* explosionSystem;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ammo")
 		float movementSpeed = 1500.0f;
 
-	float damage;	
+	float damage;
 	float effectiveRange;
 	float rangeMag;
 	float life;
@@ -47,20 +49,20 @@ protected:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	
+
 	void AmmoDestroy();
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	void SetParameter(float _damage, float _effectiveRange, float _rangeMag, float _life);
 
 	UFUNCTION()
-	void OnHit(
-		UPrimitiveComponent* HitComponent,
-		AActor* OtherActor, 
-		UPrimitiveComponent* OtherComp,
-		FVector NormalImpulse, 
-		const FHitResult& Hit
-	);
+		void OnHit(
+			UPrimitiveComponent* HitComponent,
+			AActor* OtherActor,
+			UPrimitiveComponent* OtherComp,
+			FVector NormalImpulse,
+			const FHitResult& Hit
+		);
 };
