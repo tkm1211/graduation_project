@@ -213,6 +213,8 @@ private:
 	void RangeLimit(APieceOrigin* piece);
 	void ResetFlags();
 
+	void UpdatePieceLocation();
+
 	int JudgePieceInPanel(APieceOrigin* piece);
 
 	void OnPuzzle();

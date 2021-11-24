@@ -114,7 +114,7 @@ void AGrid::Initialize()
 		{
 			InputComponent = PlayerController->InputComponent;
 			check(InputComponent);
-			InputComponent->BindAction("Puzzle", IE_Pressed, this, &AGrid::OnPuzzle).bConsumeInput = false;
+			//InputComponent->BindAction("Puzzle", IE_Pressed, this, &AGrid::OnPuzzle).bConsumeInput = false;
 			InputComponent->BindAction("PieceUp", IE_Pressed, this, &AGrid::OnPieceUp).bConsumeInput = false;
 			InputComponent->BindAction("PieceDown", IE_Pressed, this, &AGrid::OnPieceDown).bConsumeInput = false;
 			InputComponent->BindAction("PieceLeft", IE_Pressed, this, &AGrid::OnPieceLeft).bConsumeInput = false;
@@ -296,7 +296,8 @@ void AGrid::MovePiece(float DeltaTime)
 		auto piece = pieces[pieceNum];
 
 		auto location = GetLocation();
-		if (onAdjust) location += forwardVec * AdjustPiece;
+
+		piecePos += onAdjust ? (forwardVec * (AdjustPiece * 2.0f)) : (forwardVec * AdjustPiece);
 
 		AdjustPiecePosFromOrigin(piecePos, pieceDatas[pieceNum].shape, piece->GetTurnCnt());
 		piece->PieceMove(piecePos, location, rightVec, upVec);
@@ -606,6 +607,7 @@ void AGrid::PieceMove(APieceOrigin* piece)
 
 	auto piecePos = originPiecePos;
 	{
+		piecePos += forwardVec * (AdjustPiece * 2.0f);
 		AdjustPiecePosFromOrigin(piecePos, pieceDatas[selectPieceNum].shape, piece->GetTurnCnt());
 		piece->PieceMove(piecePos, GetLocation(), rightVec, upVec);
 	}
@@ -639,16 +641,16 @@ void AGrid::PieceDecision(APieceOrigin* piece)
 			}
 		}
 
+		FDecisionPiece tempDecisionPiece;
+		{
+			tempDecisionPiece.pieceNum = pastSelectPieceNum;
+			tempDecisionPiece.panelNum = panelNumAtOriginPiece;
+		}
+		decisionPieces.Add(tempDecisionPiece);
+
 		// ピース セットアップ
 		if (pastSelectPieceNum != selectPieceNum)
 		{
-			FDecisionPiece tempDecisionPiece;
-			{
-				tempDecisionPiece.pieceNum = pastSelectPieceNum;
-				tempDecisionPiece.panelNum = panelNumAtOriginPiece;
-			}
-			decisionPieces.Add(tempDecisionPiece);
-
 			AdjustPiecePos(pastSelectPieceNum);
 			SetVisiblePiece(selectPieceNum, true, pieces[pastSelectPieceNum]->GetActorLocation());
 			SetUpPiece(pieces[selectPieceNum]);
@@ -709,6 +711,7 @@ void AGrid::MoveCantBeDecision(APieceOrigin* piece, bool atInitialize)
 				SetPanelNumAtOriginPiece(j);
 				auto piecePos = originPiecePos;
 				{
+					piecePos += forwardVec * (AdjustPiece * 2.0f);
 					AdjustPiecePosFromOrigin(piecePos, pieceDatas[selectPieceNum].shape, piece->GetTurnCnt());
 					piece->PieceMove(piecePos, GetLocation(), rightVec, upVec);
 
@@ -753,8 +756,6 @@ void AGrid::SetVisiblePiece(int currentPieceNum, bool isVisible, FVector currntP
 		auto piecePos = originPiecePos;
 		{
 			AdjustPiecePosFromOrigin(piecePos, data.shape, piece->GetTurnCnt());
-
-			piecePos += (forwardVec * AdjustPiece);
 			piece->SetActorLocation(piecePos);
 		}
 
@@ -867,12 +868,11 @@ void AGrid::SelectPieceNum(APieceOrigin* piece)
 
 void AGrid::AdjustPiecePos(int currentPieceNum)
 {
-	auto piece = pieces[currentPieceNum];
+	/*auto piece = pieces[currentPieceNum];
 	auto piecePos = piece->GetActorLocation();
 	{
-		piecePos -= (forwardVec * AdjustPiece);
 		piece->SetActorLocation(piecePos);
-	}
+	}*/
 }
 
 int AGrid::JudgePieceInPanel(APieceOrigin* piece)
@@ -1031,8 +1031,6 @@ void AGrid::AdjustPiecePosFromOrigin(FVector& piecePos, PieceShape type, int tur
 		break;
 	default: break;
 	}
-
-	piecePos += GetActorRightVector() * AdjustPiece * 2.0f;
 }
 
 void AGrid::AdjustOriginPos(FVector& originPos, int panelNum, TArray<int> pieceNums, PieceShape type, int turnCnt)
@@ -1176,6 +1174,7 @@ void AGrid::RangeLimit(APieceOrigin* piece)
 
 	auto piecePos = originPiecePos;
 	{
+		piecePos += forwardVec * (AdjustPiece * 2.0f);
 		AdjustPiecePosFromOrigin(piecePos, pieceDatas[selectPieceNum].shape, piece->GetTurnCnt());
 		piece->PieceMove(piecePos, GetLocation(), rightVec, upVec);
 	}
@@ -1184,7 +1183,6 @@ void AGrid::RangeLimit(APieceOrigin* piece)
 void AGrid::CreatePiece(PieceShape pieceShape, FVector SpawnLocation)
 {
 	FVector Location = SpawnLocation;
-	//Location += GetActorRightVector() * AdjustPiece;
 
 	bool alive = false;
 	switch (pieceShape)
