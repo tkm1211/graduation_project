@@ -8,14 +8,15 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values
 ABaseAmmo::ABaseAmmo()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	RootComponent = CreateDefaultSubobject<USceneComponent>("Ammo");
+
 	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	RootComponent = mesh;
 
@@ -37,7 +38,7 @@ void ABaseAmmo::BeginPlay()
 }
 
 // Called every frame
-void ABaseAmmo::Tick(float DeltaTime)   
+void ABaseAmmo::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
@@ -81,7 +82,7 @@ void ABaseAmmo::OnHit(
 			{
 				ATestBoss_MK1* bossCharacter = Cast<ATestBoss_MK1>(OtherActor);
 
-				//UE_LOG(LogTemp, Warning, TEXT("Boss"));
+				UE_LOG(LogTemp, Warning, TEXT("Boss"));
 
 				bossCharacter->Damage(hitDamage);
 				hitdam = hitDamage;
@@ -94,9 +95,10 @@ void ABaseAmmo::OnHit(
 void ABaseAmmo::AmmoDestroy()
 {
 
-	if (explosion)
-	{
-		explosion->Activate(true);
-	}
 	Destroy();
+	if (explosion && explosionSystem)
+	{
+//		explosion->Activate(true);
+		UNiagaraFunctionLibrary::SpawnSystemAttached(explosionSystem, explosion, FName("None"), GetActorLocation(), FRotator(0, 0, 0), EAttachLocation::Type::KeepWorldPosition, false);
+	}
 }
