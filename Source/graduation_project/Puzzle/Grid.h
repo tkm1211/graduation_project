@@ -126,6 +126,7 @@ private:
 	int widthNum = 0;
 	int heightNum = 0;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
 	int backUpNum = 0;
 
 	float panelSize = 0.0f;

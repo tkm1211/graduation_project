@@ -684,24 +684,35 @@ void AGrid::PieceDecision(APieceOrigin* piece)
 
 void AGrid::PieceCancel(APieceOrigin* piece)
 {
-	if (!onPieceCancel) return;
-	if (backUpNum < 0) return;
+	if (!onPieceCancel) return; // 入力判定
+	if (backUpNum < 0) return; // 一個前に情報がない場合
 
+	// 現在、選択中のピースを非表示
 	auto render = piece->GetRenderComponent();
 	render->SetVisibility(false);
 
+	// 一個前のピースの情報に現状を戻す
 	selectPieceNum = decisionPieces[backUpNum].pieceNum;
 	panelNumAtOriginPiece = decisionPieces[backUpNum].panelNum;
 
+	// パネルに配置できるように変更
 	auto pieceNums = pieces[selectPieceNum]->GetPieceNums();
 	for (auto pieceNum : pieceNums)
 	{
 		onPiece[pieceNum] = false;
 	}
 
-	// TODO : 最初のピースまで戻すと最初のピースが出てこない
-	// TODO : 最後のピース配置後に戻せない
-	// TODO : 戻したピースをスロットに戻せていない。
+	// ピース情報の配置をしてないに変更
+	pieceDatas[selectPieceNum].isPlacement = false; // 次のスロットの並べなおしで参照するのでここで変更
+
+	// スロットの並べなおし
+	SelectSlotPiece(selectPieceNum);
+
+	// 配置中ピースの情報から一個前のピース情報を削除
+	decisionPieces.RemoveAt(backUpNum);
+
+	// 一個前に戻す
+	--backUpNum;
 }
 
 void AGrid::MoveCantBeDecision(APieceOrigin* piece, bool atInitialize)
