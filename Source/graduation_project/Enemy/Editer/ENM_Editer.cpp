@@ -5,6 +5,7 @@
 
 ENM_Editer::ENM_Editer()
 {
+	MaximumHP = 1000.f;
 }
 
 ENM_Editer::~ENM_Editer()

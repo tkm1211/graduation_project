@@ -12,4 +12,8 @@ class GRADUATION_PROJECT_API ENM_Editer
 public:
 	ENM_Editer();
 	~ENM_Editer();
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "BOSS_RP3")
+		float MaximumHP;
+
 };
