@@ -85,47 +85,53 @@ void AStageGimmick::CreatePieceBlock(FPlacedPieceData data)
 		location -= upVec * BlockSize;
 	}
 
-	FRotator pastRotate = rotation;
-	rotation = FRotator(90.0f * data.turnCnt * -1.0f, pastRotate.Euler().Z , pastRotate.Euler().X);
+	//FRotator pastRotate = rotation;
+	//rotation = FRotator(90.0f * data.turnCnt * -1.0f, pastRotate.Euler().Z , pastRotate.Euler().X);
+
+	FRotator addRotation = FRotator(90.0f * data.turnCnt * -1.0f, 0.0f, 0.0f);
 
 	switch (data.shape)
 	{
 	case O:
-		CreatePieceBlockO(location, rotation, scale);
+		CreatePieceBlockO(location, rotation, addRotation, scale);
 		break;
 
 	case L:
-		CreatePieceBlockL(location, rotation, scale);
+		CreatePieceBlockL(location, rotation, addRotation, scale);
 		break;
 
 	case I:
-		CreatePieceBlockI(location, rotation, scale);
+		CreatePieceBlockI(location, rotation, addRotation, scale);
 		break;
 
 	case T:
-		CreatePieceBlockT(location, rotation, scale);
+		CreatePieceBlockT(location, rotation, addRotation, scale);
 		break;
 
 	default: break;
 	}
 }
 
-void AStageGimmick::CreatePieceBlockO(FVector location, FRotator rotation, FVector scale)
+void AStageGimmick::CreatePieceBlockO(FVector location, FRotator rotation, FRotator addRotation, FVector scale)
 {
 	auto tempO = GetWorld()->SpawnActor<APieceBlockO>(PieceBlockO, location, rotation);
+	tempO->AddActorLocalRotation(addRotation, false, 0, ETeleportType::TeleportPhysics);
 }
 
-void AStageGimmick::CreatePieceBlockL(FVector location, FRotator rotation, FVector scale)
+void AStageGimmick::CreatePieceBlockL(FVector location, FRotator rotation, FRotator addRotation, FVector scale)
 {
 	auto tempL = GetWorld()->SpawnActor<APieceBlockL>(PieceBlockL, location, rotation);
+	tempL->AddActorLocalRotation(addRotation, false, 0, ETeleportType::TeleportPhysics);
 }
 
-void AStageGimmick::CreatePieceBlockI(FVector location, FRotator rotation, FVector scale)
+void AStageGimmick::CreatePieceBlockI(FVector location, FRotator rotation, FRotator addRotation, FVector scale)
 {
 	auto tempI = GetWorld()->SpawnActor<APieceBlockI>(PieceBlockI, location, rotation);
+	tempI->AddActorLocalRotation(addRotation, false, 0, ETeleportType::TeleportPhysics);
 }
 
-void AStageGimmick::CreatePieceBlockT(FVector location, FRotator rotation, FVector scale)
+void AStageGimmick::CreatePieceBlockT(FVector location, FRotator rotation, FRotator addRotation, FVector scale)
 {
 	auto tempT = GetWorld()->SpawnActor<APieceBlockT>(PieceBlockT, location, rotation);
+	tempT->AddActorLocalRotation(addRotation, false, 0, ETeleportType::TeleportPhysics);
 }

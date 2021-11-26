@@ -52,8 +52,8 @@ public:
 private:
 	void PlacePieceBlock();
 	void CreatePieceBlock(FPlacedPieceData data);
-	void CreatePieceBlockO(FVector location, FRotator rotation, FVector scale);
-	void CreatePieceBlockL(FVector location, FRotator rotation, FVector scale);
-	void CreatePieceBlockI(FVector location, FRotator rotation, FVector scale);
-	void CreatePieceBlockT(FVector location, FRotator rotation, FVector scale);
+	void CreatePieceBlockO(FVector location, FRotator rotation, FRotator addRotation, FVector scale);
+	void CreatePieceBlockL(FVector location, FRotator rotation, FRotator addRotation, FVector scale);
+	void CreatePieceBlockI(FVector location, FRotator rotation, FRotator addRotation, FVector scale);
+	void CreatePieceBlockT(FVector location, FRotator rotation, FRotator addRotation, FVector scale);
 };
