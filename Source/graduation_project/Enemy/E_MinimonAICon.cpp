@@ -16,7 +16,7 @@ AE_MinimonAIController::AE_MinimonAIController()
     AISensorComp = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerceptionComp"));
 
     UAISenseConfig_Sight* sensor_sight = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("Sensor_Sight"));
-    sensor_sight->Implementation = UAISenseConfig_Sight::StaticClass();
+    sensor_sight->Implementation = UAISense_Sight::StaticClass();
     sensor_sight->SightRadius = 800.f;
     sensor_sight->LoseSightRadius = 1600.f;
 

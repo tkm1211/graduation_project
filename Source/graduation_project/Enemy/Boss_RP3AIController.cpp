@@ -24,8 +24,8 @@ ABoss_RP3AIController::ABoss_RP3AIController() : Super()
 	SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
 	AISensorComp->ConfigureSense(*SightConfig);
 
-	//ConstructorHelpers::FObjectFinder<UBehaviorTree> BTFinder(TEXT("/Game/Enemy/Boss/Blueprints/AI/BT_PrototypeMK1"));
-	//BehaviorTree = BTFinder.Object;
+	ConstructorHelpers::FObjectFinder<UBehaviorTree> BTFinder(TEXT("/Game/Enemy/Boss/RP3/Blueprints/BT_RP3"));
+	BehaviorTree = BTFinder.Object;
 
 	PlayerActorKeyName = "PlayerActor";
 }
