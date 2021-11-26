@@ -44,6 +44,8 @@ void AGrid::Initialize()
 		widthNum = 0;
 		heightNum = 0;
 
+		backUpNum = -1;
+
 		panelSize = 0.0f;
 
 		panelMinX = 0.0f;
@@ -197,6 +199,9 @@ void AGrid::UpdatePuzzle(float DeltaTime)
 
 			// 配置
 			PieceDecision(piece);
+
+			// 戻る
+			PieceCancel(piece);
 		}
 	}
 }
@@ -648,6 +653,8 @@ void AGrid::PieceDecision(APieceOrigin* piece)
 		}
 		decisionPieces.Add(tempDecisionPiece);
 
+		++backUpNum;
+
 		// ピース セットアップ
 		if (pastSelectPieceNum != selectPieceNum)
 		{
@@ -673,6 +680,39 @@ void AGrid::PieceDecision(APieceOrigin* piece)
 			SelectSlotPiece(selectPieceNum);
 		}
 	}
+}
+
+void AGrid::PieceCancel(APieceOrigin* piece)
+{
+	if (!onPieceCancel) return; // 入力判定
+	if (backUpNum < 0) return; // 一個前に情報がない場合
+
+	// 現在、選択中のピースを非表示
+	auto render = piece->GetRenderComponent();
+	render->SetVisibility(false);
+
+	// 一個前のピースの情報に現状を戻す
+	selectPieceNum = decisionPieces[backUpNum].pieceNum;
+	panelNumAtOriginPiece = decisionPieces[backUpNum].panelNum;
+
+	// パネルに配置できるように変更
+	auto pieceNums = pieces[selectPieceNum]->GetPieceNums();
+	for (auto pieceNum : pieceNums)
+	{
+		onPiece[pieceNum] = false;
+	}
+
+	// ピース情報の配置をしてないに変更
+	pieceDatas[selectPieceNum].isPlacement = false; // 次のスロットの並べなおしで参照するのでここで変更
+
+	// スロットの並べなおし
+	SelectSlotPiece(selectPieceNum);
+
+	// 配置中ピースの情報から一個前のピース情報を削除
+	decisionPieces.RemoveAt(backUpNum);
+
+	// 一個前に戻す
+	--backUpNum;
 }
 
 void AGrid::MoveCantBeDecision(APieceOrigin* piece, bool atInitialize)
