@@ -12,7 +12,7 @@ AENM_Minimon::AENM_Minimon()
     AIControllerClass = AE_MinimonAIController::StaticClass();
 
 
-    static ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshAsset(TEXT("/Game/Asset_Arita/Animation/Minimon/Anim_Minimon_mesh"));
+    static ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshAsset(TEXT("/Game/Asset_Arita/Minimon_Anim/Anim_Minimon_mesh"));
     USkeletalMesh* meshasset = MeshAsset.Object;
 
     GetMesh()->SetSkeletalMesh(meshasset);
