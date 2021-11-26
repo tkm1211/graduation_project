@@ -204,6 +204,11 @@ void AGrid::UpdatePuzzle(float DeltaTime)
 			PieceCancel(piece);
 		}
 	}
+	else
+	{
+		// 戻る
+		PieceCancel(nullptr); // ピースを使い切った時に戻る処理を実行するため
+	}
 }
 
 void AGrid::UpdateSlot(float DeltaTime)
@@ -688,8 +693,11 @@ void AGrid::PieceCancel(APieceOrigin* piece)
 	if (backUpNum < 0) return; // 一個前に情報がない場合
 
 	// 現在、選択中のピースを非表示
-	auto render = piece->GetRenderComponent();
-	render->SetVisibility(false);
+	if (piece)
+	{
+		auto render = piece->GetRenderComponent();
+		render->SetVisibility(false);
+	}
 
 	// 一個前のピースの情報に現状を戻す
 	selectPieceNum = decisionPieces[backUpNum].pieceNum;
