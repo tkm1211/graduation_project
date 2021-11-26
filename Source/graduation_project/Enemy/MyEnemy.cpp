@@ -13,9 +13,10 @@
 // Sets default values
 AMyEnemy::AMyEnemy()
 {
-    PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComp"));
-    PawnSensingComp->SetPeripheralVisionAngle(60.0f);
-    PawnSensingComp->SightRadius = 2000;
+    //PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComp"));
+    //PawnSensingComp->SetPeripheralVisionAngle(60.0f);
+    //PawnSensingComp->SightRadius = 2000;
+
     //PawnSensingComp->OnSeePawn.AddDynamic(this, &AMyEnemy::OnSeePlayer);
 
     CharaMoveComp = GetCharacterMovement();

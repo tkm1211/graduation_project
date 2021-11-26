@@ -27,7 +27,7 @@ ABoss_RobotParts3::ABoss_RobotParts3()
 {
 	RootComponent = GetCapsuleComponent();
 
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshAsset(TEXT("/Game/Asset_Arita/Animation/Boss/Anim_Boss_Beam"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshAsset(TEXT("/Game/Asset_Arita/Boss_Anim/Anim_Boss_Beam"));
 	USkeletalMesh* meshasset = MeshAsset.Object;
 
 	GetMesh()->SetSkeletalMesh(meshasset);
