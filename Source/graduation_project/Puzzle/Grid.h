@@ -54,6 +54,7 @@ private:
 	const float AdjustSideSlotPiece = 175.0f;
 	const int MaxWidthNum = 20;
 	const int MaxHeightNum = 20;
+	const FString FilePath = "Tool\\Data\\Document\\Puzzle\\";
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Puzzle", meta = (AllowPrivateAccess = "true"))
@@ -93,9 +94,6 @@ private:
 	FVector originPiecePos;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
-	FString panelFilePath = "Tool\\Data\\Document\\Puzzle\\BackData";
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
 	bool onPieceOrigin = false;
 
 private:
@@ -115,6 +113,8 @@ private:
 	FVector upVec;
 
 	FVector gridScale;
+
+	FString panelFilePath;
 
 	FPlacedPieceData placedPieceData;
 	
@@ -174,6 +174,7 @@ public:
 	void SetAdjustHeight(float height);
 	void SetAdjustLen(float len);
 	void SetPuzzle(bool puzzle);
+	void SetGridFlieName(FString fileName);
 	bool DidPlacePiece();
 	FPlacedPieceData GetPlacedPieceData();
 

@@ -42,6 +42,9 @@ void AStageGimmick::PlacePieceBlock()
 	// パズル画面でピースが配置されたか？
 	if (!gimmickMediator->DidPlacePiece()) return;
 
+	// グループIDが初期値ではないか？
+	if (GroupID == -1) return;
+
 	// グループIDが一致しているか？
 	if (GroupID != gimmickMediator->GetGroupID()) return;
 

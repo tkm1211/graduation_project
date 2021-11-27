@@ -83,6 +83,7 @@ void APuzzleOrigin::CreateGrid()
 		grid->SetGridScale(GridScale);
 		grid->SetAdjustHeight(GridLenZ);
 		grid->SetAdjustLen(GridLen);
+		grid->SetGridFlieName(GridFileName);
 		grid->Initialize();
 	}
 }
