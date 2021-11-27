@@ -19,11 +19,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Puzzle", meta = (AllowPrivateAccess = "true"))
 	class USphereComponent* InJudge; // プレイヤー当たり判定用
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<AGrid> GridOrigin; // パズルグリッド（エディタで設定）
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Gimmick", meta = (AllowPrivateAccess = "true"))
+	FString GridFileName = "BackData02"; // パズルグリッドのファイル名（エディタで設定）
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle", meta = (AllowPrivateAccess = "true"))
-	FString GridFileName; // パズルグリッドのファイル名（エディタで設定）
+	TSubclassOf<AGrid> GridOrigin; // パズルグリッド（エディタで設定）
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<APuzzleCamera> PuzzleCameraOrigin; // パズルカメラ（エディタで設定）
