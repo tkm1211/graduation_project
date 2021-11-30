@@ -50,8 +50,9 @@ class GRADUATION_PROJECT_API AGrid : public AActor
 private:
 	const float OriginPanelSize = 128.0f;
 	const float AdjustPiece = 0.1f;
-	const float AdjustSlotPieceNum = 7.0f;
+	const float AdjustSlotPieceNum = 5.0f;
 	const float AdjustSideSlotPiece = 175.0f;
+	const float AdjustSideSlotPieceHeight = 0.5f;
 	const int MaxWidthNum = 20;
 	const int MaxHeightNum = 20;
 	const FString FilePath = "Tool\\Data\\Document\\Puzzle\\";
@@ -59,6 +60,9 @@ private:
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Puzzle", meta = (AllowPrivateAccess = "true"))
 	class UStaticMeshComponent* GridMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle", meta = (AllowPrivateAccess = "true"))
+	float AdjustWidht = 0.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<APieceOrigin> PieceOrigin; // 元のピース（エディタで設定）
@@ -78,22 +82,22 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<APiecePanel> PiecePanel; // ピースのパネル（エディタで設定）
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
 	FVector panelMinXPos;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
 	FVector panelMaxXPos;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
 	FVector panelMinYPos;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
 	FVector panelMaxYPos;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
 	FVector originPiecePos;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
 	bool onPieceOrigin = false;
 
 private:

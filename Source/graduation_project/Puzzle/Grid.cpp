@@ -18,7 +18,7 @@
 // Sets default values
 AGrid::AGrid(const FObjectInitializer& ObjectInitializer) : AActor(ObjectInitializer)
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
@@ -351,8 +351,12 @@ void AGrid::MoveSlot(float DeltaTime)
 	if (selectPieceNum != slotLeftNum)
 	{
 		auto slotLeftPiece = slotPieces[slotLeftNum];
+		auto location = piecePos;
 		{
-			slotLeftPiece->SetActorLocation(piecePos - rightVec * (adjust * 0.5f));
+			location -= rightVec * (adjust * 0.75f);
+			location -= upVec * AdjustSideSlotPieceHeight;
+
+			slotLeftPiece->SetActorLocation(location);
 			slotLeftPiece->SetActorRotation(GetActorRotation());
 			//slotLeftPiece->SetActorScale3D(pieceScale * 0.5f);
 		}
@@ -361,8 +365,12 @@ void AGrid::MoveSlot(float DeltaTime)
 	if (selectPieceNum != slotRightNum)
 	{
 		auto slotRightPiece = slotPieces[slotRightNum];
+		auto location = piecePos;
 		{
-			slotRightPiece->SetActorLocation(piecePos + rightVec * (adjust * 0.5f));
+			location += rightVec * (adjust * 0.75f);
+			location -= upVec * AdjustSideSlotPieceHeight;
+
+			slotRightPiece->SetActorLocation(location);
 			slotRightPiece->SetActorRotation(GetActorRotation());
 			//slotRightPiece->SetActorScale3D(pieceScale * 0.5f);
 		}
@@ -890,20 +898,28 @@ void AGrid::SelectSlotPiece(int currentPieceNum)
 	if (currentPieceNum != slotLeftNum)
 	{
 		auto slotLeftPiece = slotPieces[slotLeftNum];
+		auto location = piecePos;
 		{
+			location -= rightVec * (adjust * 0.75f);
+			location -= upVec * AdjustSideSlotPieceHeight;
+
 			slotLeftPiece->GetRenderComponent()->SetVisibility(true);
-			slotLeftPiece->SetActorLocation(piecePos - rightVec * (adjust * 0.5f));
-			slotLeftPiece->SetActorScale3D(pieceScale * 0.5f);
+			slotLeftPiece->SetActorLocation(location);
+			slotLeftPiece->SetActorScale3D(pieceScale * 0.35f);
 		}
 	}
 
 	if (currentPieceNum != slotRightNum)
 	{
 		auto slotRightPiece = slotPieces[slotRightNum];
+		auto location = piecePos;
 		{
+			location += rightVec * (adjust * 0.75f);
+			location -= upVec * AdjustSideSlotPieceHeight;
+
 			slotRightPiece->GetRenderComponent()->SetVisibility(true);
-			slotRightPiece->SetActorLocation(piecePos + rightVec * (adjust * 0.5f));
-			slotRightPiece->SetActorScale3D(pieceScale * 0.5f);
+			slotRightPiece->SetActorLocation(location);
+			slotRightPiece->SetActorScale3D(pieceScale * 0.35f);
 		}
 	}
 }
@@ -1660,6 +1676,7 @@ FVector AGrid::GetLocation()
 {
 	FVector SpawnLocation = GetActorLocation();
 	SpawnLocation += forwardVec * adjustLen;
+	SpawnLocation -= rightVec * AdjustWidht;
 
 	return SpawnLocation;
 }
