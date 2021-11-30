@@ -29,6 +29,8 @@ ABoss_RobotParts3::ABoss_RobotParts3()
 
 	AIControllerClass = ABoss_RP3AIController::StaticClass();
 
+	HealthPoint = 1000.f;
+
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshAsset(TEXT("/Game/Asset_Arita/Boss_Anim/Anim_Boss_Beam"));
 	USkeletalMesh* meshasset = MeshAsset.Object;
 

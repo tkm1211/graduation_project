@@ -33,3 +33,7 @@ void AEnemyBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 }
 
+void AEnemyBase::Damage(float _indamage)
+{
+	HealthPoint -= _indamage;
+}

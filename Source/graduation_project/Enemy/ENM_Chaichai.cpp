@@ -3,7 +3,7 @@
 
 #include "ENM_Chaichai.h"
 
-
+#include "E_ChaichaiAIController.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -11,7 +11,7 @@ AENM_Chaichai::AENM_Chaichai()
 {
     PrimaryActorTick.bCanEverTick = true;
 
-    //AIControllerClass = AE_MinimonAIController::StaticClass();
+    AIControllerClass = AE_ChaichaiAIController::StaticClass();
 
 
     static ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshAsset(TEXT("/Game/Asset_Arita/Chaichai_Anim/Anim_chaichai_mesh"));

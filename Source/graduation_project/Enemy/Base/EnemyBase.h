@@ -22,10 +22,10 @@ public:
 	bool reachto_patpt = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HP")
-		float HealthPoint = 1000.f;
+		float HealthPoint = 100.f;
 
-	UFUNCTION()
-		virtual void Damage(float giveDamage);
+
+	virtual void Damage(float giveDamage);
 
 
 protected:
