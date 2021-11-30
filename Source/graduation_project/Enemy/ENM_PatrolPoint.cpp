@@ -48,11 +48,20 @@ void AENM_PatrolPoint::BeginPlay()
 
 		transform.SetLocation(cube->GetRelativeLocation());
 
-		enm = GetWorld()->SpawnActor<AEnemyBase>(EnemySpawnClass, GetTransform());
+		//enm = GetWorld()->SpawnActor<AEnemyBase>(EnemySpawnClass, GetActorLocation(), GetActorRotation());
+		enm = GetWorld()->SpawnActor<AEnemyBase>(EnemySpawnClass);
 
-		enm->SpawnDefaultController();
+		if (enm)
+		{
+			enm->SetActorTransform(GetActorTransform());
+			enm->SpawnDefaultController();
 
-		enm->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, false));
+			enm->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, false));
+		}
+		else
+		{
+			cube->SetHiddenInGame(false);
+		}
 	}
 	else
 	{
