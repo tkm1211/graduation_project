@@ -56,8 +56,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Projectile")
 		TSubclassOf<class APrototypeMissile> ProjectileClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HP")
-		float HealthPoint = 1000.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ATK")
 		int ForceNextAtk = 0;
