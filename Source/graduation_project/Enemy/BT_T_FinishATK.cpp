@@ -2,14 +2,13 @@
 
 
 #include "BT_T_FinishATK.h"
-#include "TestBoss_MK1.h"
-#include "TestBoss_MK1AIController.h"
-
+#include "Boss_RobotParts3.h"
+#include "Boss_RP3AIController.h"
 
 EBTNodeResult::Type UBT_T_FinishATK::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	ATestBoss_MK1AIController* Controller = Cast<ATestBoss_MK1AIController>(OwnerComp.GetAIOwner());
-	ATestBoss_MK1* Boss_mk1 = Cast<ATestBoss_MK1>(Controller->GetCharacter());
+	ABoss_RP3AIController* Controller = Cast<ABoss_RP3AIController>(OwnerComp.GetAIOwner());
+	ABoss_RobotParts3* Boss_mk1 = Cast<ABoss_RobotParts3>(Controller->GetCharacter());
 
 	Boss_mk1->WitchAtk = 0;
 

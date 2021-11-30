@@ -15,6 +15,12 @@ public:
 	// Sets default values for this character's properties
 	AEnemyBase();
 
+	FVector lookat_patpt;
+
+	int current_patpt;
+	
+	bool reachto_patpt = true;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
