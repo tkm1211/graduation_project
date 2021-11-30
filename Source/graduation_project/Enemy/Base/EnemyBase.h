@@ -21,6 +21,13 @@ public:
 	
 	bool reachto_patpt = true;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HP")
+		float HealthPoint = 100.f;
+
+
+	virtual void Damage(float giveDamage);
+
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
