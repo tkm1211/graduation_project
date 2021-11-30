@@ -34,13 +34,14 @@ void AShotgun::Tick(float DeltaTime)
 
 	if (_playerCharacter && _playerCharacter->isDead) return;
 
-	Super::Tick(DeltaTime);
 
 	// 弾発射
 	ShotFire(DeltaTime);
-	fireTimer -= 1.0f * DeltaTime;
 
-	if (fireTimer < 0.0f) fireTimer = -1.0f;
+	fireTimer -= DeltaTime;
+	if (fireTimer <= 0.0f) fireTimer = 0.0f;
+
+	Super::Tick(DeltaTime);
 }
 
 void AShotgun::Fire()
@@ -52,6 +53,7 @@ void AShotgun::Fire()
 	if (ammoClass)
 	{
 		SpawnShot();
+		UE_LOG(LogTemp, Warning, TEXT("in"));
 	}
 }
 
@@ -89,32 +91,21 @@ void AShotgun::ShotFire(float DeltaTime)
 {
 	if (!onFire) return;
 
-	if (0 > fireTimer)
+	if (fireTimer <= 0)
 	{
 		Fire();
-	}
-	else
-	{
-		if (muzzleFlash)
-		{
-			muzzleFlash->Activate(false);
-		}
 	}
 }
 
 void AShotgun::SpawnShot()
 {
+
+	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
+
 	for (int i = 0; i < 8; i++)
 	{
-		TArray<AActor*> foundActors;
-		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACameraManager::StaticClass(), foundActors);
-		FVector _rayForward = firePoint->GetForwardVector();
-
-		if (foundActors.Max() > 0)
-		{
-			ACameraManager* cameraM = Cast<ACameraManager>(foundActors[0]);
-			_rayForward = cameraM->cameraPoint->GetForwardVector();
-		}
+		FVector _rayForward = _playerCharacter->GetActorForwardVector();
 
 		float rad = 45.0f * i;
 		rad = FMath::DegreesToRadians(rad);
@@ -141,12 +132,12 @@ void AShotgun::SpawnShot()
 
 		FVector _rayEnd = (firePoint->GetComponentLocation()) + (_rayForward * ammoRayCastRange) + right + up;
 
-		// レイのヒットしたアクター保存用
-		TArray<AActor*> IngoreActors;
-		IngoreActors.Add(this);
-		TArray<FHitResult> HitRetArray;
+		//// レイのヒットしたアクター保存用
+		//TArray<AActor*> IngoreActors;
+		//IngoreActors.Add(this);
+		//TArray<FHitResult> HitRetArray;
 
-		// SphereCast
+		//// SphereCast
 		//bool isHit = UKismetSystemLibrary::LineTraceMulti(GetWorld(), _rayStart, _rayEnd, UEngineTypes::ConvertToTraceType(ECC_WorldStatic), false, IngoreActors, EDrawDebugTrace::Type::ForDuration, HitRetArray, true);
 		
 		// プレイヤーの向きと発射位置取得
@@ -159,7 +150,6 @@ void AShotgun::SpawnShot()
 		ABaseAmmo* _tempAmmoBase = GetWorld()->SpawnActor<ABaseAmmo>(ammoClass, _fireLoc, _newRotator);
 		_tempAmmoBase->SetOwner(this);
 		_tempAmmoBase->SetParameter(damage, effectiveRange, rangeMag, lifeTime);
-		firePoint->GetComponentTransform();
 	}
 
 

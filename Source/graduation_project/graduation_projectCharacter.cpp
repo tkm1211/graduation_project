@@ -12,6 +12,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Animation/AnimMontage.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Puzzle/WeponPuzzle.h"
 
 //////////////////////////////////////////////////////////////////////////
 // Agraduation_projectCharacter
@@ -74,6 +75,14 @@ void Agraduation_projectCharacter::BeginPlay()
 	isInvincible = false;
 	isDead = false;
 	cameraChangeTimer = 0.0f;
+
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AWeponPuzzle::StaticClass(), FoundActors);
+
+	if (FoundActors[0])
+	{
+		weponPuzzle = Cast<AWeponPuzzle>(FoundActors[0]);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -95,6 +104,8 @@ void Agraduation_projectCharacter::SetupPlayerInputComponent(class UInputCompone
 
 	PlayerInputComponent->BindAction("Pause", IE_Pressed, this, &Agraduation_projectCharacter::Pause);
 	PlayerInputComponent->BindAction("Pause", IE_Released, this, &Agraduation_projectCharacter::ReleasePause);
+
+	PlayerInputComponent->BindAction("WeponPazzle", IE_Pressed, this, &Agraduation_projectCharacter::WeponPuzzle);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &Agraduation_projectCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &Agraduation_projectCharacter::MoveRight);
@@ -155,19 +166,53 @@ void Agraduation_projectCharacter::Tick(float DeltaTime)
 	// 銃を構えるまたは、射撃中はカメラのほうにプレイヤーを固定
 	if (isAim || isFire)
 	{
-		FRotator newRotor = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
-		newRotor.Pitch = 0.0f;
-		newRotor.Roll = 0.0f;
-		SetActorRotation(newRotor);
-
-		// エイムのアニメーション再生
-		auto animInstance = GetMesh()->GetAnimInstance();
-		if (!animInstance->Montage_IsPlaying(aimMontages[0]) && !animInstance->Montage_IsPlaying(recoilMontages[0]))
+		if (isAim)
 		{
-			animInstance->Montage_Play(aimMontages[0], 1.0f);
+			FRotator newRotor = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
+			newRotor.Pitch = 0.0f;
+			newRotor.Roll = 0.0f;
+			SetActorRotation(newRotor);
+			auto animInstance = GetMesh()->GetAnimInstance();
+			if (!animInstance->Montage_IsPlaying(aimMontages[0]) && !animInstance->Montage_IsPlaying(recoilMontages[0]))
+			{
+				aimMontages[0]->BlendIn = 0.2;
+				aimMontages[0]->BlendOut = 0.2;
+				animInstance->Montage_Play(aimMontages[0], 1.0f);
+			}
+		}
+
+		if (isFire && !isAim)
+		{
+			// エイムのアニメーション再生
+			auto animInstance = GetMesh()->GetAnimInstance();
+			if (!animInstance->Montage_IsPlaying(aimMontages[0]) && !animInstance->Montage_IsPlaying(recoilMontages[0]))
+			{
+				aimMontages[0]->BlendIn = 0.2;
+				aimMontages[0]->BlendOut = 0.2;
+				animInstance->Montage_Play(aimMontages[0], 1.0f);
+			}
 		}
 
 	}
+
+	if (firstShotTrg)
+	{
+		isFire = true;
+		firstShotTrgTime -= DeltaTime;
+		if (firstShotTrgTime < 0)
+		{
+			firstShotTrg = false;
+		}
+	}
+	else
+	{
+		if (!isPressFire)
+		{
+			isFire = false;
+			useWepon->SetOnFire(isFire);
+		}
+	}
+
 	CameraChange(DeltaTime);
 
 }
@@ -251,9 +296,14 @@ void Agraduation_projectCharacter::FireWepon()
 	if (changePlayerInput || isDead) return;
 
 	if (!useWepon) return;
-
+	isPressFire = true;
 	isFire = true;
-	useWepon->FirstFire();
+	if (!firstShotTrg)
+	{
+		firstShotTrg = true;
+		firstShotTrgTime = 0.31f;
+		useWepon->FirstFire();
+	}
 }
 
 // エイム開始
@@ -271,7 +321,8 @@ void Agraduation_projectCharacter::StopFireWepon()
 
 	if (!useWepon) return;
 
-	isFire = false;
+	if(isAim) isFire = false;
+	isPressFire = false;
 	useWepon->SetOnFire(isFire);
 }
 
@@ -395,7 +446,23 @@ void Agraduation_projectCharacter::CameraChange(float DeltaTime)
 	CameraBoom->CameraLagMaxDistance = lagDistance;
 }
 
+void Agraduation_projectCharacter::WeponPuzzle()
+{
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AWeponPuzzle::StaticClass(), FoundActors);
 
-
-
-
+	if (FoundActors[0])
+	{
+		AWeponPuzzle* _weponPuzzle = Cast<AWeponPuzzle>(FoundActors[0]);
+		if (!onWeponePuzzle)
+		{
+			_weponPuzzle->BeginPuzzle();
+			onWeponePuzzle = true;
+		}
+		else
+		{
+			_weponPuzzle->EndPuzzle();
+			onWeponePuzzle = false;
+		}
+	}
+}

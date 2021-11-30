@@ -95,20 +95,18 @@ void AAssultRifle::ShotFire(float DeltaTime)
 	{
 		Fire();
 	}
-	else
-	{
-		if (muzzleFlash)
-		{
-			muzzleFlash->Activate(false);
-		}
-	}
 }
 
 // 弾生成
 void AAssultRifle::SpawnShot()
 {
+	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
+
 	// プレイヤーの向きと発射位置取得
-	FRotator _newRotator = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
+	FRotator _newRotator;
+	if (_playerCharacter->isAim)  _newRotator = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
+	else  _newRotator = _playerCharacter->GetActorRotation();
 	FVector _fireLoc = firePoint->GetComponentLocation();
 
 	//　スポーンさせる
