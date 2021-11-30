@@ -5,10 +5,12 @@
 #include "E_MinimonAICon.h"
 
 #include "Components/CapsuleComponent.h"
-
+#include "GameFramework/CharacterMovementComponent.h"
 
 AENM_Minimon::AENM_Minimon()
 {
+    PrimaryActorTick.bCanEverTick = true;
+
     AIControllerClass = AE_MinimonAIController::StaticClass();
 
 
@@ -26,6 +28,8 @@ AENM_Minimon::AENM_Minimon()
 
     GetCapsuleComponent()->SetCapsuleRadius(60.f);
     GetCapsuleComponent()->SetCapsuleHalfHeight(70.f);
+
+    GetCharacterMovement()->MaxWalkSpeed = 100.f;
 }
 
 

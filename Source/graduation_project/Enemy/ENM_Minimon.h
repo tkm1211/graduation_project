@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Base/EnemyBase.h"
+#include "ENM_PatrolPoint.h"
 #include "ENM_Minimon.generated.h"
 
 /**
@@ -18,6 +19,7 @@ class GRADUATION_PROJECT_API AENM_Minimon : public AEnemyBase
 
 		UFUNCTION()
 		void OnSeePlayer(APawn* Pawn);
+
 
 protected:
 	// Called when the game starts or when spawned

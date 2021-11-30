@@ -27,6 +27,8 @@ ABoss_RobotParts3::ABoss_RobotParts3()
 {
 	RootComponent = GetCapsuleComponent();
 
+	AIControllerClass = ABoss_RP3AIController::StaticClass();
+
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshAsset(TEXT("/Game/Asset_Arita/Boss_Anim/Anim_Boss_Beam"));
 	USkeletalMesh* meshasset = MeshAsset.Object;
 
@@ -50,7 +52,7 @@ ABoss_RobotParts3::ABoss_RobotParts3()
 	RFireColOFF.AddDynamic(this, &ABoss_RobotParts3::OnRightFireOFF);
 
 	//UNiagaraFunctionLibrary::SpawnSystemAttached()
-	NS_LeftLaserHit = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NS_LeftBeam_Hit"));;
+	NS_LeftLaserHit = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NS_LeftBeam_Hit"));
 	NS_RightLaserHit = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NS_RightBeam_Hit"));
 	//NS_LaserHit[LEFT_HAND] = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NS_LeftBeam_Hit"));
 	//NS_LaserHit[RIGHT_HAND] = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NS_RightBeam_Hit"));

@@ -16,6 +16,12 @@ class GRADUATION_PROJECT_API APuzzleOrigin : public AActor
 	GENERATED_BODY()
 
 protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Puzzle", meta = (AllowPrivateAccess = "true"))
+	class USphereComponent* InJudge; // プレイヤー当たり判定用
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Gimmick", meta = (AllowPrivateAccess = "true"))
+	FString GridFileName = "BackData02"; // パズルグリッドのファイル名（エディタで設定）
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AGrid> GridOrigin; // パズルグリッド（エディタで設定）
 
@@ -26,13 +32,10 @@ protected:
 	FVector GridScale; // グリッドサイズ（エディタで設定）
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle", meta = (AllowPrivateAccess = "true"))
-	class USphereComponent* InJudge; // プレイヤー当たり判定用
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle", meta = (AllowPrivateAccess = "true"))
 	float GridLen = 15.0f; // ターミナルとパズルの距離（エディタで設定）
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle", meta = (AllowPrivateAccess = "true"))
-	float GridLenZ = 81.5f; // ターミナルとパズルの距離（エディタで設定）
+	float GridLenZ = 81.5f; // パズルの高さ（エディタで設定）
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle", meta = (AllowPrivateAccess = "true"))
 	float CameraLen = 2500.0f; // パズルとカメラの距離（エディタで設定）

@@ -5,8 +5,8 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "../graduation_projectCharacter.h"
-#include "TestBoss_MK1.h"
-#include "TestBoss_MK1AIController.h"
+#include "Boss_RobotParts3.h"
+#include "Boss_RP3AIController.h"
 
 void UBT_S_Target::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
@@ -17,8 +17,8 @@ void UBT_S_Target::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory
 	BBComp->SetValueAsObject("PlayerActor", player);
 
 	
-	ATestBoss_MK1AIController* Controller = Cast<ATestBoss_MK1AIController>(OwnerComp.GetAIOwner());
-	ATestBoss_MK1* Boss_mk1 = Cast<ATestBoss_MK1>(Controller->GetCharacter());
+	ABoss_RP3AIController* Controller = Cast<ABoss_RP3AIController>(OwnerComp.GetAIOwner());
+	ABoss_RobotParts3* Boss_mk1 = Cast<ABoss_RobotParts3>(Controller->GetCharacter());
 
 	if (Boss_mk1->WitchAtk == 0)
 	{
@@ -30,19 +30,19 @@ void UBT_S_Target::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory
 		PrevATK = Boss_mk1->WitchAtk;
 
 		int rand_num = (int)(((double)rand() / ((double)RAND_MAX + 1)) * 100);
-		if (Boss_mk1->ForceNextAtk == ATestBoss_MK1::IDLE)
+		if (Boss_mk1->ForceNextAtk == ABoss_RobotParts3::IDLE)
 		{
 			if (rand_num < SLAM)
 			{
-				Boss_mk1->WitchAtk = ATestBoss_MK1::SLAM_ATK;
+				Boss_mk1->WitchAtk = ABoss_RobotParts3::SLAM_ATK;
 			}
 			else if (rand_num < FLAME)
 			{
-				Boss_mk1->WitchAtk = ATestBoss_MK1::FLAME_FIRE;
+				Boss_mk1->WitchAtk = ABoss_RobotParts3::FLAME_FIRE;
 			}
 			else if (rand_num < FLAME + 20)
 			{
-				Boss_mk1->WitchAtk = ATestBoss_MK1::MISSILE_FIRE;
+				Boss_mk1->WitchAtk = ABoss_RobotParts3::MISSILE_FIRE;
 			}
 
 
@@ -70,7 +70,7 @@ void UBT_S_Target::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory
 		else
 		{
 			Boss_mk1->WitchAtk = Boss_mk1->ForceNextAtk;
-			Boss_mk1->ForceNextAtk = ATestBoss_MK1::IDLE;
+			Boss_mk1->ForceNextAtk = ABoss_RobotParts3::IDLE;
 		}
 		WitchATK = Boss_mk1->WitchAtk;
 	}

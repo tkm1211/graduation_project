@@ -2,15 +2,15 @@
 
 
 #include "BT_D_CheckATK.h"
-#include "TestBoss_MK1.h"
-#include "TestBoss_MK1AIController.h"
+#include "Boss_RobotParts3.h"
+#include "Boss_RP3AIController.h"
 
 bool UBT_D_CheckATK::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const
 {
-	ATestBoss_MK1AIController* Controller = Cast<ATestBoss_MK1AIController>(OwnerComp.GetAIOwner());
-	ATestBoss_MK1* Boss_mk1 = Cast<ATestBoss_MK1>(Controller->GetCharacter());
+	ABoss_RP3AIController* Controller = Cast<ABoss_RP3AIController>(OwnerComp.GetAIOwner());
+	ABoss_RobotParts3* RP3 = Cast<ABoss_RobotParts3>(Controller->GetCharacter());
 
-	if (Boss_mk1->WitchAtk == permittedATK)
+	if (RP3->WitchAtk == permittedATK)
 	{
 		return true;
 	}

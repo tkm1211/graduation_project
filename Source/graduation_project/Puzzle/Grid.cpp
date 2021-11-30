@@ -1485,7 +1485,7 @@ void AGrid::CreatePiecePanel(FVector SpawnLocation)
 
 bool AGrid::LoadJson(const FString& Path)
 {
-	const auto JsonObject = UJsonFunctionLibrary::LoadJsonObject(Path);
+	const auto JsonObject = UJsonFunctionLibrary::LoadJsonObject(FilePath + Path);
 	if (!JsonObject.IsValid())
 	{
 		return false;
@@ -1667,6 +1667,11 @@ FVector AGrid::GetLocation()
 void AGrid::SetPuzzle(bool puzzle)
 {
 	onPuzzle = puzzle;
+}
+
+void AGrid::SetGridFlieName(FString fileName)
+{
+	panelFilePath = fileName;
 }
 
 bool AGrid::DidPlacePiece()
