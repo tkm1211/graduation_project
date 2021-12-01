@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "BaseAmmo.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAmmoExplosion);
+
 class UProjectileMovementComponent;
 class UNiagaraSystem;
 class UNiagaraComponent;
@@ -29,15 +31,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Niagara")
 		UNiagaraComponent* naiagaraTrail;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Niagara")
-		UNiagaraComponent* explosion;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Niagara")
-		UNiagaraSystem* explosionSystem;
-
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AmmoName")
+		FString ammoName;
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ammo")
 		float movementSpeed = 1500.0f;
+
+	UPROPERTY(BlueprintAssignable)
+		FAmmoExplosion ammoExplosion;
 
 	float damage;
 	float effectiveRange;

@@ -8,6 +8,7 @@
 
 class ABaseWepon;
 class UAnimMontage;
+class AWeponPuzzle;
 
 UCLASS(config = Game)
 class Agraduation_projectCharacter : public ACharacter
@@ -24,11 +25,16 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class UCameraComponent* FollowCamera;
 
-
 	FVector directionCollision;
 
 	bool changePlayerInput = false;
 	bool pauseTrg = false;
+
+	bool isPressFire = false;
+	bool firstShotTrg = false;
+
+	AWeponPuzzle* weponPuzzle;
+	bool onWeponePuzzle = false;
 
 	float cameraChangeTimer;
 public:
@@ -62,6 +68,9 @@ public:
 		float defaultInvincibleTime;
 
 	float invincibleTime = defaultInvincibleTime;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Horming)
+		float firstShotTrgTime = 0.31f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Horming)
 		bool isInvincible;
@@ -122,6 +131,8 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void CameraChange(float DeltaTime);
+
+	void WeponPuzzle();
 public:
 	virtual void Tick(float DeltaTime) override;
 

@@ -48,9 +48,7 @@ void ABlaster::Fire()
 	// 1発だけ出す
 	if (ammoClass)
 	{
-
 		SpawnShot();
-
 	}
 }
 
@@ -94,17 +92,19 @@ void ABlaster::ShotFire(float DeltaTime)
 	{
 		Fire();
 	}
-	else
-	{
 
-	}
 }
 
 // 弾生成
 void ABlaster::SpawnShot()
 {
 	// プレイヤーの向きと発射位置取得
-	FRotator _newRotator = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
+	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
+
+	FRotator _newRotator;
+	if (_playerCharacter->isAim)  _newRotator = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
+	else  _newRotator = _playerCharacter->GetActorRotation();
 	FVector _fireLoc = firePoint->GetComponentLocation();
 
 	//　スポーンさせる

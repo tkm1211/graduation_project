@@ -15,6 +15,10 @@ class GRADUATION_PROJECT_API ABaseWepon : public AActor
 {
 	GENERATED_BODY()
 	
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "WeponeName")
+		FString weponName;
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 		UCapsuleComponent* capsuleComp;
@@ -22,9 +26,6 @@ protected:
 		UStaticMeshComponent* mesh;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 		USceneComponent* firePoint;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Niagara")
-		UNiagaraComponent* muzzleFlash;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AmmoFire")
 		float motionRate = 1.0f;

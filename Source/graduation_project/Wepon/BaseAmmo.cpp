@@ -9,6 +9,7 @@
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "../EffectSystem/EffectSystem.h"
 
 // Sets default values
 ABaseAmmo::ABaseAmmo()
@@ -26,7 +27,6 @@ ABaseAmmo::ABaseAmmo()
 
 	naiagaraTrail = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Trail"));
 	naiagaraTrail->SetupAttachment(mesh);
-	explosion = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Explosion"));
 
 }
 
@@ -35,6 +35,7 @@ void ABaseAmmo::BeginPlay()
 {
 	Super::BeginPlay();
 
+	mesh->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
 }
 
 // Called every frame
@@ -43,6 +44,11 @@ void ABaseAmmo::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	life += DeltaTime;
+
+	if (life > 0.03)
+	{
+		mesh->SetCollisionEnabled(ECollisionEnabled::Type::QueryOnly);
+	}
 
 	if (life > defaultLife)
 	{
@@ -77,6 +83,7 @@ void ABaseAmmo::OnHit(
 		float hitDamage = damage - ((rangeMag * effectiveRange) * (rangeMag * effectiveRange)) * life;
 		if (OtherComp->ComponentTags.Max() > 0)
 		{
+			if (OtherComp->ComponentTags[0] == "Ammo") return;
 			if (OtherComp->ComponentTags[0] == "Wepon") return;
 			if (OtherComp->ComponentTags[0] == "Boss")
 			{
@@ -94,11 +101,18 @@ void ABaseAmmo::OnHit(
 
 void ABaseAmmo::AmmoDestroy()
 {
+	
+	TArray<AActor*> foundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEffectSystem::StaticClass(), foundActors);
+	if (foundActors[0])
+	{
+		AEffectSystem* _es = Cast<AEffectSystem>(foundActors[0]);
+		if(ammoName == FString("Blaster")) _es->SpawnEffect(EffectType::BlasterAmmoExplosion, GetActorLocation());
+		else if(ammoName == FString("BombGun")) _es->SpawnEffect(EffectType::BombGunAmmoExplosion, GetActorLocation());
+		else if(ammoName == FString("ShotGun")) _es->SpawnEffect(EffectType::ShotGunAmmoExplosion, GetActorLocation());
+	}
+
+	ammoExplosion.Broadcast();
 
 	Destroy();
-	if (explosion && explosionSystem)
-	{
-//		explosion->Activate(true);
-		UNiagaraFunctionLibrary::SpawnSystemAttached(explosionSystem, explosion, FName("None"), GetActorLocation(), FRotator(0, 0, 0), EAttachLocation::Type::KeepWorldPosition, false);
-	}
 }

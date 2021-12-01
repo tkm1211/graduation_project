@@ -9,6 +9,7 @@
 #include "Components/ActorComponent.h"
 #include "../graduation_projectCharacter.h"
 #include "Animation/AnimMontage.h"
+#include "../EffectSystem/EffectSystem.h"
 
 // Sets default values
 ABaseWepon::ABaseWepon()
@@ -27,8 +28,6 @@ ABaseWepon::ABaseWepon()
 	firePoint = CreateDefaultSubobject<USceneComponent>(TEXT("firePoint"));
 	firePoint->SetupAttachment(mesh);
 
-	muzzleFlash = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Trail"));
-	muzzleFlash->SetupAttachment(mesh);
 
 	firstFireTimer = 0.0f;
 }
@@ -48,7 +47,7 @@ void ABaseWepon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);	
 	firstFireTimer -= DeltaTime;
-	if (firstFireTimer < 0.0f) firstFireTimer = -1.0f;
+	if (firstFireTimer < 0.0f) firstFireTimer = 0.0f;
 }
 
 
@@ -57,24 +56,31 @@ void ABaseWepon:: Fire()
 	onFire = true;
 	fireTimer = fireDelayTime;
 
-	// マズルフラッシュ発射
-	if (muzzleFlash)
-	{
-		muzzleFlash->Activate(true);
-	}
-
 	// モンタージュ再生
 	// プレイヤーを取得し、キャストする
 	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
 	auto animInstance = _playerCharacter->GetMesh()->GetAnimInstance();
 	animInstance->Montage_Play(_playerCharacter->recoilMontages[0], motionRate);
+
+	// EffectSpawn
+	TArray<AActor*> foundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEffectSystem::StaticClass(), foundActors);
+	if (foundActors[0])
+	{
+		AEffectSystem* _es = Cast<AEffectSystem>(foundActors[0]);
+
+		if (weponName == FString("Blaster")) _es->SpawnEffect(EffectType::BlasterMuzzuleFlash, firePoint->GetComponentLocation());
+		else if (weponName == FString("BombGun")) _es->SpawnEffect(EffectType::BombGunMuzzuleFlash, firePoint->GetComponentLocation());
+		else if (weponName == FString("ShotGun")) _es->SpawnEffect(EffectType::ShotGunMuzzuleFlash, firePoint->GetComponentLocation());
+	}
+
 }
 
 void ABaseWepon:: FirstFire()
 {
 	onFire = true;
-	fireTimer = 0.3f;
+	if(fireTimer <= 0.0f) fireTimer = 0.3f;
 }
 
 bool ABaseWepon::FirstShotEnable()
