@@ -79,13 +79,13 @@ void Agraduation_projectCharacter::BeginPlay()
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AWeponPuzzle::StaticClass(), FoundActors);
 
-	//if (FoundActors.Max() > 0)
-	//{
-	//	if (FoundActors[0])
-	//	{
-	//		weponPuzzle = Cast<AWeponPuzzle>(FoundActors[0]);
-	//	}
-	//}
+	if (FoundActors.Max() > 0)
+	{
+		if (FoundActors[0])
+		{
+			weponPuzzle = Cast<AWeponPuzzle>(FoundActors[0]);
+		}
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -451,21 +451,14 @@ void Agraduation_projectCharacter::CameraChange(float DeltaTime)
 
 void Agraduation_projectCharacter::WeponPuzzle()
 {
-	//TArray<AActor*> FoundActors;
-	//UGameplayStatics::GetAllActorsOfClass(GetWorld(), AWeponPuzzle::StaticClass(), FoundActors);
-
-	//if (FoundActors[0])
-	//{
-	//	AWeponPuzzle* _weponPuzzle = Cast<AWeponPuzzle>(FoundActors[0]);
-	//	if (!onWeponePuzzle)
-	//	{
-	//		_weponPuzzle->BeginPuzzle();
-	//		onWeponePuzzle = true;
-	//	}
-	//	else
-	//	{
-	//		_weponPuzzle->EndPuzzle();
-	//		onWeponePuzzle = false;
-	//	}
-	//}
+	if (!onWeponePuzzle)
+	{
+		weponPuzzle->BeginPuzzle();
+		onWeponePuzzle = true;
+	}
+	else
+	{
+		weponPuzzle->EndPuzzle();
+		onWeponePuzzle = false;
+	}
 }
