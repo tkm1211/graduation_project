@@ -9,6 +9,7 @@
 class ABaseWepon;
 class UAnimMontage;
 class AWeponPuzzle;
+class AGimmickPuzzle;
 
 UCLASS(config = Game)
 class Agraduation_projectCharacter : public ACharacter
@@ -33,10 +34,13 @@ private:
 	bool isPressFire = false;
 	bool firstShotTrg = false;
 
-	AWeponPuzzle* weponPuzzle;
 	bool onWeponePuzzle = false;
 
 	float cameraChangeTimer;
+
+	AGimmickPuzzle* gimmickPuzzle;
+	bool onGimmickPuzzle;
+	bool useGimmickPuzzle;
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Wepon")
 		ABaseWepon* useWepon;
@@ -53,6 +57,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wepon")
 		int32 weponNumber;
 	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wepon")
+		AWeponPuzzle* weponPuzzle;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wepon")
 		FString jumpName;
 
@@ -74,6 +81,12 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Horming)
 		bool isInvincible;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "WeponPuzzle")
+		FVector asjustWeponPuzzleLoc;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "WeponPuzzle")
+		TSubclassOf<AWeponPuzzle> weponPuzzleClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AnimMontage")
 		TArray<UAnimMontage*> recoilMontages;
@@ -133,11 +146,32 @@ protected:
 	void CameraChange(float DeltaTime);
 
 	void WeponPuzzle();
+	void GimmickPuzzle();
 public:
 	virtual void Tick(float DeltaTime) override;
 
 	void ChangeWepon(ABaseWepon* nextWepon);
 
 	void Damage(float giveDamage, FVector hitPosition);
+
+
+	UFUNCTION()
+		void BeginOverlap(
+			class UPrimitiveComponent* OverlappedComponent,
+			AActor* OtherActor,
+			UPrimitiveComponent* OtherComp,
+			int32 OtherBodyIndex,
+			bool bFromSweep,
+			const FHitResult& SweepResult
+		);
+	UFUNCTION()
+		void EndOverlap
+		(
+			class UPrimitiveComponent* OverlappedComponent,
+			AActor* OtherActor,
+			UPrimitiveComponent* OtherComp,
+			int32 OtherBodyIndex
+		);
+
 };
 

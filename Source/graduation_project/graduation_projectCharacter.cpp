@@ -13,6 +13,7 @@
 #include "Animation/AnimMontage.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Puzzle/WeponPuzzle.h"
+#include "Puzzle/GimmickPuzzle.h"
 
 //////////////////////////////////////////////////////////////////////////
 // Agraduation_projectCharacter
@@ -50,9 +51,11 @@ Agraduation_projectCharacter::Agraduation_projectCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-
 	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
 	GetCharacterMovement()->MaxAcceleration = 2048.0f;
+
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &Agraduation_projectCharacter::BeginOverlap);
+	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &Agraduation_projectCharacter::EndOverlap);
 
 	hp = defaultHp;
 	invincibleTime = defaultInvincibleTime;
@@ -65,6 +68,12 @@ void Agraduation_projectCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// wepon pazzule
+	if (weponPuzzleClass)
+	{
+		weponPuzzle = GetWorld()->SpawnActor<AWeponPuzzle>(weponPuzzleClass);
+		weponPuzzle->SetActorLocation(FVector(-290, 20, 300));
+	}
 
 	GetCharacterMovement()->GravityScale = 4.0;
 	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
@@ -75,17 +84,6 @@ void Agraduation_projectCharacter::BeginPlay()
 	isInvincible = false;
 	isDead = false;
 	cameraChangeTimer = 0.0f;
-
-	TArray<AActor*> FoundActors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AWeponPuzzle::StaticClass(), FoundActors);
-
-	if (FoundActors.Max() > 0)
-	{
-		if (FoundActors[0])
-		{
-			weponPuzzle = Cast<AWeponPuzzle>(FoundActors[0]);
-		}
-	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -108,7 +106,8 @@ void Agraduation_projectCharacter::SetupPlayerInputComponent(class UInputCompone
 	PlayerInputComponent->BindAction("Pause", IE_Pressed, this, &Agraduation_projectCharacter::Pause);
 	PlayerInputComponent->BindAction("Pause", IE_Released, this, &Agraduation_projectCharacter::ReleasePause);
 
-	PlayerInputComponent->BindAction("WeponPazzle", IE_Pressed, this, &Agraduation_projectCharacter::WeponPuzzle);
+	PlayerInputComponent->BindAction("WeponPuzzle", IE_Pressed, this, &Agraduation_projectCharacter::WeponPuzzle);
+	PlayerInputComponent->BindAction("GimmickPuzzle", IE_Pressed, this, &Agraduation_projectCharacter::GimmickPuzzle);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &Agraduation_projectCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &Agraduation_projectCharacter::MoveRight);
@@ -125,6 +124,15 @@ void Agraduation_projectCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	FVector _newWeponePuzzleLoc = FVector(FollowCamera->GetSocketLocation(FName("None"))) + FollowCamera->GetForwardVector() * asjustWeponPuzzleLoc;
+	FRotator _newWeponePuzzleRot = UKismetMathLibrary::FindLookAtRotation(FollowCamera->GetSocketLocation(FName("None")), weponPuzzle->GetActorLocation());
+	float tmp = _newWeponePuzzleRot.Pitch;
+	_newWeponePuzzleRot.Pitch = _newWeponePuzzleRot.Roll;
+	_newWeponePuzzleRot.Roll = tmp;
+	_newWeponePuzzleRot.Yaw += 90;
+	weponPuzzle->SetActorLocation(_newWeponePuzzleLoc);
+	weponPuzzle->SetActorRotation(_newWeponePuzzleRot);
+	
 	// Ž€‚ñ‚¾Žž‚Ìˆ—
 	if (isDead)
 	{
@@ -451,6 +459,7 @@ void Agraduation_projectCharacter::CameraChange(float DeltaTime)
 
 void Agraduation_projectCharacter::WeponPuzzle()
 {
+	if (!weponPuzzle) return;
 	if (!onWeponePuzzle)
 	{
 		weponPuzzle->BeginPuzzle();
@@ -460,5 +469,65 @@ void Agraduation_projectCharacter::WeponPuzzle()
 	{
 		weponPuzzle->EndPuzzle();
 		onWeponePuzzle = false;
+	}
+	Pause();
+}
+
+void Agraduation_projectCharacter::GimmickPuzzle()
+{
+	if (!gimmickPuzzle) return;
+
+	if (!onGimmickPuzzle)
+	{
+		if (!useGimmickPuzzle) return;
+		gimmickPuzzle->BeginPuzzle();
+		onGimmickPuzzle = true;
+	}
+	else
+	{
+		gimmickPuzzle->EndPuzzle();
+		onGimmickPuzzle = false;
+	}
+	Pause();
+}
+
+void Agraduation_projectCharacter::BeginOverlap(
+	class UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult& SweepResult
+)
+{
+	if (!OtherActor && OtherActor != this && OtherActor != GetOwner()) return;
+
+	if (OtherComp->ComponentTags.Max() > 0)
+	{
+		if (OtherComp->ComponentTags[0] == "GimmickPuzzle")
+		{
+			gimmickPuzzle = Cast<AGimmickPuzzle>(OtherActor);
+			useGimmickPuzzle = true;
+		}
+	}
+}
+
+void Agraduation_projectCharacter::EndOverlap
+(
+	class UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex
+)
+{
+	if (!OtherActor && OtherActor != this && OtherActor != GetOwner()) return;
+
+	if (OtherComp->ComponentTags.Max() > 0)
+	{
+		if (OtherComp->ComponentTags[0] == "GimmickPuzzle")
+		{
+			gimmickPuzzle = Cast<AGimmickPuzzle>(OtherActor);
+			useGimmickPuzzle = false;
+		}
 	}
 }

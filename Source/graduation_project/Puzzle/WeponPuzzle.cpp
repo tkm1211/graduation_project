@@ -28,6 +28,8 @@ void AWeponPuzzle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	grid->SetActorLocation(GetActorLocation());
+	grid->SetActorRotation(GetActorRotation());
 }
 
 void AWeponPuzzle::DoBeginPuzzle()
