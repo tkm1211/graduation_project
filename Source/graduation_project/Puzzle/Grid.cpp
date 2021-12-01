@@ -318,7 +318,7 @@ void AGrid::MovePiece(float DeltaTime)
 
 		rotateVec = GetActorRotation().Euler();
 		rotateX = 90.0f * piece->GetTurnCnt() * -1.0f;
-		rotate = FRotator(rotateX, rotateVec.Z, 0.0f);
+		rotate = FRotator(rotateX, rotateVec.Z, rotateVec.X);
 		piece->SetActorRotation(rotate);
 	};
 
