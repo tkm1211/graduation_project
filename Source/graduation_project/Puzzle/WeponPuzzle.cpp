@@ -19,6 +19,8 @@ void AWeponPuzzle::BeginPlay()
 	Super::BeginPlay();
 
 	grid->VisibleGridMesh(false);
+	grid->VisibleGrid(false);
+	grid->SetActorHiddenInGame(true);
 }
 
 // Called every frame
@@ -26,4 +28,16 @@ void AWeponPuzzle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AWeponPuzzle::DoBeginPuzzle()
+{
+	grid->VisibleGrid(true);
+	grid->SetActorHiddenInGame(false);
+}
+
+void AWeponPuzzle::DoEndPuzzle()
+{
+	grid->VisibleGrid(false);
+	grid->SetActorHiddenInGame(true);
 }

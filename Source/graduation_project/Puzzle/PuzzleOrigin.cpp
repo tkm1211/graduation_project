@@ -96,17 +96,12 @@ void APuzzleOrigin::OnPuzzle()
 
 void APuzzleOrigin::BeginPuzzle()
 {
-	APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
-	playerController->SetViewTargetWithBlend(puzzleCamera, 1.0f, VTBlend_Linear, 10.0f);
-
+	DoBeginPuzzle();
 	grid->SetPuzzle(true);
 }
 
 void APuzzleOrigin::EndPuzzle()
 {
-	APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
-	ACharacter* playerCharacter = UGameplayStatics::GetPlayerCharacter(this, 0);
-	playerController->SetViewTargetWithBlend(playerCharacter, 1.0f, VTBlend_Linear, 1.0f);
-
+	DoEndPuzzle();
 	grid->SetPuzzle(false);
 }

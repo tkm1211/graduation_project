@@ -41,4 +41,7 @@ private:
 	void UpdateCamera();
 
 	void PlacePieceBlock();
+
+	void DoBeginPuzzle() override;
+	void DoEndPuzzle() override;
 };

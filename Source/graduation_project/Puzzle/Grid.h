@@ -104,11 +104,15 @@ private:
 	TArray<bool> onPanel; // パネルが見えているか？
 	TArray<bool> onPiece; // ピースが置かれているか？
 	TArray<FVector> panelPositions;
+	TArray<APiecePanel*> panels;
 	TArray<APieceOrigin*> pieces;
 	TArray<APieceOrigin*> slotPieces;
 	TArray<FPieceData> pieceDatas;
-	TArray<APiecePanel*> panels;
 	TArray<FDecisionPiece> decisionPieces;
+
+	TArray<bool> visibilityPanel;
+	TArray<bool> visibilityPiece;
+	TArray<bool> visibilitySlotPiece;
 
 	FVector originPiecePosAtBackUp;
 
@@ -173,6 +177,7 @@ public:
 
 public:
 	void Initialize();
+	void VisibleGrid(bool visible);
 	void VisibleGridMesh(bool visible);
 	void SetGridScale(FVector scale);
 	void SetAdjustHeight(float height);

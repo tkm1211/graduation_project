@@ -76,4 +76,8 @@ public:
 	void OnPuzzle();
 	void BeginPuzzle();
 	void EndPuzzle();
+
+protected:
+	virtual void DoBeginPuzzle() {}
+	virtual void DoEndPuzzle() {}
 };
