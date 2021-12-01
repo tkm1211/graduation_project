@@ -10,6 +10,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "../EffectSystem/EffectSystem.h"
+#include "../Enemy/Base/EnemyBase.h"
 
 // Sets default values
 ABaseAmmo::ABaseAmmo()
@@ -85,13 +86,10 @@ void ABaseAmmo::OnHit(
 		{
 			if (OtherComp->ComponentTags[0] == "Ammo") return;
 			if (OtherComp->ComponentTags[0] == "Wepon") return;
-			if (OtherComp->ComponentTags[0] == "Boss")
+			if (OtherComp->ComponentTags[0] == "Enemy")
 			{
-				ATestBoss_MK1* bossCharacter = Cast<ATestBoss_MK1>(OtherActor);
-
-				UE_LOG(LogTemp, Warning, TEXT("Boss"));
-
-				bossCharacter->Damage(hitDamage);
+				AEnemyBase* _enemy = Cast<AEnemyBase>(OtherActor);
+				_enemy->Damage(hitDamage);
 				hitdam = hitDamage;
 			}
 		}
