@@ -45,26 +45,26 @@ void AEffectSystem::SpawnEffect(EffectType type, FVector location)
 		break;
 
 	case EffectType::ShotGunAmmoExplosion:
-		if (blasterAmmoExplosion)
+		if (shotGunAmmoExplosion)
 		{
 			UNiagaraFunctionLibrary::SpawnSystemAttached(shotGunAmmoExplosion, RootComponent, FName("None"), location, FRotator(0, 0, 0), EAttachLocation::Type::KeepWorldPosition, false);
 		}
 		break;
 	case EffectType::ShotGunMuzzuleFlash:
-		if (blasterMuzzuleFlash)
+		if (shotGunMuzzuleFlash)
 		{
 			UNiagaraFunctionLibrary::SpawnSystemAttached(shotGunMuzzuleFlash, RootComponent, FName("None"), location, FRotator(0, 0, 0), EAttachLocation::Type::KeepWorldPosition, false);
 		}
 		break;
 
 	case EffectType::BombGunAmmoExplosion:
-		if (blasterAmmoExplosion)
+		if (bombGunAmmoExplosion)
 		{
 			UNiagaraFunctionLibrary::SpawnSystemAttached(bombGunAmmoExplosion, RootComponent, FName("None"), location, FRotator(0, 0, 0), EAttachLocation::Type::KeepWorldPosition, false);
 		}
 		break;
 	case EffectType::BombGunMuzzuleFlash:
-		if (blasterMuzzuleFlash)
+		if (bombGunMuzzuleFlash)
 		{
 			UNiagaraFunctionLibrary::SpawnSystemAttached(bombGunMuzzuleFlash, RootComponent, FName("None"), location, FRotator(0, 0, 0), EAttachLocation::Type::KeepWorldPosition, false);
 		}
