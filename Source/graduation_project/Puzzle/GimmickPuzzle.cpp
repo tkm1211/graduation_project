@@ -138,7 +138,7 @@ void AGimmickPuzzle::PlacePieceBlock()
 void AGimmickPuzzle::DoBeginPuzzle()
 {
 	APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
-	playerController->SetViewTargetWithBlend(puzzleCamera, 1.0f, VTBlend_Linear, 10.0f);
+	playerController->SetViewTargetWithBlend(puzzleCamera, 1.0f, VTBlend_Linear, 10.0f, true);
 
 	//grid->VisibleGrid(true);
 	//grid->SetActorHiddenInGame(false);
@@ -148,7 +148,7 @@ void AGimmickPuzzle::DoEndPuzzle()
 {
 	APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
 	ACharacter* playerCharacter = UGameplayStatics::GetPlayerCharacter(this, 0);
-	playerController->SetViewTargetWithBlend(playerCharacter, 1.0f, VTBlend_Linear, 1.0f);
+	playerController->SetViewTargetWithBlend(playerCharacter, 1.0f, VTBlend_Linear, 10.0f, true);
 
 	//grid->VisibleGrid(false);
 	//grid->SetActorHiddenInGame(true);
