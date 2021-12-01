@@ -25,4 +25,8 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+private:
+	void DoBeginPuzzle() override;
+	void DoEndPuzzle() override;
 };

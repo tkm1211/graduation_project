@@ -26,6 +26,8 @@ void AGimmickPuzzle::BeginPlay()
 	Super::BeginPlay();
 
 	grid->VisibleGridMesh(true);
+	//grid->VisibleGrid(false);
+	//grid->SetActorHiddenInGame(true);
 }
 
 // Called every frame
@@ -131,4 +133,23 @@ void AGimmickPuzzle::PlacePieceBlock()
 	// パズル画面で配置されたピースの情報を渡す
 	auto placedPieceData = grid->GetPlacedPieceData();
 	gimmickMediator->AddPlacePiece(GroupID, placedPieceData);
+}
+
+void AGimmickPuzzle::DoBeginPuzzle()
+{
+	APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
+	playerController->SetViewTargetWithBlend(puzzleCamera, 1.0f, VTBlend_Linear, 10.0f);
+
+	//grid->VisibleGrid(true);
+	//grid->SetActorHiddenInGame(false);
+}
+
+void AGimmickPuzzle::DoEndPuzzle()
+{
+	APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
+	ACharacter* playerCharacter = UGameplayStatics::GetPlayerCharacter(this, 0);
+	playerController->SetViewTargetWithBlend(playerCharacter, 1.0f, VTBlend_Linear, 1.0f);
+
+	//grid->VisibleGrid(false);
+	//grid->SetActorHiddenInGame(true);
 }

@@ -800,6 +800,7 @@ void AGrid::SetVisiblePiece(int currentPieceNum, bool isVisible, FVector currntP
 	auto piece = pieces[currentPieceNum];
 	{
 		piece->GetRenderComponent()->SetVisibility(isVisible);
+		visibilityPiece[currentPieceNum] = isVisible;
 	}
 
 	auto data = pieceDatas[currentPieceNum];
@@ -861,9 +862,10 @@ void AGrid::AddPanelNumAtOriginPiece(int addPanelNum)
 
 void AGrid::SelectSlotPiece(int currentPieceNum)
 {
-	for (auto piece : slotPieces)
+	for (int i = 0; i < slotPieces.Num(); ++i)
 	{
-		piece->GetRenderComponent()->SetVisibility(false);
+		slotPieces[i]->GetRenderComponent()->SetVisibility(false);
+		visibilitySlotPiece[i] = false;
 	}
 
 	if (currentPieceNum == -1) return;
@@ -890,6 +892,8 @@ void AGrid::SelectSlotPiece(int currentPieceNum)
 
 	auto slotPiece = slotPieces[currentPieceNum];
 	{
+		visibilitySlotPiece[currentPieceNum] = true;
+
 		slotPiece->GetRenderComponent()->SetVisibility(true);
 		slotPiece->SetActorLocation(piecePos);
 		slotPiece->SetActorScale3D(pieceScale * 0.75f);
@@ -902,6 +906,8 @@ void AGrid::SelectSlotPiece(int currentPieceNum)
 		{
 			location -= rightVec * (adjust * 0.75f);
 			location -= upVec * AdjustSideSlotPieceHeight;
+
+			visibilitySlotPiece[slotLeftNum] = true;
 
 			slotLeftPiece->GetRenderComponent()->SetVisibility(true);
 			slotLeftPiece->SetActorLocation(location);
@@ -916,6 +922,8 @@ void AGrid::SelectSlotPiece(int currentPieceNum)
 		{
 			location += rightVec * (adjust * 0.75f);
 			location -= upVec * AdjustSideSlotPieceHeight;
+
+			visibilitySlotPiece[slotRightNum] = true;
 
 			slotRightPiece->GetRenderComponent()->SetVisibility(true);
 			slotRightPiece->SetActorLocation(location);
@@ -1280,6 +1288,8 @@ void AGrid::CreatePiece(PieceShape pieceShape, FVector SpawnLocation)
 		}
 
 		pieceDatas.Add(data);
+		visibilityPiece.Add(false);
+		visibilitySlotPiece.Add(false);
 	}
 }
 
@@ -1566,6 +1576,7 @@ void AGrid::CreatePanels(FVector SpawnLocation)
 			if (onPanel[cnt]) CreatePiecePanel(Location);
 			else if (onPieceOrigin) CreatePieceOrigin(Location);
 			onPiece.Add(false);
+			visibilityPanel.Add(onPanel[cnt]);
 			panelPositions.Add(Location);
 			Location += rightVec * panelSize;
 			++cnt;
@@ -1650,6 +1661,44 @@ void AGrid::OnPieceSlotRight()
 	if (!onPuzzle) return;
 
 	onPieceSlotRight = true;
+}
+
+void AGrid::VisibleGrid(bool visible)
+{
+	if (visible)
+	{
+		for (int i = 0; i < panels.Num(); ++i)
+		{
+			panels[i]->GetRenderComponent()->SetVisibility(true);
+		}
+
+		for (int i = 0; i < pieces.Num(); ++i)
+		{
+			pieces[i]->GetRenderComponent()->SetVisibility(visibilityPiece[i]);
+		}
+
+		for (int i = 0; i < slotPieces.Num(); ++i)
+		{
+			slotPieces[i]->GetRenderComponent()->SetVisibility(visibilitySlotPiece[i]);
+		}
+	}
+	else
+	{
+		for (auto panel : panels)
+		{
+			panel->GetRenderComponent()->SetVisibility(false);
+		}
+
+		for (auto piece : pieces)
+		{
+			piece->GetRenderComponent()->SetVisibility(false);
+		}
+
+		for (auto slotPiece : slotPieces)
+		{
+			slotPiece->GetRenderComponent()->SetVisibility(false);
+		}
+	}
 }
 
 void AGrid::VisibleGridMesh(bool visible)
