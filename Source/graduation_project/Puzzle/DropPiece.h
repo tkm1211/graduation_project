@@ -26,14 +26,30 @@ private:
 	float RandMin = 1.0f;
 	float RandMax = 10.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece", meta = (AllowPrivateAccess = "true"))
+	float FlySpeedRandMin = 10.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece", meta = (AllowPrivateAccess = "true"))
+	float FlySpeedRandMax = 20.0f;
+
+	float UnabsorbableMaxTime = 0.25f;
+	float FlyDownSpeed = 0.25f;
+
 private:
 	bool onHoming = false;
 	float homingSpeed = 0.0f;
 	float homingJumpRand = 0.0f;
+	float flySpeed = 0.0f;
+	float unabsorbableTime = 0.0f;
+
+	FVector flyDirection;
 
 public:	
 	// Sets default values for this actor's properties
 	ADropPiece();
+
+public:
+	void SetFlyDirection(FVector direction);
 
 protected:
 	// Called when the game starts or when spawned

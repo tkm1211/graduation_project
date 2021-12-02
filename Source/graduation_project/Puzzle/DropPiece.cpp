@@ -34,6 +34,8 @@ void ADropPiece::BeginPlay()
 	onHoming = false;
 	homingSpeed = 0.0f;
 	homingJumpRand = FMath::FRandRange(RandMin, RandMax);
+	flySpeed = FMath::FRandRange(FlySpeedRandMin, FlySpeedRandMax);
+	unabsorbableTime = 0.0f;
 }
 
 // Called every frame
@@ -41,7 +43,27 @@ void ADropPiece::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	onHoming ? Homing() : JudgeAria();
+	unabsorbableTime += DeltaTime;
+
+	if (0.0f <= flySpeed)
+	{
+		auto newLocation = GetActorLocation();
+
+		FVector flyVector = flyDirection.GetSafeNormal();
+		FVector vector = flyVector * flySpeed;
+		vector.Z = flySpeed;
+
+		newLocation += vector;
+
+		SetActorLocation(newLocation);
+
+		flySpeed -= FlyDownSpeed;
+	}
+
+	if (UnabsorbableMaxTime < unabsorbableTime)
+	{
+		onHoming ? Homing() : JudgeAria();
+	}
 }
 
 void ADropPiece::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -84,4 +106,9 @@ void ADropPiece::JudgeAria()
 		onHoming = true;
 		homingSpeed = 0.0f;
 	}
+}
+
+void ADropPiece::SetFlyDirection(FVector direction)
+{
+	flyDirection = direction;
 }
