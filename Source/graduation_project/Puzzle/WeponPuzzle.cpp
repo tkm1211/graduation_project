@@ -19,8 +19,12 @@ void AWeponPuzzle::BeginPlay()
 	Super::BeginPlay();
 
 	grid->VisibleGridMesh(false);
-	grid->VisibleGrid(false);
-	grid->SetActorHiddenInGame(true);
+
+#if 0
+	DoBeginPuzzle(); // Debug—p
+#else
+	DoEndPuzzle();
+#endif
 }
 
 // Called every frame
