@@ -8,7 +8,6 @@
 #include "PieceI.h"
 #include "PieceT.h"
 #include "PiecePanel.h"
-#include "PieceResourceManager.h"
 #include "PaperSpriteComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -97,7 +96,7 @@ void AGrid::Initialize()
 		auto datas = resourceManager->GetPieceResourceDatas();
 		for (auto data : datas)
 		{
-			CreatePiece(data.shape, SpawnLocation);
+			CreatePiece(data, SpawnLocation);
 		}
 
 		SetVisiblePiece(selectPieceNum, true, pieces[selectPieceNum]->GetActorLocation());
@@ -117,10 +116,14 @@ void AGrid::Initialize()
 			InputComponent = PlayerController->InputComponent;
 			check(InputComponent);
 			//InputComponent->BindAction("Puzzle", IE_Pressed, this, &AGrid::OnPuzzle).bConsumeInput = false;
-			InputComponent->BindAction("PieceUp", IE_Pressed, this, &AGrid::OnPieceUp).bConsumeInput = false;
+			/*InputComponent->BindAction("PieceUp", IE_Pressed, this, &AGrid::OnPieceUp).bConsumeInput = false;
 			InputComponent->BindAction("PieceDown", IE_Pressed, this, &AGrid::OnPieceDown).bConsumeInput = false;
 			InputComponent->BindAction("PieceLeft", IE_Pressed, this, &AGrid::OnPieceLeft).bConsumeInput = false;
-			InputComponent->BindAction("PieceRight", IE_Pressed, this, &AGrid::OnPieceRight).bConsumeInput = false;
+			InputComponent->BindAction("PieceRight", IE_Pressed, this, &AGrid::OnPieceRight).bConsumeInput = false;*/
+
+			InputComponent->BindAxis("PieceYAxis", this, &AGrid::OnPieceYAxis).bConsumeInput = false;
+			InputComponent->BindAxis("PieceXAxis", this, &AGrid::OnPieceXAxis).bConsumeInput = false;
+
 			InputComponent->BindAction("PieceTurnLeft", IE_Pressed, this, &AGrid::OnPieceTurnLeft).bConsumeInput = false;
 			InputComponent->BindAction("PieceTurnRight", IE_Pressed, this, &AGrid::OnPieceTurnRight).bConsumeInput = false;
 			InputComponent->BindAction("PieceDecision", IE_Pressed, this, &AGrid::OnPieceDecision).bConsumeInput = false;
@@ -642,6 +645,7 @@ void AGrid::PieceDecision(APieceOrigin* piece)
 			placedPieceData.placedPanelNum = panelNumAtOriginPiece;
 			placedPieceData.turnCnt = piece->GetTurnCnt();
 			placedPieceData.shape = pieceDatas[selectPieceNum].shape;
+			placedPieceData.type = pieceDatas[selectPieceNum].type;
 		}
 
 		piece->PieceDecision();
@@ -1252,27 +1256,27 @@ void AGrid::RangeLimit(APieceOrigin* piece)
 	}
 }
 
-void AGrid::CreatePiece(PieceShape pieceShape, FVector SpawnLocation)
+void AGrid::CreatePiece(FPieceResourceData pieceData, FVector SpawnLocation)
 {
 	FVector Location = SpawnLocation;
 
 	bool alive = false;
-	switch (pieceShape)
+	switch (pieceData.shape)
 	{
 	case O:
-		alive = CreatePieceO(Location);
+		alive = CreatePieceO(pieceData.type, Location);
 		break;
 
 	case L:
-		alive = CreatePieceL(Location);
+		alive = CreatePieceL(pieceData.type, Location);
 		break;
 
 	case I:
-		alive = CreatePieceI(Location);
+		alive = CreatePieceI(pieceData.type, Location);
 		break;
 
 	case T:
-		alive = CreatePieceT(Location);
+		alive = CreatePieceT(pieceData.type, Location);
 		break;
 
 	default: break;
@@ -1284,7 +1288,8 @@ void AGrid::CreatePiece(PieceShape pieceShape, FVector SpawnLocation)
 		{
 			data.isVisible = false;
 			data.isPlacement = false;
-			data.shape = pieceShape;
+			data.shape = pieceData.shape;
+			data.type = pieceData.type;
 		}
 
 		pieceDatas.Add(data);
@@ -1320,24 +1325,15 @@ void AGrid::CreatePieceOrigin(FVector SpawnLocation)
 	}
 }
 
-bool AGrid::CreatePieceO(FVector SpawnLocation)
+bool AGrid::CreatePieceO(PieceType type, FVector SpawnLocation)
 {
-	if (PieceO)
+	auto CreateO = [&](TSubclassOf<APieceO> pieceO)
 	{
 		FVector Location = SpawnLocation;
 		FRotator Rotation = GetActorRotation();
 		FVector Scale = gridScale;
 
-		/*if (widthNum % 2 != 0)
-		{
-			Location -= rightVec * (panelSize * 0.5f);
-		}
-		if (heightNum % 2 != 0)
-		{
-			Location += upVec * (panelSize * 0.5f);
-		}*/
-
-		auto TempAPieceO = GetWorld()->SpawnActor<APieceO>(PieceO, Location, Rotation);
+		auto TempAPieceO = GetWorld()->SpawnActor<APieceO>(pieceO, Location, Rotation);
 		{
 			TempAPieceO->Initialize(1, widthNum, heightNum, panelSize);
 			TempAPieceO->SetActorScale3D(Scale);
@@ -1348,7 +1344,7 @@ bool AGrid::CreatePieceO(FVector SpawnLocation)
 			}
 		}
 
-		auto TempASlotPieceO = GetWorld()->SpawnActor<APieceO>(PieceO, Location, Rotation);
+		auto TempASlotPieceO = GetWorld()->SpawnActor<APieceO>(pieceO, Location, Rotation);
 		{
 			TempASlotPieceO->Initialize(1, widthNum, heightNum, panelSize);
 			TempASlotPieceO->SetActorScale3D(Scale);
@@ -1358,30 +1354,37 @@ bool AGrid::CreatePieceO(FVector SpawnLocation)
 				render->SetVisibility(false);
 			}
 		}
-	
+
 		pieces.Add(TempAPieceO);
 		slotPieces.Add(TempASlotPieceO);
+	};
 
+	switch (type)
+	{
+	case Power:
+		CreateO(PieceOBlue);
 		return true;
+	case Range:
+		CreateO(PieceOYellow);
+		return true;
+	case Attribute:
+		CreateO(PieceOPurple);
+		return true;
+	default: break;
 	}
 
 	return false;
 }
 
-bool AGrid::CreatePieceL(FVector SpawnLocation)
+bool AGrid::CreatePieceL(PieceType type, FVector SpawnLocation)
 {
-	if (PieceL)
+	auto CreateL = [&](TSubclassOf<APieceL> pieceL)
 	{
 		FVector Location = SpawnLocation;
 		FRotator Rotation = GetActorRotation();
 		FVector Scale = gridScale;
 
-		/*if (heightNum % 2 != 0)
-		{
-			Location += upVec * (panelSize * 0.5f);
-		}*/
-
-		auto TempAPieceL = GetWorld()->SpawnActor<APieceL>(PieceL, Location, Rotation);
+		auto TempAPieceL = GetWorld()->SpawnActor<APieceL>(pieceL, Location, Rotation);
 		{
 			TempAPieceL->Initialize(1, widthNum, heightNum, panelSize);
 			TempAPieceL->SetActorScale3D(Scale);
@@ -1392,7 +1395,7 @@ bool AGrid::CreatePieceL(FVector SpawnLocation)
 			}
 		}
 
-		auto TempASlotPieceL = GetWorld()->SpawnActor<APieceL>(PieceL, Location, Rotation);
+		auto TempASlotPieceL = GetWorld()->SpawnActor<APieceL>(pieceL, Location, Rotation);
 		{
 			TempASlotPieceL->Initialize(1, widthNum, heightNum, panelSize);
 			TempASlotPieceL->SetActorScale3D(Scale);
@@ -1405,27 +1408,34 @@ bool AGrid::CreatePieceL(FVector SpawnLocation)
 
 		pieces.Add(TempAPieceL);
 		slotPieces.Add(TempASlotPieceL);
+	};
 
+	switch (type)
+	{
+	case Power:
+		CreateL(PieceLBlue);
 		return true;
+	case Range:
+		CreateL(PieceLYellow);
+		return true;
+	case Attribute:
+		CreateL(PieceLPurple);
+		return true;
+	default: break;
 	}
 
 	return false;
 }
 
-bool AGrid::CreatePieceI(FVector SpawnLocation)
+bool AGrid::CreatePieceI(PieceType type, FVector SpawnLocation)
 {
-	if (PieceI)
+	auto CreateI = [&](TSubclassOf<APieceI> pieceI)
 	{
 		FVector Location = SpawnLocation;
 		FRotator Rotation = GetActorRotation();
 		FVector Scale = gridScale;
 
-		/*if (widthNum % 2 != 0)
-		{
-			Location -= rightVec * (panelSize * 0.5f);
-		}*/
-
-		auto TempAPieceI = GetWorld()->SpawnActor<APieceI>(PieceI, Location, Rotation);
+		auto TempAPieceI = GetWorld()->SpawnActor<APieceI>(pieceI, Location, Rotation);
 		{
 			TempAPieceI->Initialize(1, widthNum, heightNum, panelSize);
 			TempAPieceI->SetActorScale3D(Scale);
@@ -1436,7 +1446,7 @@ bool AGrid::CreatePieceI(FVector SpawnLocation)
 			}
 		}
 
-		auto TempASlotPieceI = GetWorld()->SpawnActor<APieceI>(PieceI, Location, Rotation);
+		auto TempASlotPieceI = GetWorld()->SpawnActor<APieceI>(pieceI, Location, Rotation);
 		{
 			TempASlotPieceI->Initialize(1, widthNum, heightNum, panelSize);
 			TempASlotPieceI->SetActorScale3D(Scale);
@@ -1449,22 +1459,34 @@ bool AGrid::CreatePieceI(FVector SpawnLocation)
 
 		pieces.Add(TempAPieceI);
 		slotPieces.Add(TempASlotPieceI);
+	};
 
+	switch (type)
+	{
+	case Power:
+		CreateI(PieceIBlue);
 		return true;
+	case Range:
+		CreateI(PieceIYellow);
+		return true;
+	case Attribute:
+		CreateI(PieceIPurple);
+		return true;
+	default: break;
 	}
 
 	return false;
 }
 
-bool AGrid::CreatePieceT(FVector SpawnLocation)
+bool AGrid::CreatePieceT(PieceType type, FVector SpawnLocation)
 {
-	if (PieceT)
+	auto CreateT = [&](TSubclassOf<APieceT> pieceT)
 	{
 		FVector Location = SpawnLocation;
 		FRotator Rotation = GetActorRotation();
 		FVector Scale = gridScale;
 
-		auto TempAPieceT = GetWorld()->SpawnActor<APieceT>(PieceT, Location, Rotation);
+		auto TempAPieceT = GetWorld()->SpawnActor<APieceT>(pieceT, Location, Rotation);
 		{
 			TempAPieceT->Initialize(1, widthNum, heightNum, panelSize);
 			TempAPieceT->SetActorScale3D(Scale);
@@ -1475,7 +1497,7 @@ bool AGrid::CreatePieceT(FVector SpawnLocation)
 			}
 		}
 
-		auto TempASlotPieceT = GetWorld()->SpawnActor<APieceT>(PieceT, Location, Rotation);
+		auto TempASlotPieceT = GetWorld()->SpawnActor<APieceT>(pieceT, Location, Rotation);
 		{
 			TempASlotPieceT->Initialize(1, widthNum, heightNum, panelSize);
 			TempASlotPieceT->SetActorScale3D(Scale);
@@ -1488,8 +1510,20 @@ bool AGrid::CreatePieceT(FVector SpawnLocation)
 
 		pieces.Add(TempAPieceT);
 		slotPieces.Add(TempASlotPieceT);
+	};
 
+	switch (type)
+	{
+	case Power:
+		CreateT(PieceTBlue);
 		return true;
+	case Range:
+		CreateT(PieceTYellow);
+		return true;
+	case Attribute:
+		CreateT(PieceTPurple);
+		return true;
+	default: break;
 	}
 
 	return false;
@@ -1661,6 +1695,56 @@ void AGrid::OnPieceSlotRight()
 	if (!onPuzzle) return;
 
 	onPieceSlotRight = true;
+}
+
+void AGrid::OnPieceYAxis(float value)
+{
+	if (!onPuzzle) return;
+
+	if (value == 0.0f)
+	{
+		inputYAxisTimer = 0;
+		return;
+	}
+
+	if (inputYAxisTimer % InputIntervalTime == 0)
+	{
+		if (0 < value)
+		{
+			OnPieceUp();
+		}
+		else if (value < 0)
+		{
+			OnPieceDown();
+		}
+	}
+
+	++inputYAxisTimer;
+}
+
+void AGrid::OnPieceXAxis(float value)
+{
+	if (!onPuzzle) return;
+
+	if (value == 0.0f)
+	{
+		inputXAxisTimer = 0;
+		return;
+	}
+
+	if (inputXAxisTimer % InputIntervalTime == 0)
+	{
+		if (0 < value)
+		{
+			OnPieceRight();
+		}
+		else if (value < 0)
+		{
+			OnPieceLeft();
+		}
+	}
+
+	++inputXAxisTimer;
 }
 
 void AGrid::VisibleGrid(bool visible)

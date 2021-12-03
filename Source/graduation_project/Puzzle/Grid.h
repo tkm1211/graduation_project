@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "PieceBase.h"
+#include "PieceResourceManager.h"
 #include "Grid.generated.h"
 
 class APieceOrigin;
@@ -28,6 +29,9 @@ struct FPieceData
 
 	// 形
 	PieceShape shape = PieceShape::T;
+
+	// 種類
+	PieceType type = PieceType::Power;
 };
 
 USTRUCT(BlueprintType)
@@ -55,6 +59,7 @@ private:
 	const float AdjustSideSlotPieceHeight = 0.5f;
 	const int MaxWidthNum = 20;
 	const int MaxHeightNum = 20;
+	const int InputIntervalTime = 15;
 	const FString FilePath = "Tool\\Data\\Document\\Puzzle\\";
 
 private:
@@ -68,16 +73,40 @@ private:
 	TSubclassOf<APieceOrigin> PieceOrigin; // 元のピース（エディタで設定）
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<APieceO> PieceO; // O字のピース（エディタで設定）
+	TSubclassOf<APieceO> PieceOBlue; // 青色のO字のピース（エディタで設定）
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<APieceL> PieceL; // L字のピース（エディタで設定）
+	TSubclassOf<APieceL> PieceLBlue; // 青色のL字のピース（エディタで設定）
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<APieceI> PieceI; // I字のピース（エディタで設定）
+	TSubclassOf<APieceI> PieceIBlue; // 青色のI字のピース（エディタで設定）
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<APieceT> PieceT; // T字のピース（エディタで設定）
+	TSubclassOf<APieceT> PieceTBlue; // 青色のT字のピース（エディタで設定）
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APieceO> PieceOYellow; // 黄色のO字のピース（エディタで設定）
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APieceL> PieceLYellow; // 黄色のL字のピース（エディタで設定）
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APieceI> PieceIYellow; // 黄色のI字のピース（エディタで設定）
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APieceT> PieceTYellow; // 黄色のT字のピース（エディタで設定）
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APieceO> PieceOPurple; // 紫色のO字のピース（エディタで設定）
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APieceL> PieceLPurple; // 紫色のL字のピース（エディタで設定）
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APieceI> PieceIPurple; // 紫色のI字のピース（エディタで設定）
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APieceT> PieceTPurple; // 紫色のT字のピース（エディタで設定）
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<APiecePanel> PiecePanel; // ピースのパネル（エディタで設定）
@@ -125,6 +154,9 @@ private:
 	FString panelFilePath;
 
 	FPlacedPieceData placedPieceData;
+
+	int inputYAxisTimer = 0;
+	int inputXAxisTimer = 0;
 	
 	int selectPieceNum = 0;
 	int panelNumAtOriginPiece = 0;
@@ -195,12 +227,12 @@ private:
 	void MoveSlot(float DeltaTime);
 
 	void CreatePanels(FVector SpawnLocation);
-	void CreatePiece(PieceShape pieceShape, FVector SpawnLocation);
+	void CreatePiece(FPieceResourceData pieceData, FVector SpawnLocation);
 	void CreatePieceOrigin(FVector SpawnLocation);
-	bool CreatePieceO(FVector SpawnLocation);
-	bool CreatePieceL(FVector SpawnLocation);
-	bool CreatePieceI(FVector SpawnLocation);
-	bool CreatePieceT(FVector SpawnLocation);
+	bool CreatePieceO(PieceType type, FVector SpawnLocation);
+	bool CreatePieceL(PieceType type, FVector SpawnLocation);
+	bool CreatePieceI(PieceType type, FVector SpawnLocation);
+	bool CreatePieceT(PieceType type, FVector SpawnLocation);
 	void CreatePiecePanel(FVector SpawnLocation);
 
 	bool LoadJson(const FString& Path);
@@ -242,6 +274,9 @@ private:
 	void OnPieceCancel();
 	void OnPieceSlotLeft();
 	void OnPieceSlotRight();
+
+	void OnPieceYAxis(float value);
+	void OnPieceXAxis(float value);
 
 	FVector GetLocation();
 };
