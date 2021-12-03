@@ -123,15 +123,17 @@ void Agraduation_projectCharacter::SetupPlayerInputComponent(class UInputCompone
 void Agraduation_projectCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	FVector _newWeponePuzzleLoc = FVector(FollowCamera->GetSocketLocation(FName("None"))) + FollowCamera->GetForwardVector() * asjustWeponPuzzleLoc;
-	FRotator _newWeponePuzzleRot = UKismetMathLibrary::FindLookAtRotation(FollowCamera->GetSocketLocation(FName("None")), weponPuzzle->GetActorLocation());
-	float tmp = _newWeponePuzzleRot.Pitch;
-	_newWeponePuzzleRot.Pitch = _newWeponePuzzleRot.Roll;
-	_newWeponePuzzleRot.Roll = tmp;
-	_newWeponePuzzleRot.Yaw += 90;
-	weponPuzzle->SetActorLocation(_newWeponePuzzleLoc);
-	weponPuzzle->SetActorRotation(_newWeponePuzzleRot);
+	if (FollowCamera)
+	{
+		FVector _newWeponePuzzleLoc = FVector(FollowCamera->GetSocketLocation(FName("None"))) + FollowCamera->GetForwardVector() * asjustWeponPuzzleLoc;
+		FRotator _newWeponePuzzleRot = UKismetMathLibrary::FindLookAtRotation(FollowCamera->GetSocketLocation(FName("None")), weponPuzzle->GetActorLocation());
+		float tmp = _newWeponePuzzleRot.Pitch;
+		_newWeponePuzzleRot.Pitch = _newWeponePuzzleRot.Roll;
+		_newWeponePuzzleRot.Roll = tmp;
+		_newWeponePuzzleRot.Yaw += 90;
+		weponPuzzle->SetActorLocation(_newWeponePuzzleLoc);
+		weponPuzzle->SetActorRotation(_newWeponePuzzleRot);
+	}
 	
 	// €‚ñ‚¾‚Ìˆ—
 	if (isDead)
