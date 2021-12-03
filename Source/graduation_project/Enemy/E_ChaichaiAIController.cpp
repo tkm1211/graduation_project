@@ -25,7 +25,7 @@ AE_ChaichaiAIController::AE_ChaichaiAIController()
     ConstructorHelpers::FObjectFinder<UBehaviorTree> BTFinder(TEXT("/Game/Enemy/Minimon/Blueprints/BT_Minimon"));
     BehaviorTree = BTFinder.Object;
 
-
+   
 }
 
 void AE_ChaichaiAIController::OnPossess(class APawn* InPawn)

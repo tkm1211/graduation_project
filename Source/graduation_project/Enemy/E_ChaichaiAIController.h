@@ -3,29 +3,29 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AIController.h"
+#include "Base\BaseAIController.h"
 #include "E_ChaichaiAIController.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class GRADUATION_PROJECT_API AE_ChaichaiAIController : public AAIController
+class GRADUATION_PROJECT_API AE_ChaichaiAIController : public ABaseAIController
 {
 	GENERATED_BODY()
 	
 
 		AE_ChaichaiAIController();
 
-	UPROPERTY(EditDefaultsOnly, Category = AI)
-		class UBehaviorTree* BehaviorTree;
+	//UPROPERTY(EditDefaultsOnly, Category = AI)
+	//	class UBehaviorTree* BehaviorTree;
 
-	class UBehaviorTreeComponent* BehaviorComp;
+	//class UBehaviorTreeComponent* BehaviorComp;
 
-	class UBlackboardComponent* BlackboardComp;
+	//class UBlackboardComponent* BlackboardComp;
 
-	UPROPERTY(EditDefaultsOnly, Category = AI)
-		class UAIPerceptionComponent* AISensorComp;
+	//UPROPERTY(EditDefaultsOnly, Category = AI)
+	//	class UAIPerceptionComponent* AISensorComp;
 
 	/* Called whenever the controller possesses a character bot */
 	virtual void OnPossess(class APawn* InPawn) override;

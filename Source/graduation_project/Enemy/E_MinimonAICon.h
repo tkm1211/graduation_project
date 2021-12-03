@@ -3,32 +3,41 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AIController.h"
+#include "Base/BaseAIController.h"
 #include "E_MinimonAICon.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
-class GRADUATION_PROJECT_API AE_MinimonAIController : public AAIController
+class GRADUATION_PROJECT_API AE_MinimonAIController : public ABaseAIController
 {
 	GENERATED_BODY()
 
-		AE_MinimonAIController();
+public:
 
-	UPROPERTY(EditDefaultsOnly, Category = AI)
-		class UBehaviorTree* BehaviorTree;
+	AE_MinimonAIController();
 
-	class UBehaviorTreeComponent* BehaviorComp;
+	class AENM_Minimon* enm;
 
-	class UBlackboardComponent* BlackboardComp;
+	//UPROPERTY(EditDefaultsOnly, Category = AI)
+	//	class UBehaviorTree* BehaviorTree;
 
-	UPROPERTY(EditDefaultsOnly, Category = AI)
-		class UAIPerceptionComponent* AISensorComp;
+	//class UBehaviorTreeComponent* BehaviorComp;
+
+	//class UBlackboardComponent* BlackboardComp;
+
+	//UPROPERTY(VisibleDefaultsOnly, Category = AI)
+	//	class UAIPerceptionComponent* AISensorComp;
 
 	/* Called whenever the controller possesses a character bot */
 	virtual void OnPossess(class APawn* InPawn) override;
 
 	virtual void OnUnPossess() override;
 
+	void SearchPlayerActor(const TArray<AActor*>& actors) override;
+
+	void LostPlayerActor(const FActorPerceptionUpdateInfo& info) override;
+
+	virtual void Tick(float Deltatime) override;
 };

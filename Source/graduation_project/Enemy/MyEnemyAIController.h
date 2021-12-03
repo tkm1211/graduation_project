@@ -25,7 +25,8 @@ class GRADUATION_PROJECT_API AMyEnemyAIController : public AAIController
 
     UBlackboardComponent* BlackboardComp;
 
-    UAIPerceptionComponent* AISensorComp;
+    UPROPERTY(VisibleAnywhere, Category = "AI Perception")
+        UAIPerceptionComponent* AISensorComp;
 
     UPROPERTY(VisibleAnywhere, Category = "AI Perception")
     class UAISenseConfig_Sight* SightConfig;
