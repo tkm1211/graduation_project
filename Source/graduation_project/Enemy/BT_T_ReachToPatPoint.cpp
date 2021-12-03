@@ -18,6 +18,7 @@ EBTNodeResult::Type UBT_T_ReachToPatPoint::ExecuteTask(UBehaviorTreeComponent& O
 		if (enm)
 		{
 			enm->reachto_patpt = true;
+			enm->is_combat = false;
 		}
 	}
 

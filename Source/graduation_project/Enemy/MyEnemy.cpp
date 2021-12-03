@@ -8,7 +8,6 @@
 #include "../graduation_projectCharacter.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
-#include "../Mo2Func.h"
 
 // Sets default values
 AMyEnemy::AMyEnemy()

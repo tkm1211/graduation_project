@@ -20,6 +20,7 @@ class GRADUATION_PROJECT_API AENM_Minimon : public AEnemyBase
 		UFUNCTION()
 		void OnSeePlayer(APawn* Pawn);
 
+		float deadtimer;
 
 protected:
 	// Called when the game starts or when spawned

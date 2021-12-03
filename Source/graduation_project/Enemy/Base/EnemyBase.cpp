@@ -2,6 +2,8 @@
 
 
 #include "EnemyBase.h"
+#include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 AEnemyBase::AEnemyBase()
@@ -9,6 +11,12 @@ AEnemyBase::AEnemyBase()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	Tags.Add("Enemy");
+
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+
+	GetCapsuleComponent()->ComponentTags.Add("Enemy");
+	
 }
 
 // Called when the game starts or when spawned
@@ -35,5 +43,5 @@ void AEnemyBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 void AEnemyBase::Damage(float _indamage)
 {
-	HealthPoint -= _indamage;
+	healthpoint -= _indamage;
 }

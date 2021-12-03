@@ -16,8 +16,6 @@ public:
 	// Sets default values for this character's properties
 	AMyEnemy();
 
-	UPROPERTY(VisibleAnywhere, Category = "AI")
-		class UPawnSensingComponent* PawnSensingComp;
 
 	//UPROPERTY(EditAnywhere, Category = "")
 		class UCharacterMovementComponent* CharaMoveComp;

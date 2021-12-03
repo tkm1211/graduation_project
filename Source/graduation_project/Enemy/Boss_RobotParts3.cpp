@@ -13,8 +13,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "../Mo2Func.h"
-//#include "NiagaraSystem.h"
 #include "Components/CapsuleComponent.h"
 
 #include "RP3_Missile.h"
@@ -29,7 +27,7 @@ ABoss_RobotParts3::ABoss_RobotParts3()
 
 	AIControllerClass = ABoss_RP3AIController::StaticClass();
 
-	HealthPoint = 1000.f;
+	healthpoint = 1000.f;
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshAsset(TEXT("/Game/Asset_Arita/Boss_Anim/Anim_Boss_Beam"));
 	USkeletalMesh* meshasset = MeshAsset.Object;
@@ -69,6 +67,7 @@ ABoss_RobotParts3::ABoss_RobotParts3()
 	CharaMoveComp = GetCharacterMovement();
 	CharaMoveComp->DefaultLandMovementMode = MOVE_Flying;
 	CharaMoveComp->MaxWalkSpeed = 400.f;
+	CharaMoveComp->bOrientRotationToMovement = false;
 
 	//攻撃用ソケット名前取得（コリジョンやミサイル発射用）
 	SocketName[LEFT_HAND] = "arm_2_LSocket";
@@ -229,7 +228,7 @@ void ABoss_RobotParts3::Damage(float giveDamage)
 		defence = giveDamage * 0.99f;
 	}
 
-	HealthPoint -= (giveDamage - defence);
+	healthpoint -= (giveDamage - defence);
 
 }
 
@@ -266,7 +265,7 @@ void ABoss_RobotParts3::BeginPlay()
 
 	RFireCapsuleComp->SetCollisionProfileName("Custom...");
 	RFireCapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	LFireCapsuleComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+	RFireCapsuleComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 	RFireCapsuleComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
 	RFireCapsuleComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	RFireCapsuleComp->SetGenerateOverlapEvents(true);
@@ -281,7 +280,7 @@ void ABoss_RobotParts3::Tick(float DeltaTime)
 
 	ModifyCollision();
 
-	if (HealthPoint < 0)
+	if (healthpoint < 0)
 	{
 
 		UGameplayStatics::OpenLevel(GetWorld(), FName("BossDead"));

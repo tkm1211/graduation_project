@@ -19,6 +19,8 @@ class GRADUATION_PROJECT_API AENM_Chaichai : public AEnemyBase
 		UFUNCTION()
 		void OnSeePlayer(APawn* Pawn);
 
+		UPROPERTY(EditAnywhere,  Category = "BodyCapsuleComp")
+			class UCapsuleComponent* body;
 
 protected:
 	// Called when the game starts or when spawned

@@ -7,6 +7,8 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
+#include "Anim\/AnimIns_Minimon.h"
+
 AENM_Minimon::AENM_Minimon()
 {
     PrimaryActorTick.bCanEverTick = true;
@@ -19,17 +21,21 @@ AENM_Minimon::AENM_Minimon()
 
     GetMesh()->SetSkeletalMesh(meshasset);
     GetMesh()->SetWorldLocation(FVector(0.f, 0.f, -65.f));
-    GetMesh()->AddWorldRotation(FRotator(0.f, -90.f, 0.f));
+    GetMesh()->SetWorldRotation(FRotator(0.f, -90.f, 0.f));
 
-    static ConstructorHelpers::FClassFinder<UAnimInstance> AnimAsset(TEXT("/Game/Enemy/Minimon/Anim/Minimon_AnimBP"));
+    static ConstructorHelpers::FClassFinder<UAnimInstance> AnimAsset(TEXT("/Game/Enemy/Minimon/Anim/AnimBP_Minimon"));
     TSubclassOf<UAnimInstance> animclass = AnimAsset.Class;
 
     GetMesh()->SetAnimClass(animclass);
+    
 
     GetCapsuleComponent()->SetCapsuleRadius(60.f);
     GetCapsuleComponent()->SetCapsuleHalfHeight(70.f);
 
     GetCharacterMovement()->MaxWalkSpeed = 100.f;
+
+    deadtimer = 0.f;
+
 }
 
 
@@ -51,6 +57,7 @@ void AENM_Minimon::BeginPlay()
 {
     Super::BeginPlay();
 
+
 }
 
 // Called every frame
@@ -58,5 +65,23 @@ void AENM_Minimon::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
+    //GetMesh()->GetAnimInstance();   
+
+    if (healthpoint <= 0.f)
+    {
+        static int lifetimer = 5.0f;
+
+        deadtimer += DeltaTime;
+        if (lifetimer < deadtimer)
+        {
+            AActor* parent = GetAttachParentActor();
+
+            if (parent)
+            {
+                parent->Destroy();
+                Destroy();
+            }
+        }
+    }
 }
 
