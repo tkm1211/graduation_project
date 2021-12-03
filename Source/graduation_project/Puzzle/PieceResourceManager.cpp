@@ -13,10 +13,14 @@ void UPieceResourceManager::Initialize(FSubsystemCollectionBase& Collection)
 		SetPiece(PieceShape::I, PieceType::Power);
 		SetPiece(PieceShape::O, PieceType::Power);
 		SetPiece(PieceShape::L, PieceType::Power);
-		SetPiece(PieceShape::T, PieceType::Power);
-		SetPiece(PieceShape::I, PieceType::Power);
-		SetPiece(PieceShape::O, PieceType::Power);
-		SetPiece(PieceShape::L, PieceType::Power);
+		SetPiece(PieceShape::T, PieceType::Range);
+		SetPiece(PieceShape::I, PieceType::Range);
+		SetPiece(PieceShape::O, PieceType::Range);
+		SetPiece(PieceShape::L, PieceType::Range);
+		SetPiece(PieceShape::T, PieceType::Attribute);
+		SetPiece(PieceShape::I, PieceType::Attribute);
+		SetPiece(PieceShape::O, PieceType::Attribute);
+		SetPiece(PieceShape::L, PieceType::Attribute);
 	}
 }
 
