@@ -10,6 +10,10 @@
 
 #include "../../graduation_projectCharacter.h"
 
+ABaseAIController::ABaseAIController()
+{
+    bAttachToPawn = true;
+}
 
 void ABaseAIController::SearchPlayerActor(const TArray<AActor*>& actors)
 {

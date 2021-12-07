@@ -21,10 +21,18 @@ public:
 	
 	bool reachto_patpt = true;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HP")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "STATUS")
 		float healthpoint = 100.f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "STATUS")
+		float IDLE_WALK_SPEED = 100.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "STATUS")
+		float COMBAT_WALK_SPEED = 250.f;
+
 	bool is_combat = false;
+
+	virtual void CombatON(){}
+	virtual void CombatOFF(){}
 
 	virtual void Damage(float giveDamage);
 

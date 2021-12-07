@@ -54,9 +54,9 @@ void AENM_PatrolPoint::BeginPlay()
 		if (enm)
 		{
 			enm->SetActorTransform(GetActorTransform());
-			enm->SpawnDefaultController();
 
 			enm->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, false));
+			enm->SpawnDefaultController();
 			
 		}
 		else

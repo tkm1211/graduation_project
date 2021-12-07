@@ -19,7 +19,8 @@ EBTNodeResult::Type UBT_T_Encountered::ExecuteTask(UBehaviorTreeComponent& Owner
 
 		if (enm)
 		{
-			enm->is_combat = true;
+			enm->CombatON();
+			
 		}
 
 

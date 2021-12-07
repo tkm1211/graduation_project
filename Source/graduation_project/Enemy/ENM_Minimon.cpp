@@ -2,7 +2,7 @@
 
 
 #include "ENM_Minimon.h"
-#include "E_MinimonAICon.h"
+#include "E_MinimonController.h"
 
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -13,7 +13,7 @@ AENM_Minimon::AENM_Minimon()
 {
     PrimaryActorTick.bCanEverTick = true;
 
-    AIControllerClass = AE_MinimonAIController::StaticClass();
+    AIControllerClass = AE_MinimonController::StaticClass();
 
 
     static ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshAsset(TEXT("/Game/Asset_Arita/Minimon_Anim/Anim_Minimon_mesh"));
@@ -57,6 +57,7 @@ void AENM_Minimon::BeginPlay()
 {
     Super::BeginPlay();
 
+    GetCharacterMovement()->MaxWalkSpeed = IDLE_WALK_SPEED;
 
 }
 
@@ -80,8 +81,31 @@ void AENM_Minimon::Tick(float DeltaTime)
             {
                 parent->Destroy();
                 Destroy();
+
+                AENM_Minimon* enm = GetWorld()->SpawnActor<AENM_Minimon>(AENM_Minimon::StaticClass());
+
+                if (enm)
+                {
+                    enm->SetActorTransform(GetActorTransform());
+
+                    enm->SpawnDefaultController();
+
+                }
+
             }
         }
     }
 }
 
+void AENM_Minimon::CombatON()
+{
+    is_combat = true;
+    GetCharacterMovement()->MaxWalkSpeed = COMBAT_WALK_SPEED;
+}
+
+
+void AENM_Minimon::CombatOFF()
+{
+    is_combat = false;
+    GetCharacterMovement()->MaxWalkSpeed = IDLE_WALK_SPEED;
+}

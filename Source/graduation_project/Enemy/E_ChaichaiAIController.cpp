@@ -17,15 +17,20 @@ AE_ChaichaiAIController::AE_ChaichaiAIController()
 
     UAISenseConfig_Sight* sensor_sight = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("Sensor_Sight"));
     sensor_sight->Implementation = UAISense_Sight::StaticClass();
-    sensor_sight->SightRadius = 800.f;
+    sensor_sight->SightRadius = 1200.f;
     sensor_sight->LoseSightRadius = 1600.f;
+    sensor_sight->DetectionByAffiliation.bDetectEnemies = true;
+    sensor_sight->DetectionByAffiliation.bDetectNeutrals = true;
+    sensor_sight->DetectionByAffiliation.bDetectFriendlies = true;
 
     AISensorComp->ConfigureSense(*sensor_sight);
 
     ConstructorHelpers::FObjectFinder<UBehaviorTree> BTFinder(TEXT("/Game/Enemy/Minimon/Blueprints/BT_Minimon"));
     BehaviorTree = BTFinder.Object;
 
-   
+    AISensorComp->OnPerceptionUpdated.AddDynamic(this, &ABaseAIController::SearchPlayerActor);
+    AISensorComp->OnTargetPerceptionInfoUpdated.AddDynamic(this, &ABaseAIController::LostPlayerActor);
+
 }
 
 void AE_ChaichaiAIController::OnPossess(class APawn* InPawn)

@@ -4,19 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "Base/BaseAIController.h"
-#include "E_MinimonAICon.generated.h"
+#include "E_MinimonController.generated.h"
 
 /**
- *
+ * 
  */
 UCLASS()
-class GRADUATION_PROJECT_API AE_MinimonAIController : public ABaseAIController
+class GRADUATION_PROJECT_API AE_MinimonController : public ABaseAIController
 {
 	GENERATED_BODY()
-
-public:
-
-	AE_MinimonAIController();
+	
+		AE_MinimonController();
 
 	class AENM_Minimon* enm;
 
@@ -35,9 +33,11 @@ public:
 
 	virtual void OnUnPossess() override;
 
+public:
 	void SearchPlayerActor(const TArray<AActor*>& actors) override;
 
 	void LostPlayerActor(const FActorPerceptionUpdateInfo& info) override;
 
 	virtual void Tick(float Deltatime) override;
 };
+

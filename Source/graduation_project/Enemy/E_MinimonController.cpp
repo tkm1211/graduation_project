@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "E_MinimonAICon.h"
+#include "E_MinimonController.h"
 #include "ENM_Minimon.h"
 #include "UObject/ConstructorHelpers.h"
 #include "BehaviorTree/BehaviorTree.h"
@@ -12,7 +12,7 @@
 #include "Base\BaseAIController.h"
 #include "../graduation_projectCharacter.h"
 
-AE_MinimonAIController::AE_MinimonAIController()
+AE_MinimonController::AE_MinimonController()
 {
 
 
@@ -32,12 +32,13 @@ AE_MinimonAIController::AE_MinimonAIController()
     ConstructorHelpers::FObjectFinder<UBehaviorTree> BTFinder(TEXT("/Game/Enemy/Minimon/Blueprints/BT_Minimon"));
     BehaviorTree = BTFinder.Object;
 
-    AISensorComp->OnPerceptionUpdated.AddDynamic(this, &AE_MinimonAIController::SearchPlayerActor);
-    AISensorComp->OnTargetPerceptionInfoUpdated.AddDynamic(this, &AE_MinimonAIController::LostPlayerActor);
+    AISensorComp->OnPerceptionUpdated.AddDynamic(this, &AE_MinimonController::SearchPlayerActor);
+    AISensorComp->OnTargetPerceptionInfoUpdated.AddDynamic(this, &AE_MinimonController::LostPlayerActor);
 
+    bAttachToPawn = true;
 }
 
-void AE_MinimonAIController::OnPossess(class APawn* InPawn)
+void AE_MinimonController::OnPossess(class APawn* InPawn)
 {
     Super::OnPossess(InPawn);
     BlackboardComp->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
@@ -48,7 +49,7 @@ void AE_MinimonAIController::OnPossess(class APawn* InPawn)
 }
 
 
-void AE_MinimonAIController::OnUnPossess()
+void AE_MinimonController::OnUnPossess()
 {
     Super::OnUnPossess();
 
@@ -56,7 +57,7 @@ void AE_MinimonAIController::OnUnPossess()
 }
 
 
-void AE_MinimonAIController::SearchPlayerActor(const TArray<AActor*>& actors)
+void AE_MinimonController::SearchPlayerActor(const TArray<AActor*>& actors)
 {
 
     for (int i = 0; i < actors.Num(); i++)
@@ -79,7 +80,7 @@ void AE_MinimonAIController::SearchPlayerActor(const TArray<AActor*>& actors)
 
 }
 
-void AE_MinimonAIController::LostPlayerActor(const FActorPerceptionUpdateInfo& info)
+void AE_MinimonController::LostPlayerActor(const FActorPerceptionUpdateInfo& info)
 {
 
     if (!info.Stimulus.WasSuccessfullySensed())
@@ -90,8 +91,10 @@ void AE_MinimonAIController::LostPlayerActor(const FActorPerceptionUpdateInfo& i
 
 }
 
-void AE_MinimonAIController::Tick(float Deltatime)
+void AE_MinimonController::Tick(float Deltatime)
 {
+    Super::Tick(Deltatime);
+
     if (enm)
     {
         if (enm->healthpoint <= 0.f)

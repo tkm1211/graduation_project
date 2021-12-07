@@ -27,6 +27,9 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+	void CombatON();
+	void CombatOFF();
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
