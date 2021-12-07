@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "PieceBase.h"
 #include "DropPiece.generated.h"
+
 
 UCLASS()
 class GRADUATION_PROJECT_API ADropPiece : public AActor
@@ -26,10 +28,16 @@ private:
 	float RandMin = 1.0f;
 	float RandMax = 10.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Drop Piece Data", meta = (AllowPrivateAccess = "true"))
+	TEnumAsByte<PieceShape> Shape;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Drop Piece Data", meta = (AllowPrivateAccess = "true"))
+	TEnumAsByte<PieceType> Type;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Drop Piece Data | Fly Speed Rand", meta = (AllowPrivateAccess = "true"))
 	float FlySpeedRandMin = 10.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Drop Piece Data | Fly Speed Rand", meta = (AllowPrivateAccess = "true"))
 	float FlySpeedRandMax = 20.0f;
 
 	float UnabsorbableMaxTime = 0.25f;
@@ -62,6 +70,9 @@ public:
 private:
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
 	void Homing();
 	void JudgeAria();
+
+	void AddPiece();
 };

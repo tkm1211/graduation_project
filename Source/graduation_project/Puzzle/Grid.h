@@ -129,19 +129,27 @@ private:
 	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
 	bool onPieceOrigin = false;
 
+public:
+	static TArray<bool> onDecisionPieces;
+
+private:
+	TArray<APieceOrigin*> pieces;
+	TArray<APieceOrigin*> slotPieces;
+	TArray<FPieceData> pieceDatas;
+	TArray<bool> visibilityPiece;
+	TArray<bool> visibilitySlotPiece;
+
+	// 次にピースを取得するときにpieceDatasの開始番号
+	int currentResourceIndex;
+
 private:
 	TArray<bool> onPanel; // パネルが見えているか？
 	TArray<bool> onPiece; // ピースが置かれているか？
 	TArray<FVector> panelPositions;
 	TArray<APiecePanel*> panels;
-	TArray<APieceOrigin*> pieces;
-	TArray<APieceOrigin*> slotPieces;
-	TArray<FPieceData> pieceDatas;
 	TArray<FDecisionPiece> decisionPieces;
 
 	TArray<bool> visibilityPanel;
-	TArray<bool> visibilityPiece;
-	TArray<bool> visibilitySlotPiece;
 
 	FVector originPiecePosAtBackUp;
 
@@ -154,6 +162,8 @@ private:
 	FString panelFilePath;
 
 	FPlacedPieceData placedPieceData;
+
+	UPieceResourceManager* resourceManager;
 
 	int inputYAxisTimer = 0;
 	int inputXAxisTimer = 0;
@@ -168,6 +178,11 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
 	int backUpNum = 0;
+
+	// WeaponPuzzle用
+	int powerBorderNum = 0;
+	int rangeBorderNum = 0;
+	int attributeBorderNum = 0;
 
 	float panelSize = 0.0f;
 
@@ -219,6 +234,11 @@ public:
 	bool DidPlacePiece();
 	FPlacedPieceData GetPlacedPieceData();
 
+	// WeaponPuzzle用
+	int GetPowerBorderNum();
+	int GetRangeBorderNum();
+	int GetAttributeBorderNum();
+
 private:
 	void UpdatePuzzle(float DeltaTime);
 	void UpdateSlot(float DeltaTime);
@@ -236,6 +256,7 @@ private:
 	void CreatePiecePanel(FVector SpawnLocation);
 
 	bool LoadJson(const FString& Path);
+	void LoadPieces();
 
 	void SetUpPiece(APieceOrigin* piece);
 	void JudgeInput(APieceOrigin* piece);
@@ -245,6 +266,7 @@ private:
 	void PieceUpdateEnd(APieceOrigin* piece);
 	void PieceMove(APieceOrigin* piece);
 	void PieceDecision(APieceOrigin* piece);
+	void PieceDecision(int pieceNum);
 	void PieceCancel(APieceOrigin* piece);
 	void MoveCantBeDecision(APieceOrigin* piece, bool atInitialize);
 	void SetVisiblePiece(int currentPieceNum, bool isVisible, FVector currntPiecePos);

@@ -2,6 +2,7 @@
 
 
 #include "DropPiece.h"
+#include "PieceResourceManager.h"
 #include "Math/UnrealMathUtility.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -74,6 +75,7 @@ void ADropPiece::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UP
 
 	if (OtherActor && OtherActor == playerCharacter)
 	{
+		AddPiece();
 		Destroy();
 	}
 }
@@ -106,6 +108,16 @@ void ADropPiece::JudgeAria()
 		onHoming = true;
 		homingSpeed = 0.0f;
 	}
+}
+
+void ADropPiece::AddPiece()
+{
+	// ゲームインスタンスからリソース用のMediator（仲介役）を取得
+	UGameInstance* instance = GetWorld()->GetGameInstance();
+	auto pieceResourceManger = instance->GetSubsystem<UPieceResourceManager>();
+
+	// 取得したピースの情報を渡す
+	pieceResourceManger->AddPiece(Shape, Type);
 }
 
 void ADropPiece::SetFlyDirection(FVector direction)

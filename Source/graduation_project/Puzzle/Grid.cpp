@@ -12,6 +12,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "../FileStream/JsonFunctionLibrary.h"
+#include <ThirdParty/Vivox/vivox-sdk/Include/Vxc.h>
+
+
+TArray<bool> AGrid::onDecisionPieces;
 
 
 // Sets default values
@@ -43,7 +47,13 @@ void AGrid::Initialize()
 		widthNum = 0;
 		heightNum = 0;
 
+		powerBorderNum = 0;
+		rangeBorderNum = 0;
+		attributeBorderNum = 0;
+
 		backUpNum = -1;
+
+		currentResourceIndex = 0;
 
 		panelSize = 0.0f;
 
@@ -72,6 +82,11 @@ void AGrid::Initialize()
 		forwardVec = GetActorRightVector();
 		rightVec = GetActorForwardVector();
 		upVec = GetActorUpVector();
+
+		UGameInstance* instance = GetWorld()->GetGameInstance();
+		resourceManager = instance->GetSubsystem<UPieceResourceManager>();
+
+		onDecisionPieces.Empty();
 	}
 
 	// パネルデータ取得
@@ -83,29 +98,6 @@ void AGrid::Initialize()
 	{
 		FVector SpawnLocation = GetLocation();
 		CreatePanels(SpawnLocation);
-	}
-
-	// ピース生成
-	{
-		FVector SpawnLocation = GetLocation();
-
-		SetPanelNumAtOriginPiece(panelPositions.Num() / 2);
-
-		UGameInstance* instance = GetWorld()->GetGameInstance();
-		auto resourceManager = instance->GetSubsystem<UPieceResourceManager>();
-		auto datas = resourceManager->GetPieceResourceDatas();
-		for (auto data : datas)
-		{
-			CreatePiece(data, SpawnLocation);
-		}
-
-		SetVisiblePiece(selectPieceNum, true, pieces[selectPieceNum]->GetActorLocation());
-	}
-
-	// ピースセットアップ
-	{
-		auto piece = pieces[selectPieceNum];
-		SetUpPiece(piece);
 	}
 
 	// 入力バインド
@@ -142,6 +134,17 @@ void AGrid::Tick(float DeltaTime)
 	forwardVec = GetActorRightVector();
 	rightVec = GetActorForwardVector();
 	upVec = GetActorUpVector();
+
+	// リソースマネージャーからピース情報を取得
+	LoadPieces();
+
+	// ピースがなければ、早期リターン
+	if (pieces.Num() == 0) return;
+
+	for (int i = 0; i < pieces.Num(); ++i)
+	{
+		PieceDecision(i);
+	}
 
 #if 1
 	// グリッド移動
@@ -638,20 +641,50 @@ void AGrid::PieceDecision(APieceOrigin* piece)
 {
 	if (onPieceDecision && canPieceDecision && !onPieceInPiece)
 	{
+		int pastSelectPieceNum = selectPieceNum;
+
 		didPlacePiece = true;
 		{
 			placedPieceData.widthNum = widthNum;
 			placedPieceData.heightNum = heightNum;
 			placedPieceData.placedPanelNum = panelNumAtOriginPiece;
+			placedPieceData.placedPiecePanelNum = piece->GetPieceNums().Num();
 			placedPieceData.turnCnt = piece->GetTurnCnt();
 			placedPieceData.shape = pieceDatas[selectPieceNum].shape;
 			placedPieceData.type = pieceDatas[selectPieceNum].type;
 		}
 
+		switch (placedPieceData.type)
+		{
+		case Power:
+			powerBorderNum += placedPieceData.placedPiecePanelNum;
+			break;
+
+		case Range:
+			rangeBorderNum += placedPieceData.placedPiecePanelNum;
+			break;
+
+		case Attribute:
+			attributeBorderNum += placedPieceData.placedPiecePanelNum;
+			break;
+
+		default: break;
+		}
+
+		FDecisionPiece tempDecisionPiece;
+		{
+			tempDecisionPiece.pieceNum = pastSelectPieceNum;
+			tempDecisionPiece.panelNum = panelNumAtOriginPiece;
+		}
+		decisionPieces.Add(tempDecisionPiece);
+
+		onDecisionPieces[pastSelectPieceNum] = true;
+
+		++backUpNum;
+
+
 		piece->PieceDecision();
 		pieceDatas[selectPieceNum].isPlacement = true;
-
-		int pastSelectPieceNum = selectPieceNum;
 
 		for (int i = 0; i < slotPieces.Num(); ++i)
 		{
@@ -662,15 +695,6 @@ void AGrid::PieceDecision(APieceOrigin* piece)
 				break;
 			}
 		}
-
-		FDecisionPiece tempDecisionPiece;
-		{
-			tempDecisionPiece.pieceNum = pastSelectPieceNum;
-			tempDecisionPiece.panelNum = panelNumAtOriginPiece;
-		}
-		decisionPieces.Add(tempDecisionPiece);
-
-		++backUpNum;
 
 		// ピース セットアップ
 		if (pastSelectPieceNum != selectPieceNum)
@@ -699,6 +723,45 @@ void AGrid::PieceDecision(APieceOrigin* piece)
 	}
 }
 
+void AGrid::PieceDecision(int pieceNum)
+{
+	if (!onDecisionPieces[pieceNum]) return;
+	if (pieceDatas[pieceNum].isPlacement) return;
+
+	int pastSelectPieceNum = pieceNum;
+
+	pieces[pieceNum]->PieceDecision();
+	pieces[pieceNum]->GetRenderComponent()->SetVisibility(false);
+	pieceDatas[pieceNum].isPlacement = true;
+
+	if (pieceNum == selectPieceNum)
+	{
+		for (int i = 0; i < slotPieces.Num(); ++i)
+		{
+			++selectPieceNum;
+			if (pieces.Num() - 1 < selectPieceNum) selectPieceNum = 0;
+			if (!pieceDatas[selectPieceNum].isPlacement)
+			{
+				break;
+			}
+		}
+	}
+
+	// ピース セットアップ
+	if (pieceNum != selectPieceNum)
+	{
+		SetVisiblePiece(selectPieceNum, true, pieces[pastSelectPieceNum]->GetActorLocation());
+		SetUpPiece(pieces[selectPieceNum]);
+	}
+	else
+	{
+		slotPieces[selectPieceNum]->GetRenderComponent()->SetVisibility(false);
+		visibilitySlotPiece[selectPieceNum] = false;
+
+		selectPieceNum = -1;
+	}
+}
+
 void AGrid::PieceCancel(APieceOrigin* piece)
 {
 	if (!onPieceCancel) return; // 入力判定
@@ -714,6 +777,25 @@ void AGrid::PieceCancel(APieceOrigin* piece)
 	// 一個前のピースの情報に現状を戻す
 	selectPieceNum = decisionPieces[backUpNum].pieceNum;
 	panelNumAtOriginPiece = decisionPieces[backUpNum].panelNum;
+	onDecisionPieces[selectPieceNum] = false;
+
+	// 武器パズルの情報も戻す
+	switch (placedPieceData.type)
+	{
+	case Power:
+		powerBorderNum -= placedPieceData.placedPiecePanelNum;
+		break;
+
+	case Range:
+		rangeBorderNum -= placedPieceData.placedPiecePanelNum;
+		break;
+
+	case Attribute:
+		attributeBorderNum -= placedPieceData.placedPiecePanelNum;
+		break;
+
+	default: break;
+	}
 
 	// パネルに配置できるように変更
 	auto pieceNums = pieces[selectPieceNum]->GetPieceNums();
@@ -1581,6 +1663,45 @@ bool AGrid::LoadJson(const FString& Path)
 	return true;
 }
 
+void AGrid::LoadPieces()
+{
+	// ピース生成
+	bool addPiece = false;
+	{
+		FVector SpawnLocation = GetLocation();
+
+		while (resourceManager->CanGetPieceResourceData(currentResourceIndex))
+		{
+			if (onDecisionPieces.Num() == pieces.Num()) onDecisionPieces.Add(false);
+
+			CreatePiece(resourceManager->GetPieceResourceData(currentResourceIndex), SpawnLocation);
+			++currentResourceIndex;
+			addPiece = true;
+		}
+
+		int nextPieceNum = pieces.Num() - 1;
+		if (selectPieceNum == -1 && !pieceDatas[nextPieceNum].isPlacement)
+		{
+			selectPieceNum = nextPieceNum;
+		}
+
+		if (0 < pieces.Num() && addPiece)
+		{
+			SetPanelNumAtOriginPiece(panelPositions.Num() / 2);
+			SetVisiblePiece(selectPieceNum, true, pieces[selectPieceNum]->GetActorLocation());
+		}
+	}
+
+	// ピースセットアップ
+	{
+		if (0 < pieces.Num() && addPiece)
+		{
+			auto piece = pieces[selectPieceNum];
+			SetUpPiece(piece);
+		}
+	}
+}
+
 void AGrid::CreatePanels(FVector SpawnLocation)
 {
 	FVector Location = SpawnLocation;
@@ -1835,4 +1956,19 @@ bool AGrid::DidPlacePiece()
 FPlacedPieceData AGrid::GetPlacedPieceData()
 {
 	return placedPieceData;
+}
+
+int AGrid::GetPowerBorderNum()
+{
+	return powerBorderNum;
+}
+
+int AGrid::GetRangeBorderNum()
+{
+	return rangeBorderNum;
+}
+
+int AGrid::GetAttributeBorderNum()
+{
+	return attributeBorderNum;
 }

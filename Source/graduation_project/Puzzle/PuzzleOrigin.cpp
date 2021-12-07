@@ -28,7 +28,7 @@ void APuzzleOrigin::BeginPlay()
 	onPuzzle = false;
 
 	// 入力バインド
-	{
+	/*{
 		APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
 		if (PlayerController)
 		{
@@ -36,7 +36,7 @@ void APuzzleOrigin::BeginPlay()
 			check(InputComponent);
 			InputComponent->BindAction("Puzzle", IE_Pressed, this, &APuzzleOrigin::OnPuzzle).bConsumeInput = false;
 		}
-	}
+	}*/
 
 	// カメラ生成
 	{

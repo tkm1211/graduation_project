@@ -39,10 +39,16 @@ public:
 	// ゲーム開始時の初期化
 	void InitializeAtGameStart();
 
-	// ピースを取得した時に設定
-	void SetPiece(PieceShape shape, PieceType type);
+	// ピースを取得した時に追加
+	void AddPiece(PieceShape shape, PieceType type);
 
 public:
 	// 現在、保持しているピースをすべて取得
 	TArray<FPieceResourceData> GetPieceResourceDatas() { return pieceDatas; }
+
+	// 現在、保持しているピースを取得
+	FPieceResourceData GetPieceResourceData(int index) { return pieceDatas[index]; }
+
+	// ピースを取得できるか？
+	bool CanGetPieceResourceData(int index) { return index != pieceDatas.Num(); }
 };

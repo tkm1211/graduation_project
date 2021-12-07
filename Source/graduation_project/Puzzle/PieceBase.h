@@ -36,6 +36,9 @@ struct FPlacedPieceData
 
 	int placedPanelNum = 0;
 
+	// 配置したピースのパネル数（例：T字なら4マス。基本的にどのピースでも4マス分。）
+	int placedPiecePanelNum = 0;
+
 	int turnCnt = 0;
 
 	// 形

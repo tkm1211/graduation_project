@@ -8,20 +8,22 @@
 void UPieceResourceManager::Initialize(FSubsystemCollectionBase& Collection)
 {
 	pieceDatas.Empty();
+#if 0
 	{
-		SetPiece(PieceShape::T, PieceType::Power);
-		SetPiece(PieceShape::I, PieceType::Power);
-		SetPiece(PieceShape::O, PieceType::Power);
-		SetPiece(PieceShape::L, PieceType::Power);
-		SetPiece(PieceShape::T, PieceType::Range);
-		SetPiece(PieceShape::I, PieceType::Range);
-		SetPiece(PieceShape::O, PieceType::Range);
-		SetPiece(PieceShape::L, PieceType::Range);
-		SetPiece(PieceShape::T, PieceType::Attribute);
-		SetPiece(PieceShape::I, PieceType::Attribute);
-		SetPiece(PieceShape::O, PieceType::Attribute);
-		SetPiece(PieceShape::L, PieceType::Attribute);
+		AddPiece(PieceShape::T, PieceType::Power);
+		AddPiece(PieceShape::I, PieceType::Power);
+		AddPiece(PieceShape::O, PieceType::Power);
+		AddPiece(PieceShape::L, PieceType::Power);
+		AddPiece(PieceShape::T, PieceType::Range);
+		AddPiece(PieceShape::I, PieceType::Range);
+		AddPiece(PieceShape::O, PieceType::Range);
+		AddPiece(PieceShape::L, PieceType::Range);
+		AddPiece(PieceShape::T, PieceType::Attribute);
+		AddPiece(PieceShape::I, PieceType::Attribute);
+		AddPiece(PieceShape::O, PieceType::Attribute);
+		AddPiece(PieceShape::L, PieceType::Attribute);
 	}
+#endif
 }
 
 // èIóπâª
@@ -35,7 +37,7 @@ void UPieceResourceManager::InitializeAtGameStart()
 	pieceDatas.Empty();
 }
 
-void UPieceResourceManager::SetPiece(PieceShape shape, PieceType type)
+void UPieceResourceManager::AddPiece(PieceShape shape, PieceType type)
 {
 	FPieceResourceData data;
 	{
