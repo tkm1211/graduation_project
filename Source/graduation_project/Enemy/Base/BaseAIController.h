@@ -16,6 +16,8 @@ class GRADUATION_PROJECT_API ABaseAIController : public AAIController
 	GENERATED_BODY()
 	
 public:
+	ABaseAIController();
+
 	UPROPERTY(EditDefaultsOnly, Category = AI)
 		class UBehaviorTree* BehaviorTree;
 

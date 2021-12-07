@@ -43,9 +43,8 @@ AENM_Chaichai::AENM_Chaichai()
     underspace->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
     underspace->SetGenerateOverlapEvents(false);
 
-    GetCharacterMovement()->MaxWalkSpeed = 100.f;
 
-    GetCharacterMovement()->MaxFlySpeed = 100.f;
+    GetCharacterMovement()->MaxFlySpeed = IDLE_WALK_SPEED;
 
     GetCharacterMovement()->DefaultLandMovementMode = EMovementMode::MOVE_Flying;
 }
