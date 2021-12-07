@@ -3,20 +3,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
 #include "PuzzleOrigin.h"
-#include "WeponPuzzle.generated.h"
+#include "WeaponPuzzle.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
-class GRADUATION_PROJECT_API AWeponPuzzle : public APuzzleOrigin
+class GRADUATION_PROJECT_API AWeaponPuzzle : public APuzzleOrigin
 {
 	GENERATED_BODY()
 
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle", meta = (AllowPrivateAccess = "true"))
+	bool onPuzzle = false;
+
 public:
 	// Sets default values for this actor's properties
-	AWeponPuzzle();
+	AWeaponPuzzle();
 
 protected:
 	// Called when the game starts or when spawned
@@ -27,6 +30,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
+	// 配置したピース情報を武器用のMediator（仲介役）に渡す
+	void NotifyMediatorOfPlacedPieces();
+
 	void DoBeginPuzzle() override;
 	void DoEndPuzzle() override;
 };
