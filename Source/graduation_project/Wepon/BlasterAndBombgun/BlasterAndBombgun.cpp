@@ -6,6 +6,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "../../graduation_projectCharacter.h"
 #include "../BaseAmmo.h"
+#include "DrawDebugHelpers.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "UObject/NameTypes.h"
 #include "BlasterAndBombgun.h"
 
 
@@ -17,14 +21,25 @@ ABlasterAndBombgun::ABlasterAndBombgun()
 void ABlasterAndBombgun::BeginPlay()
 {
 	Super::BeginPlay();
+
 }
 
 void ABlasterAndBombgun::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
+
+	if (_playerCharacter && _playerCharacter->isDead) return;
+
 
 	// 弾発射
 	ShotFire(DeltaTime);
+
+	fireTimer -= DeltaTime;
+	if (fireTimer <= 0.0f) fireTimer = 0.0f;
+
+	Super::Tick(DeltaTime);
+
 }
 
 void ABlasterAndBombgun::Fire()
@@ -32,35 +47,70 @@ void ABlasterAndBombgun::Fire()
 	// 弾発射のコールを受けた
 	Super::Fire();
 
-	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	// 1発だけ出す
+	if (ammoClass)
+	{
+		SpawnShot();
+	}
+}
 
+// 初弾の発射
+void ABlasterAndBombgun::FirstFire()
+{
+	// キャラクターが存在しいているかどうか
+	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
 
 	if (!_playerCharacter) return;
-	// 1発だけ出す
+
+	// エイム中かどうか
 	if (ammoClass && _playerCharacter->isAim)
 	{
-		FRotator _newRotator = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
-		FVector _fireLoc = firePoint->GetComponentLocation();
-		FRotator _fireRot = firePoint->GetComponentRotation();
-
-		ABaseAmmo* _tempAmmoBase = GetWorld()->SpawnActor<ABaseAmmo>(ammoClass, _fireLoc, _newRotator);
-
-		_tempAmmoBase->SetOwner(this);
+		if (Super::FirstShotEnable())
+		{
+			firstFireTimer = fireDelayTime;
+			Super::Fire();
+			SpawnShot();
+		}
+		else
+		{
+			onFire = true;
+		}
+	}
+	else
+	{
+		Super::FirstFire();
 	}
 
 }
 
+// 持続的に弾を出す
 void ABlasterAndBombgun::ShotFire(float DeltaTime)
 {
 	if (!onFire) return;
 
-	if (fireDelayTime < fireTimer)
+	// カウントして弾を出す
+	if (fireTimer <= 0)
 	{
 		Fire();
 	}
-	else
-	{
-		fireTimer += 1.0f * DeltaTime;
-	}
+
+}
+
+// 弾生成
+void ABlasterAndBombgun::SpawnShot()
+{
+	// プレイヤーの向きと発射位置取得
+	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
+
+	FRotator _newRotator;
+	if (_playerCharacter->isAim)  _newRotator = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
+	else  _newRotator = _playerCharacter->GetActorRotation();
+	FVector _fireLoc = firePoint->GetComponentLocation();
+
+	//　スポーンさせる
+	ABaseAmmo* _tempAmmoBase = GetWorld()->SpawnActor<ABaseAmmo>(ammoClass, _fireLoc, _newRotator);
+	_tempAmmoBase->SetOwner(this);
+	_tempAmmoBase->SetParameter(damage, effectiveRange, rangeMag, lifeTime);
 }

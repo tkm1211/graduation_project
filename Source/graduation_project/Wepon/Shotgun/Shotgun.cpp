@@ -53,7 +53,6 @@ void AShotgun::Fire()
 	if (ammoClass)
 	{
 		SpawnShot();
-		UE_LOG(LogTemp, Warning, TEXT("in"));
 	}
 }
 

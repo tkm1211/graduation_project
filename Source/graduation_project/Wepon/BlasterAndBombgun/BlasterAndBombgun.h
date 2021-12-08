@@ -19,6 +19,9 @@ public:
 public:
 	ABlasterAndBombgun();
 
+private:
+	void SpawnShot();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -28,6 +31,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void Fire() override;
+	void FirstFire() override;
 	void ShotFire(float DeltaTime) override;
-
 };

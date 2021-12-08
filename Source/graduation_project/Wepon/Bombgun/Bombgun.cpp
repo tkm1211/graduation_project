@@ -32,13 +32,13 @@ void ABombgun::Tick(float DeltaTime)
 
 	if (_playerCharacter && _playerCharacter->isDead) return;
 
-	Super::Tick(DeltaTime);
-
 	// ’e”­ŽË
 	ShotFire(DeltaTime);
-	fireTimer -= 1.0f * DeltaTime;
 
-	if (fireTimer < 0.0f) fireTimer = -1.0f;
+	fireTimer -= DeltaTime;
+	if (fireTimer <= 0.0f) fireTimer = 0.0f;
+
+	Super::Tick(DeltaTime);
 }
 
 void ABombgun::Fire()
@@ -91,12 +91,9 @@ void ABombgun::ShotFire(float DeltaTime)
 	if (!onFire) return;
 
 	// ƒJƒEƒ“ƒg‚µ‚Ä’e‚ðo‚·
-	if (0 > fireTimer)
+	if (fireTimer <= 0)
 	{
 		Fire();
-	}
-	else
-	{
 	}
 }
 

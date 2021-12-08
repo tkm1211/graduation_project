@@ -48,15 +48,19 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AmmoFire")
 		float fireDelayTime;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ProjectileMovementComponent")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Timer")
+	float firstFireTimer;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Timer")
 	float fireTimer;
 	
-	float firstFireTimer;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Timer")
 	bool onFire;
 
 public:	
 	// Sets default values for this actor's properties
 	ABaseWepon();
+
+	USceneComponent* GetFirePoint() { return firePoint; }
 
 protected:
 	// Called when the game starts or when spawned

@@ -8,7 +8,7 @@
 
 class ABaseWepon;
 class UAnimMontage;
-class AWeponPuzzle;
+class AWeaponPuzzle;
 class AGimmickPuzzle;
 
 UCLASS(config = Game)
@@ -58,7 +58,7 @@ public:
 		int32 weponNumber;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wepon")
-		AWeponPuzzle* weponPuzzle;
+		AWeaponPuzzle* weaponPuzzle;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wepon")
 		FString jumpName;
@@ -86,7 +86,7 @@ public:
 		FVector asjustWeponPuzzleLoc;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "WeponPuzzle")
-		TSubclassOf<AWeponPuzzle> weponPuzzleClass;
+		TSubclassOf<AWeaponPuzzle> weponPuzzleClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AnimMontage")
 		TArray<UAnimMontage*> recoilMontages;
@@ -154,6 +154,7 @@ public:
 
 	void Damage(float giveDamage, FVector hitPosition);
 
+	ABaseWepon* GetUseWepone() { return useWepon; }
 
 	UFUNCTION()
 		void BeginOverlap(

@@ -3,7 +3,9 @@
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "EffectSystem.h"
-
+#include "../graduation_projectCharacter.h"
+#include "Kismet/GameplayStatics.h"
+#include "../Wepon/BaseWepon.h"
 
 // Sets default values
 AEffectSystem::AEffectSystem()
@@ -24,6 +26,7 @@ void AEffectSystem::BeginPlay()
 void AEffectSystem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
 
 }
 
@@ -53,7 +56,11 @@ void AEffectSystem::SpawnEffect(EffectType type, FVector location)
 	case EffectType::ShotGunMuzzuleFlash:
 		if (shotGunMuzzuleFlash)
 		{
-			UNiagaraFunctionLibrary::SpawnSystemAttached(shotGunMuzzuleFlash, RootComponent, FName("None"), location, FRotator(0, 0, 0), EAttachLocation::Type::KeepWorldPosition, false);
+			ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+			Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
+			float Z = _playerCharacter->GetActorRotation().Yaw * -1.0f;
+			float X = _playerCharacter->GetUseWepone()->GetFirePoint()->GetSocketRotation(FName("None")).Roll * -1;
+			UNiagaraFunctionLibrary::SpawnSystemAttached(shotGunMuzzuleFlash, RootComponent, FName("None"), location, FRotator(0.0f, 0.0f, Z), EAttachLocation::Type::KeepWorldPosition, false);
 		}
 		break;
 
@@ -67,6 +74,84 @@ void AEffectSystem::SpawnEffect(EffectType type, FVector location)
 		if (bombGunMuzzuleFlash)
 		{
 			UNiagaraFunctionLibrary::SpawnSystemAttached(bombGunMuzzuleFlash, RootComponent, FName("None"), location, FRotator(0, 0, 0), EAttachLocation::Type::KeepWorldPosition, false);
+		}
+		break;
+
+	case EffectType::BlasterAndBombGunAmmoExplosion:
+		if (blasterAndBombGunAmmoExplosion)
+		{
+			UNiagaraFunctionLibrary::SpawnSystemAttached(blasterAndBombGunAmmoExplosion, RootComponent, FName("None"), location, FRotator(0, 0, 0), EAttachLocation::Type::KeepWorldPosition, false);
+		}
+		break;
+	case EffectType::BlasterAndBombGunMuzzuleFlash:
+		if (blasterAndBombGunMuzzuleFlash)
+		{
+			UNiagaraFunctionLibrary::SpawnSystemAttached(blasterAndBombGunMuzzuleFlash, RootComponent, FName("None"), location, FRotator(0, 0, 0), EAttachLocation::Type::KeepWorldPosition, false);
+		}
+		break;
+
+	case EffectType::BlasterAndShotGunAmmoExplosion:
+		if (blasterAndShotGunAmmoExplosion)
+		{
+			UNiagaraFunctionLibrary::SpawnSystemAttached(blasterAndShotGunAmmoExplosion, RootComponent, FName("None"), location, FRotator(0, 0, 0), EAttachLocation::Type::KeepWorldPosition, false);
+		}
+		break;
+	case EffectType::BlasterAndShotGunMuzzuleFlash:
+		if (blasterAndShotGunMuzzuleFlash)
+		{
+			UNiagaraFunctionLibrary::SpawnSystemAttached(blasterAndShotGunMuzzuleFlash, RootComponent, FName("None"), location, FRotator(0, 0, 0), EAttachLocation::Type::KeepWorldPosition, false);
+		}
+		break;
+
+	case EffectType::ShotgunAndBombGunAmmoExplosion:
+		if (shotgunAndBombGunAmmoExplosion)
+		{
+			UNiagaraFunctionLibrary::SpawnSystemAttached(shotgunAndBombGunAmmoExplosion, RootComponent, FName("None"), location, FRotator(0, 0, 0), EAttachLocation::Type::KeepWorldPosition, false);
+		}
+		break;
+	case EffectType::ShotgunAndBombGunMuzzuleFlash:
+		if (shotgunAndBombGunAmmoMuzzuleFlash)
+		{
+			UNiagaraFunctionLibrary::SpawnSystemAttached(shotgunAndBombGunAmmoMuzzuleFlash, RootComponent, FName("None"), location, FRotator(0, 0, 0), EAttachLocation::Type::KeepWorldPosition, false);
+		}
+		break;
+
+	case EffectType::RfBlasterAmmoExplosion:
+		if (rfBlasterAmmoExplosion)
+		{
+			UNiagaraFunctionLibrary::SpawnSystemAttached(rfBlasterAmmoExplosion, RootComponent, FName("None"), location, FRotator(0, 0, 0), EAttachLocation::Type::KeepWorldPosition, false);
+		}
+		break;
+	case EffectType::RfBlasterMuzzuleFlash:
+		if (rfBlasterMuzzuleFlash)
+		{
+			UNiagaraFunctionLibrary::SpawnSystemAttached(rfBlasterMuzzuleFlash, RootComponent, FName("None"), location, FRotator(0, 0, 0), EAttachLocation::Type::KeepWorldPosition, false);
+		}
+		break;
+
+	case EffectType::RfBombGunAmmoExplosion:
+		if (rfBombGunAmmoExplosion)
+		{
+			UNiagaraFunctionLibrary::SpawnSystemAttached(rfBombGunAmmoExplosion, RootComponent, FName("None"), location, FRotator(0, 0, 0), EAttachLocation::Type::KeepWorldPosition, false);
+		}
+		break;
+	case EffectType::RfBombGunMuzzuleFlash:
+		if (rfBombGunMuzzuleFlash)
+		{
+			UNiagaraFunctionLibrary::SpawnSystemAttached(rfBombGunMuzzuleFlash, RootComponent, FName("None"), location, FRotator(0, 0, 0), EAttachLocation::Type::KeepWorldPosition, false);
+		}
+		break;
+
+	case EffectType::RfShotGunAmmoExplosion:
+		if (rfShotGunAmmoExplosion)
+		{
+			UNiagaraFunctionLibrary::SpawnSystemAttached(rfShotGunAmmoExplosion, RootComponent, FName("None"), location, FRotator(0, 0, 0), EAttachLocation::Type::KeepWorldPosition, false);
+		}
+		break;
+	case EffectType::RfShotGunMuzzuleFlash:
+		if (rfShotGunMuzzuleFlash)
+		{
+			UNiagaraFunctionLibrary::SpawnSystemAttached(rfShotGunMuzzuleFlash , RootComponent, FName("None"), location, FRotator(0, 0, 0), EAttachLocation::Type::KeepWorldPosition, false);
 		}
 		break;
 	default:

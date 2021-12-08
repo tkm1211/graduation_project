@@ -73,6 +73,12 @@ void ABaseWepon:: Fire()
 		if (weponName == FString("Blaster")) _es->SpawnEffect(EffectType::BlasterMuzzuleFlash, firePoint->GetComponentLocation());
 		else if (weponName == FString("BombGun")) _es->SpawnEffect(EffectType::BombGunMuzzuleFlash, firePoint->GetComponentLocation());
 		else if (weponName == FString("ShotGun")) _es->SpawnEffect(EffectType::ShotGunMuzzuleFlash, firePoint->GetComponentLocation());
+		else if (weponName == FString("BlasterAndBombGun")) _es->SpawnEffect(EffectType::BlasterAndBombGunMuzzuleFlash, firePoint->GetComponentLocation());
+		else if (weponName == FString("BlasterAndShotGun")) _es->SpawnEffect(EffectType::BlasterAndShotGunMuzzuleFlash, firePoint->GetComponentLocation());
+		else if (weponName == FString("ShotGunAndBombGun")) _es->SpawnEffect(EffectType::ShotgunAndBombGunMuzzuleFlash, firePoint->GetComponentLocation());
+		else if (weponName == FString("RfBlaster")) _es->SpawnEffect(EffectType::RfBlasterMuzzuleFlash, firePoint->GetComponentLocation());
+		else if (weponName == FString("RfBombGun")) _es->SpawnEffect(EffectType::RfBombGunMuzzuleFlash, firePoint->GetComponentLocation());
+		else if (weponName == FString("RfShotGun")) _es->SpawnEffect(EffectType::RfShotGunMuzzuleFlash, firePoint->GetComponentLocation());
 	}
 
 }

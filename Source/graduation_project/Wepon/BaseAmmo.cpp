@@ -105,9 +105,15 @@ void ABaseAmmo::AmmoDestroy()
 	if (foundActors[0])
 	{
 		AEffectSystem* _es = Cast<AEffectSystem>(foundActors[0]);
-		if(ammoName == FString("Blaster")) _es->SpawnEffect(EffectType::BlasterAmmoExplosion, GetActorLocation());
-		else if(ammoName == FString("BombGun")) _es->SpawnEffect(EffectType::BombGunAmmoExplosion, GetActorLocation());
-		else if(ammoName == FString("ShotGun")) _es->SpawnEffect(EffectType::ShotGunAmmoExplosion, GetActorLocation());
+		if (ammoName == FString("Blaster")) _es->SpawnEffect(EffectType::BlasterAmmoExplosion, GetActorLocation());
+		else if (ammoName == FString("BombGun")) _es->SpawnEffect(EffectType::BombGunAmmoExplosion, GetActorLocation());
+		else if (ammoName == FString("ShotGun")) _es->SpawnEffect(EffectType::ShotGunAmmoExplosion, GetActorLocation());
+		else if (ammoName == FString("BlasterAndBombGun")) _es->SpawnEffect(EffectType::BlasterAndBombGunAmmoExplosion, GetActorLocation());
+		else if (ammoName == FString("BlasterAndShotGun")) _es->SpawnEffect(EffectType::BlasterAndShotGunAmmoExplosion, GetActorLocation());
+		else if (ammoName == FString("ShotGunAndBombGun")) _es->SpawnEffect(EffectType::ShotgunAndBombGunAmmoExplosion, GetActorLocation());
+		else if (ammoName == FString("RfBlaster")) _es->SpawnEffect(EffectType::RfBlasterAmmoExplosion, GetActorLocation());
+		else if (ammoName == FString("RfBombGun")) _es->SpawnEffect(EffectType::RfBombGunAmmoExplosion, GetActorLocation());
+		else if (ammoName == FString("RfShotGun")) _es->SpawnEffect(EffectType::RfShotGunAmmoExplosion, GetActorLocation());
 	}
 
 	ammoExplosion.Broadcast();
