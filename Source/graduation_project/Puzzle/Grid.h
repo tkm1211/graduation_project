@@ -55,8 +55,9 @@ private:
 	const float OriginPanelSize = 128.0f;
 	const float AdjustPiece = 0.1f;
 	const float AdjustSlotPieceNum = 5.0f;
+	const float AdjustSlotPieceSize = 0.5f;
 	const float AdjustSideSlotPiece = 175.0f;
-	const float AdjustSideSlotPieceHeight = 0.5f;
+	const float AdjustSideSlotPieceHeight = 0.35f;
 	const int MaxWidthNum = 20;
 	const int MaxHeightNum = 20;
 	const int InputIntervalTime = 15;
@@ -173,6 +174,8 @@ private:
 	int panelNumAtBackUp = 0;
 	int slotLeftNum = 0;
 	int slotRightNum = 0;
+	int slotMostLeftNum = 0;
+	int slotMostRightNum = 0;
 	int widthNum = 0;
 	int heightNum = 0;
 
@@ -258,7 +261,7 @@ private:
 	bool LoadJson(const FString& Path);
 	void LoadPieces();
 
-	void SetUpPiece(APieceOrigin* piece);
+	void SetUpPiece(APieceOrigin* piece, PieceShape shape);
 	void JudgeInput(APieceOrigin* piece);
 	void JudgePieceDecision(APieceOrigin* piece);
 	void PieceUpdateBegin(APieceOrigin* piece);
@@ -274,9 +277,11 @@ private:
 	void AddPanelNumAtOriginPiece(int addPanelNum);
 	void SelectSlotPiece(int currentPieceNum);
 	void SelectPieceNum(APieceOrigin* piece);
+	void PieceTurnLock(APieceOrigin* piece, PieceShape shape);
 	void AdjustPiecePos(int currentPieceNum);
 	void AdjustPiecePos(FVector& piecePos, PieceShape type, int turnCnt);
-	void AdjustPiecePosFromOrigin(FVector& piecePos, PieceShape type, int turnCnt);
+	void AdjustPiecePosFromOrigin(FVector& piecePos, float adjustSize, PieceShape type, int turnCnt);
+	void AdjustSlotPiecePosFromOrigin(FVector& piecePos, float adjustSize, PieceShape type, int turnCnt);
 	void AdjustOriginPos(FVector& originPos, int panelNum, TArray<int> pieceNums, PieceShape type, int turnCnt);
 	void RangeLimit(APieceOrigin* piece);
 	void ResetFlags();

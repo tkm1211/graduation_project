@@ -57,6 +57,7 @@ protected:
 	bool onPieceRight = false;
 	bool onPieceTurnLeft = false;
 	bool onPieceTurnRight = false;
+	bool onTurnLock = false;
 
 public:
 	void Initialize(int selectNum, int panelWidthNum, int panelHegihtNum, float onePieceSize);
@@ -74,6 +75,7 @@ public:
 	void OnPieceTurnRight();
 	void TurnLeft();
 	void TurnRight();
+	void TurnLock(int turnCnt);
 
 	int GetTurnCnt() { return mainData.turnCnt; }
 

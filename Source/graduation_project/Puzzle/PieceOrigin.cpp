@@ -8,6 +8,8 @@ void APieceOrigin::Initialize(int selectNum, int panelWidthNum, int panelHegihtN
 {
 	mainData.turnCnt = 0;
 
+	onTurnLock = false;
+
 	pieceSize = onePieceSize;
 	panelWidth = panelWidthNum;
 	panelHegiht = panelHegihtNum;
@@ -120,13 +122,24 @@ void APieceOrigin::OnPieceTurnRight()
 
 void APieceOrigin::TurnLeft()
 {
+	if (onTurnLock) return;
+
 	TurnPiece(-1);
 	DoTurnLeft();
 }
 
 void APieceOrigin::TurnRight()
 {
+	if (onTurnLock) return;
+
 	TurnPiece(1);
+	DoTurnRight();
+}
+
+void APieceOrigin::TurnLock(int turnCnt)
+{
+	onTurnLock = true;
+	mainData.turnCnt = turnCnt;
 	DoTurnRight();
 }
 
