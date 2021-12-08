@@ -36,15 +36,10 @@ AE_ChaichaiAIController::AE_ChaichaiAIController()
 void AE_ChaichaiAIController::OnPossess(class APawn* InPawn)
 {
     Super::OnPossess(InPawn);
-    BlackboardComp->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
-
-    BehaviorComp->StartTree(*BehaviorTree);
 }
-
 
 void AE_ChaichaiAIController::OnUnPossess()
 {
     Super::OnUnPossess();
-    BehaviorComp->StopTree();
 }
 

@@ -57,7 +57,8 @@ void AENM_PatrolPoint::BeginPlay()
 
 			enm->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, false));
 			enm->SpawnDefaultController();
-			
+			enm->lookat_patpt = spline->GetLocationAtSplinePoint(enm->current_patpt, ESplineCoordinateSpace::World);
+
 		}
 		else
 		{

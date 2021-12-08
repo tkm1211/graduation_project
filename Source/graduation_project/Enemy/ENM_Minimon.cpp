@@ -5,6 +5,7 @@
 #include "E_MinimonController.h"
 
 #include "Components/CapsuleComponent.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 #include "Anim\/AnimIns_Minimon.h"
@@ -36,6 +37,12 @@ AENM_Minimon::AENM_Minimon()
 
     deadtimer = 0.f;
 
+    ATKSphere = CreateDefaultSubobject<USphereComponent>("ATKSphere");
+    ATKSphere->SetSphereRadius(50.f);
+
+    FVector bite_pos = GetMesh()->GetSocketLocation(TEXT("BitingSocket"));
+    ATKSphere->SetWorldLocation(bite_pos);
+    ATKSphere->SetCollisionProfileName("Trigger");
 }
 
 
@@ -66,35 +73,22 @@ void AENM_Minimon::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-    //GetMesh()->GetAnimInstance();   
+    FVector bite_pos = GetMesh()->GetSocketLocation(TEXT("BitingSocket"));
+    ATKSphere->SetWorldLocation(bite_pos);
 
-    if (healthpoint <= 0.f)
-    {
-        static int lifetimer = 5.0f;
+    Death(DeltaTime);
+}
 
-        deadtimer += DeltaTime;
-        if (lifetimer < deadtimer)
-        {
-            AActor* parent = GetAttachParentActor();
+bool AENM_Minimon::Death(float DeltaTime)
+{
+    if (!Super::Death(DeltaTime))return false;
 
-            if (parent)
-            {
-                parent->Destroy();
-                Destroy();
+    //Cap Scale�ŕύX
+    //GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -100.f));
+    GetCapsuleComponent()->SetCapsuleRadius(35.f);
+    GetCapsuleComponent()->SetCapsuleHalfHeight(35.f);
 
-                AENM_Minimon* enm = GetWorld()->SpawnActor<AENM_Minimon>(AENM_Minimon::StaticClass());
-
-                if (enm)
-                {
-                    enm->SetActorTransform(GetActorTransform());
-
-                    enm->SpawnDefaultController();
-
-                }
-
-            }
-        }
-    }
+    return true;
 }
 
 void AENM_Minimon::CombatON()

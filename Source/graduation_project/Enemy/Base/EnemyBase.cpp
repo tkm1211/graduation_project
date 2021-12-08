@@ -4,7 +4,7 @@
 #include "EnemyBase.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-
+#include "../Anim/AnimIns_EnemyBase.h"
 // Sets default values
 AEnemyBase::AEnemyBase()
 {
@@ -17,6 +17,8 @@ AEnemyBase::AEnemyBase()
 
 	GetCapsuleComponent()->ComponentTags.Add("Enemy");
 	
+    //GetMesh()->SetCollisionProfileName("NoCollision");
+
 }
 
 // Called when the game starts or when spawned
@@ -24,13 +26,14 @@ void AEnemyBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
-
+    GetMesh()->SetCollisionProfileName("NoCollision");
 }
 
 // Called every frame
 void AEnemyBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
 
 }
 
@@ -41,7 +44,37 @@ void AEnemyBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 }
 
+bool AEnemyBase::Death(float DeltaTime)
+{
+    if (healthpoint > 0.f)return false;
+    
+        static int lifetimer = 5.0f;
+
+        //GetMesh()->SetCollisionProfileName("Pawn");
+        //GetCapsuleComponent()->SetCollisionProfileName("NoCollision");
+        //GetCharacterMovement()->DefaultLandMovementMode = EMovementMode::MOVE_Falling;
+        //GetCharacterMovement()->SetDefaultMovementMode();
+
+        deadtimer += DeltaTime;
+        if (lifetimer < deadtimer)
+        {
+            //Destroy();
+        }
+    
+        return true;
+}
+
+void AEnemyBase::OnHit(class UPrimitiveComponent* HitComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+
+}
+
+
 void AEnemyBase::Damage(float _indamage)
 {
 	healthpoint -= _indamage;
+
+    
+    
+    GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::White, FString::Printf(TEXT("Damaged")), true, FVector2D(3.0f, 3.0f));
 }

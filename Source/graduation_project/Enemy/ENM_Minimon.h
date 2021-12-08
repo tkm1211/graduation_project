@@ -20,15 +20,20 @@ class GRADUATION_PROJECT_API AENM_Minimon : public AEnemyBase
 		UFUNCTION()
 		void OnSeePlayer(APawn* Pawn);
 
-		float deadtimer;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:
+
+	UPROPERTY(EditAnywhere)
+	class USphereComponent* ATKSphere;
+
 	void CombatON();
 	void CombatOFF();
+
+	bool Death(float DeltaTime);
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
