@@ -25,7 +25,7 @@ public:
 
 	class UBlackboardComponent* BlackboardComp;
 	
-	
+	class AEnemyBase* enm;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Sensor")
 		class UAIPerceptionComponent* AISensorComp;
@@ -33,6 +33,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = AI)
 		FName PlayerActorKeyName = "PlayerActor";
 	
+	virtual void OnPossess(class APawn* InPawn) override;
+	virtual void OnUnPossess() override;
+
+	virtual void Tick(float DeltaTime) override;
+
 	UFUNCTION()
 		virtual void SearchPlayerActor(const TArray<AActor*>& actors);
 

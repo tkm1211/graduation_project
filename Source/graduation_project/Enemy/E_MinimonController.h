@@ -16,7 +16,6 @@ class GRADUATION_PROJECT_API AE_MinimonController : public ABaseAIController
 	
 		AE_MinimonController();
 
-	class AENM_Minimon* enm;
 
 	//UPROPERTY(EditDefaultsOnly, Category = AI)
 	//	class UBehaviorTree* BehaviorTree;

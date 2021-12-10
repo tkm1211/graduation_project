@@ -14,8 +14,6 @@
 
 AE_MinimonController::AE_MinimonController()
 {
-
-
     BehaviorComp = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorComp"));
     BlackboardComp = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackboardComp"));
     AISensorComp = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerceptionComp"));
@@ -28,6 +26,7 @@ AE_MinimonController::AE_MinimonController()
     sensor_sight->DetectionByAffiliation.bDetectFriendlies = true;
 
     AISensorComp->ConfigureSense(*sensor_sight);
+    //AISensorComp->GetSenseConfig
 
     ConstructorHelpers::FObjectFinder<UBehaviorTree> BTFinder(TEXT("/Game/Enemy/Minimon/Blueprints/BT_Minimon"));
     BehaviorTree = BTFinder.Object;
@@ -41,19 +40,11 @@ AE_MinimonController::AE_MinimonController()
 void AE_MinimonController::OnPossess(class APawn* InPawn)
 {
     Super::OnPossess(InPawn);
-    BlackboardComp->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
-
-    BehaviorComp->StartTree(*BehaviorTree);
-
-    enm = Cast<AENM_Minimon>(GetCharacter());
 }
-
 
 void AE_MinimonController::OnUnPossess()
 {
     Super::OnUnPossess();
-
-    BehaviorComp->StopTree();
 }
 
 
@@ -95,11 +86,4 @@ void AE_MinimonController::Tick(float Deltatime)
 {
     Super::Tick(Deltatime);
 
-    if (enm)
-    {
-        if (enm->healthpoint <= 0.f)
-        {
-            BlackboardComp->SetValueAsBool("IsDead", true);
-        }
-    }
 }

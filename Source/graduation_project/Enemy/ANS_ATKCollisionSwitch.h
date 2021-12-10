@@ -19,6 +19,8 @@ class GRADUATION_PROJECT_API UANS_ATKCollisionSwitch : public UAnimNotifyState
 public:
 	UANS_ATKCollisionSwitch();
 
+	class AEnemyBase* enm;
+
 	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration);
 	virtual void NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime);
 	virtual void NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation);

@@ -31,6 +31,22 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy")
 		class AEnemyBase* enm;
 
+	UPROPERTY(EditDefaultsOnly, Category = "STATUS")
+		float IDLE_MOVE_SPEED;
+
+	UPROPERTY(EditDefaultsOnly, Category = "STATUS")
+		float COMBAT_MOVE_SPEED;
+
+	UPROPERTY(EditDefaultsOnly, Category = "STATUS")
+		float FindRange;
+
+	UPROPERTY(EditDefaultsOnly, Category = "STATUS")
+		float LostRange;
+
+	UPROPERTY(EditDefaultsOnly, Category = "STATUS")
+		float ATKRange;
+
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

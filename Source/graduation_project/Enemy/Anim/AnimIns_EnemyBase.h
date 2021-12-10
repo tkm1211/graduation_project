@@ -21,4 +21,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
 		bool IsCombat;
 
+
+	UFUNCTION(BlueprintCallable, Category = "Root Motion Anim Instance", meta = (InAlpha = "1"))
+		void ConsumeExtractedRootMotion(float InAlpha, bool& OutSuccess, FTransform& OutDeltaTransformInWorld);
+
 };
