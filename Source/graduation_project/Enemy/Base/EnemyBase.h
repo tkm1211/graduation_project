@@ -33,6 +33,8 @@ public:
 	
 	bool is_combat = false;
 
+	bool atk_collision_on = false;
+
 	virtual void CombatON(){}
 	virtual void CombatOFF(){}
 

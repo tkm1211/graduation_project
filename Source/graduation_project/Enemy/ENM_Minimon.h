@@ -27,11 +27,13 @@ protected:
 
 public:
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "ATKShape")
 	class USphereComponent* ATKSphere;
 
 	void CombatON();
 	void CombatOFF();
+
+	void OnHit(class UPrimitiveComponent* HitComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 
 	bool Death(float DeltaTime);
 

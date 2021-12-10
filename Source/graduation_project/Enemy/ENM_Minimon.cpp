@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "../graduation_projectCharacter.h"
 
 #include "Anim\/AnimIns_Minimon.h"
 
@@ -42,7 +43,19 @@ AENM_Minimon::AENM_Minimon()
 
     FVector bite_pos = GetMesh()->GetSocketLocation(TEXT("BitingSocket"));
     ATKSphere->SetWorldLocation(bite_pos);
-    ATKSphere->SetCollisionProfileName("Trigger");
+    //ATKSphere->SetCollisionProfileName("Trigger");
+    ATKSphere->SetGenerateOverlapEvents(true);
+    ATKSphere->SetCollisionProfileName("Custom...");
+    ATKSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    FCollisionResponseContainer col_response;
+    col_response.SetAllChannels(ECollisionResponse::ECR_Overlap);
+    col_response.Camera = ECollisionResponse::ECR_Ignore;
+    col_response.Visibility = ECollisionResponse::ECR_Ignore;
+    
+    ATKSphere->SetCollisionResponseToChannels(col_response);
+    ATKSphere->UpdateCollisionProfile();
+
+    ATKSphere->OnComponentBeginOverlap.AddDynamic(this, &Super::OnHit);
 }
 
 
@@ -66,6 +79,13 @@ void AENM_Minimon::BeginPlay()
 
     GetCharacterMovement()->MaxWalkSpeed = IDLE_WALK_SPEED;
 
+    FCollisionResponseContainer col_response;
+    col_response.SetAllChannels(ECollisionResponse::ECR_Overlap);
+    col_response.Camera = ECollisionResponse::ECR_Ignore;
+    col_response.Visibility = ECollisionResponse::ECR_Ignore;
+
+    ATKSphere->SetCollisionResponseToChannels(col_response);
+
 }
 
 // Called every frame
@@ -75,6 +95,15 @@ void AENM_Minimon::Tick(float DeltaTime)
 
     FVector bite_pos = GetMesh()->GetSocketLocation(TEXT("BitingSocket"));
     ATKSphere->SetWorldLocation(bite_pos);
+
+    if (atk_collision_on)
+    {
+        ATKSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+    }
+    else
+    {
+        ATKSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    }
 
     Death(DeltaTime);
 }
@@ -102,4 +131,21 @@ void AENM_Minimon::CombatOFF()
 {
     is_combat = false;
     GetCharacterMovement()->MaxWalkSpeed = IDLE_WALK_SPEED;
+}
+
+void AENM_Minimon::OnHit(class UPrimitiveComponent* HitComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+    if (OtherComp->ComponentTags[0] == "Player")
+    {
+        Agraduation_projectCharacter* _player = Cast<Agraduation_projectCharacter>(OtherActor);
+
+        float hitDamage = 1.f;
+
+        _player->Damage(hitDamage, SweepResult.Location);
+
+        ATKSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White, FString::Printf(TEXT("Hit : Player")), true, FVector2D(1.0f, 1.0f));
+    }
+
 }

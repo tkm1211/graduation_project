@@ -26,6 +26,7 @@ AE_MinimonController::AE_MinimonController()
     sensor_sight->DetectionByAffiliation.bDetectFriendlies = true;
 
     AISensorComp->ConfigureSense(*sensor_sight);
+    //AISensorComp->GetSenseConfig
 
     ConstructorHelpers::FObjectFinder<UBehaviorTree> BTFinder(TEXT("/Game/Enemy/Minimon/Blueprints/BT_Minimon"));
     BehaviorTree = BTFinder.Object;
