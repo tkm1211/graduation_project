@@ -25,6 +25,7 @@ ABaseAmmo::ABaseAmmo()
 	movement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
 
 	mesh->OnComponentHit.AddDynamic(this, &ABaseAmmo::OnHit);
+	mesh->OnComponentBeginOverlap.AddDynamic(this, &ABaseAmmo::BeginOverlap);
 
 	naiagaraTrail = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Trail"));
 	naiagaraTrail->SetupAttachment(mesh);
@@ -64,6 +65,36 @@ void ABaseAmmo::SetParameter(float _damage, float _effectiveRange, float _rangeM
 	rangeMag = _rangeMag;
 	life = 0.0f;
 	defaultLife = _life;
+}
+
+void ABaseAmmo::BeginOverlap(
+	class UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult& SweepResult
+)
+{
+	// プレイヤーを取得し、キャストする
+	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
+
+	if (!OtherActor && OtherActor != this && OtherActor != GetOwner()) return;
+
+	float hitDamage = damage - ((rangeMag * effectiveRange) * (rangeMag * effectiveRange)) * life;
+	if (OtherComp->ComponentTags.Max() > 0)
+	{
+		if (OtherComp->ComponentTags[0] == "Ammo") return;
+		if (OtherComp->ComponentTags[0] == "Wepon") return;
+		if (OtherComp->ComponentTags[0] == "Enemy")
+		{
+			AEnemyBase* _enemy = Cast<AEnemyBase>(OtherActor);
+			_enemy->Damage(hitDamage);
+			hitdam = hitDamage;
+		}
+		AmmoDestroy();
+	}
 }
 
 

@@ -67,4 +67,15 @@ public:
 			FVector NormalImpulse,
 			const FHitResult& Hit
 		);
+
+	UFUNCTION()
+		void BeginOverlap(
+			class UPrimitiveComponent* OverlappedComponent,
+			AActor* OtherActor,
+			UPrimitiveComponent* OtherComp,
+			int32 OtherBodyIndex,
+			bool bFromSweep,
+			const FHitResult& SweepResult
+		);
+
 };

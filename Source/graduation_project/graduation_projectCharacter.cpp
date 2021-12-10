@@ -69,11 +69,11 @@ void Agraduation_projectCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	// wepon pazzule
-	//if (weponPuzzleClass)
-	//{
-	//	weponPuzzle = GetWorld()->SpawnActor<AWeponPuzzle>(weponPuzzleClass);
-	//	weponPuzzle->SetActorLocation(FVector(-290, 20, 300));
-	//}
+	if (weponPuzzleClass)
+	{
+		weaponPuzzle = GetWorld()->SpawnActor<AWeaponPuzzle>(weponPuzzleClass);
+		weaponPuzzle->SetActorLocation(FVector(-290, 20, 300));
+	}
 
 	GetCharacterMovement()->GravityScale = 4.0;
 	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
@@ -123,17 +123,17 @@ void Agraduation_projectCharacter::SetupPlayerInputComponent(class UInputCompone
 void Agraduation_projectCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	//if (FollowCamera)
-	//{
-	//	FVector _newWeponePuzzleLoc = FVector(FollowCamera->GetSocketLocation(FName("None"))) + FollowCamera->GetForwardVector() * asjustWeponPuzzleLoc;
-	//	FRotator _newWeponePuzzleRot = UKismetMathLibrary::FindLookAtRotation(FollowCamera->GetSocketLocation(FName("None")), weponPuzzle->GetActorLocation());
-	//	float tmp = _newWeponePuzzleRot.Pitch;
-	//	_newWeponePuzzleRot.Pitch = _newWeponePuzzleRot.Roll;
-	//	_newWeponePuzzleRot.Roll = tmp;
-	//	_newWeponePuzzleRot.Yaw += 90;
-	//	weponPuzzle->SetActorLocation(_newWeponePuzzleLoc);
-	//	weponPuzzle->SetActorRotation(_newWeponePuzzleRot);
-	//}
+	if (FollowCamera)
+	{
+		FVector _newWeponePuzzleLoc = FVector(FollowCamera->GetSocketLocation(FName("None"))) + FollowCamera->GetForwardVector() * asjustWeponPuzzleLoc;
+		FRotator _newWeponePuzzleRot = UKismetMathLibrary::FindLookAtRotation(FollowCamera->GetSocketLocation(FName("None")), weaponPuzzle->GetActorLocation());
+		float tmp = _newWeponePuzzleRot.Pitch;
+		_newWeponePuzzleRot.Pitch = _newWeponePuzzleRot.Roll;
+		_newWeponePuzzleRot.Roll = tmp;
+		_newWeponePuzzleRot.Yaw += 90;
+		weaponPuzzle->SetActorLocation(_newWeponePuzzleLoc);
+		weaponPuzzle->SetActorRotation(_newWeponePuzzleRot);
+	}
 	
 	// 死んだ時の処理
 	if (isDead)
@@ -186,11 +186,9 @@ void Agraduation_projectCharacter::Tick(float DeltaTime)
 			newRotor.Roll = 0.0f;
 			SetActorRotation(newRotor);
 			auto animInstance = GetMesh()->GetAnimInstance();
-			if (!animInstance->Montage_IsPlaying(aimMontages[0]) && !animInstance->Montage_IsPlaying(recoilMontages[0]))
+			if (!animInstance->Montage_IsPlaying(aimMontages[weponNumber]) && !animInstance->Montage_IsPlaying(recoilMontages[weponNumber]))
 			{
-				aimMontages[0]->BlendIn = 0.2;
-				aimMontages[0]->BlendOut = 0.2;
-				animInstance->Montage_Play(aimMontages[0], 1.0f);
+				animInstance->Montage_Play(aimMontages[weponNumber], 1.0f);
 			}
 		}
 
@@ -198,11 +196,9 @@ void Agraduation_projectCharacter::Tick(float DeltaTime)
 		{
 			// エイムのアニメーション再生
 			auto animInstance = GetMesh()->GetAnimInstance();
-			if (!animInstance->Montage_IsPlaying(aimMontages[0]) && !animInstance->Montage_IsPlaying(recoilMontages[0]))
+			if (!animInstance->Montage_IsPlaying(aimMontages[weponNumber]) && !animInstance->Montage_IsPlaying(recoilMontages[weponNumber]))
 			{
-				aimMontages[0]->BlendIn = 0.2;
-				aimMontages[0]->BlendOut = 0.2;
-				animInstance->Montage_Play(aimMontages[0], 1.0f);
+				animInstance->Montage_Play(aimMontages[weponNumber], 1.0f);
 			}
 		}
 

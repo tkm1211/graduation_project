@@ -61,7 +61,8 @@ void ABaseWepon:: Fire()
 	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
 	auto animInstance = _playerCharacter->GetMesh()->GetAnimInstance();
-	animInstance->Montage_Play(_playerCharacter->recoilMontages[0], motionRate);
+	int _weapomNum = _playerCharacter->weponNumber;
+	animInstance->Montage_Play(_playerCharacter->recoilMontages[_weapomNum], motionRate);
 
 	// EffectSpawn
 	TArray<AActor*> foundActors;

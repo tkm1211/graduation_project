@@ -150,7 +150,8 @@ protected:
 public:
 	virtual void Tick(float DeltaTime) override;
 
-	void ChangeWepon(ABaseWepon* nextWepon);
+	UFUNCTION(BlueprintCallable)
+		void ChangeWepon(ABaseWepon* nextWepon);
 
 	void Damage(float giveDamage, FVector hitPosition);
 
