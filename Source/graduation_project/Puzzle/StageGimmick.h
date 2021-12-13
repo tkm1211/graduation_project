@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "PieceBase.h"
+#include "Components/StaticMeshComponent.h"
 #include "StageGimmick.generated.h"
 
 
@@ -12,11 +13,17 @@ class APieceBlockO;
 class APieceBlockL;
 class APieceBlockI;
 class APieceBlockT;
+class UInstancedStaticMeshComponent;
+
 
 UCLASS()
 class GRADUATION_PROJECT_API AStageGimmick : public AActor
 {
 	GENERATED_BODY()
+
+public:
+	//UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Cube")
+	//UStaticMeshComponent* Cube;
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Block Type", meta = (AllowPrivateAccess = "true"))
@@ -37,6 +44,13 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Gimmick|Debug", meta = (AllowPrivateAccess = "true"))
 	float BlockSize = 0.0f; // 1ブロックの大きさ（エディタで設定）
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Gimmick", meta = (AllowPrivateAccess = "true"))
+	FString PanelFilePath = "BackData03";
+
+private:
+	int widthNum = 0;
+	int heightNum = 0;
+
 public:	
 	// Sets default values for this actor's properties
 	AStageGimmick();

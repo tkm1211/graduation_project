@@ -18,6 +18,19 @@ void AWeaponPuzzle::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// ゲームインスタンスから武器用のMediator（仲介役）を取得
+	UGameInstance* instance = GetWorld()->GetGameInstance();
+	weaponMediator = instance->GetSubsystem<UWeaponPuzzleMediator>();
+	{
+		weaponMediator->SetBlasterBorderNum(BlasterBorderNum);
+		weaponMediator->SetShotGunBorderNum(ShotGunBorderNum);
+		weaponMediator->SetBombGunBorderNum(BombGunBorderNum);
+
+		weaponMediator->SetRfBlasterBorderNum(RfBlasterBorderNum);
+		weaponMediator->SetRfShotGunBorderNum(RfShotGunBorderNum);
+		weaponMediator->SetRfBombGunBorderNum(RfBombGunBorderNum);
+	}
+
 	grid->VisibleGridMesh(false);
 
 	if (onPuzzle)
@@ -43,13 +56,9 @@ void AWeaponPuzzle::NotifyMediatorOfPlacedPieces()
 {
 	if (!grid->DidPlacePiece()) return;
 
-	// ゲームインスタンスから武器用のMediator（仲介役）を取得
-	UGameInstance* instance = GetWorld()->GetGameInstance();
-	auto weaponMediator = instance->GetSubsystem<UWeaponPuzzleMediator>();
-
 	// パズル画面で配置されたピースの情報を渡す
 	auto placedPieceData = grid->GetPlacedPieceData();
-	weaponMediator->ChangeWeapon(grid->GetPowerBorderNum(), grid->GetRangeBorderNum(), grid->GetAttributeBorderNum());
+	weaponMediator->ChangeWeapon(grid->GetBlasterPieceNum(), grid->GetShotGunPieceNum(), grid->GetBombGunPieceNum());
 }
 
 void AWeaponPuzzle::DoBeginPuzzle()

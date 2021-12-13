@@ -25,6 +25,7 @@ void AGimmickPuzzle::BeginPlay()
 {
 	Super::BeginPlay();
 
+	onGimmickPuzzle = false;
 	grid->VisibleGridMesh(true);
 	//grid->VisibleGrid(false);
 	//grid->SetActorHiddenInGame(true);
@@ -124,6 +125,7 @@ void AGimmickPuzzle::UpdateCamera()
 
 void AGimmickPuzzle::PlacePieceBlock()
 {
+	if (!onGimmickPuzzle) return;
 	if (!grid->DidPlacePiece()) return;
 
 	// ゲームインスタンスからギミック用のMediator（仲介役）を取得
@@ -137,6 +139,8 @@ void AGimmickPuzzle::PlacePieceBlock()
 
 void AGimmickPuzzle::DoBeginPuzzle()
 {
+	onGimmickPuzzle = true;
+
 	APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
 	playerController->SetViewTargetWithBlend(puzzleCamera, 1.0f, VTBlend_Linear, 10.0f, true);
 
@@ -146,6 +150,8 @@ void AGimmickPuzzle::DoBeginPuzzle()
 
 void AGimmickPuzzle::DoEndPuzzle()
 {
+	onGimmickPuzzle = false;
+
 	APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
 	ACharacter* playerCharacter = UGameplayStatics::GetPlayerCharacter(this, 0);
 	playerController->SetViewTargetWithBlend(playerCharacter, 1.0f, VTBlend_Linear, 10.0f, true);

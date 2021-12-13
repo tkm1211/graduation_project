@@ -33,19 +33,27 @@ class GRADUATION_PROJECT_API UWeaponPuzzleMediator : public UGameInstanceSubsyst
 	GENERATED_BODY()
 
 private:
-	int PowerBorderNum = 0;
-	int RangeBorderNum = 0;
-	int AttributeBorderNum = 0;
+	int BlasterBorderNum = 20;
+	int ShotGunBorderNum = 20;
+	int BombGunBorderNum = 20;
+
+	int RfBlasterBorderNum = 40;
+	int RfShotGunBorderNum = 40;
+	int RfBombGunBorderNum = 40;
 
 private:
 	WeaponType currentWeaponType = WeaponType::NoneType;
 
 public: // パズル呼び出し用
-	void ChangeWeapon(int powerPieceNum, int rangePieceNum, int attributePieceNum);
+	void ChangeWeapon(int blasterPieceNum, int shotGunPieceNum, int bombGunPieceNum);
 
-	void SetPowerBorderNum(int borderNum);
-	void SetRangeBorderNum(int borderNum);
-	void SetAttributeBorderNum(int borderNum);
+	void SetBlasterBorderNum(int borderNum);
+	void SetShotGunBorderNum(int borderNum);
+	void SetBombGunBorderNum(int borderNum);
+
+	void SetRfBlasterBorderNum(int borderNum);
+	void SetRfShotGunBorderNum(int borderNum);
+	void SetRfBombGunBorderNum(int borderNum);
 
 public: // プレイヤー呼び出し用
 	WeaponType GetWeaponType();

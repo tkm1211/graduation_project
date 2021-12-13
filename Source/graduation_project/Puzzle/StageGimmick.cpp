@@ -7,6 +7,7 @@
 #include "PieceBlockL.h"
 #include "PieceBlockI.h"
 #include "PieceBlockT.h"
+#include "../FileStream/JsonFunctionLibrary.h"
 
 
 // Sets default values
@@ -15,6 +16,33 @@ AStageGimmick::AStageGimmick()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	//Cube = CreateDefaultSubobject<UStaticMeshComponent>("Cube");
+
+	//static ConstructorHelpers::FObjectFinder<UStaticMesh> cubeMesh(TEXT("/Game/Geometry/Meshes/1M_Cube.1M_Cube"));
+	//static ConstructorHelpers::FObjectFinder<UMaterial> cubeMaterial(TEXT("/Game/AssetAtsuki/BossStage/Shield/M_Shield_Inst_3.M_Shield_Inst_3"));
+
+	//if (cubeMesh.Succeeded())
+	//{
+	//	/*if (cubeMaterial.Succeeded())
+	//	{
+	//		cubeMesh.Object->SetMaterial(0, cubeMaterial.Object);
+	//	}*/
+
+	//	Cube->SetStaticMesh(cubeMesh.Object);
+	//}
+
+	/*const FString FilePath = "Tool\\Data\\Document\\Puzzle\\";
+
+	const auto JsonObject = UJsonFunctionLibrary::LoadJsonObject(FilePath + PanelFilePath);
+	if (!JsonObject.IsValid())
+	{
+		return;
+	}
+
+	widthNum = JsonObject->GetIntegerField("widthNum");
+	heightNum = JsonObject->GetIntegerField("heightNum");*/
+
+	//Cube->SetWorldScale3D(FVector(widthNum, 1.0f, heightNum));
 }
 
 // Called when the game starts or when spawned
@@ -39,14 +67,14 @@ void AStageGimmick::PlacePieceBlock()
 	UGameInstance* instance = GetWorld()->GetGameInstance();
 	auto gimmickMediator = instance->GetSubsystem<UGimmickMediator>();
 
-	// パズル画面でピースが配置されたか？
-	if (!gimmickMediator->DidPlacePiece()) return;
-
 	// グループIDが初期値ではないか？
 	if (GroupID == -1) return;
 
 	// グループIDが一致しているか？
 	if (GroupID != gimmickMediator->GetGroupID()) return;
+
+	// パズル画面でピースが配置されたか？
+	if (!gimmickMediator->DidPlacePiece()) return;
 
 	// パズル画面で配置されたピースをステージにスポーン
 	auto placeedPiece = gimmickMediator->GetPlacedPieceData(GroupID);

@@ -25,14 +25,17 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	class UStaticMeshComponent* PieceMesh;
 
-	float RandMin = 1.0f;
-	float RandMax = 10.0f;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Drop Piece Data", meta = (AllowPrivateAccess = "true"))
 	TEnumAsByte<PieceShape> Shape;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Drop Piece Data", meta = (AllowPrivateAccess = "true"))
 	TEnumAsByte<PieceType> Type;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Drop Piece Data | Homing Jump Rand", meta = (AllowPrivateAccess = "true"))
+	float HomingJumpRandMin = 1.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Drop Piece Data | Homing Jump Rand", meta = (AllowPrivateAccess = "true"))
+	float HomingJumpRandMax = 10.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Drop Piece Data | Fly Speed Rand", meta = (AllowPrivateAccess = "true"))
 	float FlySpeedRandMin = 10.0f;
@@ -41,12 +44,13 @@ private:
 	float FlySpeedRandMax = 20.0f;
 
 	float UnabsorbableMaxTime = 0.25f;
+	float HomingJumpDownSpeed = 0.25f;
 	float FlyDownSpeed = 0.25f;
 
 private:
 	bool onHoming = false;
 	float homingSpeed = 0.0f;
-	float homingJumpRand = 0.0f;
+	float homingJumpSpeed = 0.0f;
 	float flySpeed = 0.0f;
 	float unabsorbableTime = 0.0f;
 

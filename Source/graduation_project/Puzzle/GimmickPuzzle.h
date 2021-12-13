@@ -21,6 +21,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Gimmick", meta = (AllowPrivateAccess = "true"))
 	int GroupID = -1; // StageGimmickと紐づけるための番号（エディタで設定）
 
+private:
+	bool onGimmickPuzzle = false;
+
 public:	
 	// Sets default values for this actor's properties
 	AGimmickPuzzle();

@@ -20,9 +20,9 @@ enum PieceShape
 UENUM()
 enum PieceType
 {
-	Power,    // 威力
-	Range,    // 射程距離
-	Attribute // 特殊効果
+	TypeBlaster, // ブラスター
+	TypeShotGun, // ショットガン
+	TypeBombGun  // ボムガン
 };
 
 USTRUCT(BlueprintType)
@@ -45,7 +45,7 @@ struct FPlacedPieceData
 	PieceShape shape = PieceShape::T;
 
 	// 種類
-	PieceType type = PieceType::Power;
+	PieceType type = PieceType::TypeBlaster;
 };
 
 UCLASS()

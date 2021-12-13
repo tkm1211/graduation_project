@@ -17,7 +17,7 @@ struct FPieceResourceData
 	PieceShape shape = PieceShape::T;
 
 	// Ží—Þ
-	PieceType type = PieceType::Power;
+	PieceType type = PieceType::TypeBlaster;
 };
 
 UCLASS()

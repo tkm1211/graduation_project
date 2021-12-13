@@ -31,7 +31,7 @@ struct FPieceData
 	PieceShape shape = PieceShape::T;
 
 	// 種類
-	PieceType type = PieceType::Power;
+	PieceType type = PieceType::TypeBlaster;
 };
 
 USTRUCT(BlueprintType)
@@ -69,6 +69,18 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle", meta = (AllowPrivateAccess = "true"))
 	float AdjustWidht = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle", meta = (AllowPrivateAccess = "true"))
+	float AdjustSlotWidhtOfLocation = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle", meta = (AllowPrivateAccess = "true"))
+	float AdjustMostSlotWidhtOfLocation = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle", meta = (AllowPrivateAccess = "true"))
+	float AdjustSlotHeightOfLocation = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle", meta = (AllowPrivateAccess = "true"))
+	FVector SlotPieceSize;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<APieceOrigin> PieceOrigin; // 元のピース（エディタで設定）
@@ -160,7 +172,7 @@ private:
 
 	FVector gridScale;
 
-	FString panelFilePath;
+	FString panelFilePath = "BackData03";
 
 	FPlacedPieceData placedPieceData;
 
@@ -183,9 +195,9 @@ private:
 	int backUpNum = 0;
 
 	// WeaponPuzzle用
-	int powerBorderNum = 0;
-	int rangeBorderNum = 0;
-	int attributeBorderNum = 0;
+	int blasterPieceNum = 0;
+	int shotGunPieceNum = 0;
+	int bombGunPieceNum = 0;
 
 	float panelSize = 0.0f;
 
@@ -238,9 +250,9 @@ public:
 	FPlacedPieceData GetPlacedPieceData();
 
 	// WeaponPuzzle用
-	int GetPowerBorderNum();
-	int GetRangeBorderNum();
-	int GetAttributeBorderNum();
+	int GetBlasterPieceNum();
+	int GetShotGunPieceNum();
+	int GetBombGunPieceNum();
 
 private:
 	void UpdatePuzzle(float DeltaTime);

@@ -17,6 +17,27 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle", meta = (AllowPrivateAccess = "true"))
 	bool onPuzzle = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Border", meta = (AllowPrivateAccess = "true"))
+	int BlasterBorderNum = 20;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Border", meta = (AllowPrivateAccess = "true"))
+	int ShotGunBorderNum = 20;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Border", meta = (AllowPrivateAccess = "true"))
+	int BombGunBorderNum = 20;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Border", meta = (AllowPrivateAccess = "true"))
+	int RfBlasterBorderNum = 40;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Border", meta = (AllowPrivateAccess = "true"))
+	int RfShotGunBorderNum = 40;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Border", meta = (AllowPrivateAccess = "true"))
+	int RfBombGunBorderNum = 40;
+
+private:
+	class UWeaponPuzzleMediator* weaponMediator;
+
 public:
 	// Sets default values for this actor's properties
 	AWeaponPuzzle();

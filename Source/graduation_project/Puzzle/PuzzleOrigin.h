@@ -42,6 +42,7 @@ protected:
 
 protected:
 	// ƒpƒYƒ‹•”•ª
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Puzzle", meta = (AllowPrivateAccess = "true"))
 	AGrid* grid;
 
 protected:

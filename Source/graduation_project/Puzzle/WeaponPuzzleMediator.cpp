@@ -4,26 +4,39 @@
 #include "WeaponPuzzleMediator.h"
 
 
-void UWeaponPuzzleMediator::ChangeWeapon(int powerPieceNum, int rangePieceNum, int attributePieceNum)
+void UWeaponPuzzleMediator::ChangeWeapon(int blasterPieceNum, int shotGunPieceNum, int bombGunPieceNum)
 {
-	bool clearPower = PowerBorderNum <= powerPieceNum;
-	bool clearRange = RangeBorderNum <= rangePieceNum;
-	bool clearAttribute = AttributeBorderNum <= attributePieceNum;
+	bool clearRfBlaster = RfBlasterBorderNum <= blasterPieceNum;
+	bool clearRfShotGun = RfShotGunBorderNum <= shotGunPieceNum;
+	bool clearRfBombGun = RfBombGunBorderNum <= bombGunPieceNum;
 
-	// TODO : Rf～に対応
-	// TODO : すべてボーダーを超えたときの処理
+	bool clearBlaster = BlasterBorderNum <= blasterPieceNum;
+	bool clearShotGun = ShotGunBorderNum <= shotGunPieceNum;
+	bool clearBombGun = BombGunBorderNum <= bombGunPieceNum;
 
-	if (clearPower)
+	if (clearRfBlaster)
 	{
-		currentWeaponType = clearRange ? WeaponType::BlasterAndShotGun : WeaponType::Blaster;
+		currentWeaponType = WeaponType::RfBlaster;
 	}
-	else if (clearRange)
+	else if (clearRfShotGun)
 	{
-		currentWeaponType = clearAttribute ? WeaponType::ShotGunAndBombGun : WeaponType::ShotGun;
+		currentWeaponType = WeaponType::RfShotGun;
 	}
-	else if (clearAttribute)
+	else if (clearRfBombGun)
 	{
-		currentWeaponType = clearPower ? WeaponType::BombGunAndBlaster : WeaponType::BombGun;
+		currentWeaponType = WeaponType::RfBombGun;
+	}
+	else if (clearBlaster)
+	{
+		currentWeaponType = clearShotGun ? WeaponType::BlasterAndShotGun : WeaponType::Blaster;
+	}
+	else if (clearShotGun)
+	{
+		currentWeaponType = clearBombGun ? WeaponType::ShotGunAndBombGun : WeaponType::ShotGun;
+	}
+	else if (clearBombGun)
+	{
+		currentWeaponType = clearBlaster ? WeaponType::BombGunAndBlaster : WeaponType::BombGun;
 	}
 	else
 	{
@@ -31,19 +44,34 @@ void UWeaponPuzzleMediator::ChangeWeapon(int powerPieceNum, int rangePieceNum, i
 	}
 }
 
-void UWeaponPuzzleMediator::SetPowerBorderNum(int borderNum)
+void UWeaponPuzzleMediator::SetBlasterBorderNum(int borderNum)
 {
-	PowerBorderNum = borderNum;
+	BlasterBorderNum = borderNum;
 }
 
-void UWeaponPuzzleMediator::SetRangeBorderNum(int borderNum)
+void UWeaponPuzzleMediator::SetShotGunBorderNum(int borderNum)
 {
-	RangeBorderNum = borderNum;
+	ShotGunBorderNum = borderNum;
 }
 
-void UWeaponPuzzleMediator::SetAttributeBorderNum(int borderNum)
+void UWeaponPuzzleMediator::SetBombGunBorderNum(int borderNum)
 {
-	AttributeBorderNum = borderNum;
+	BombGunBorderNum = borderNum;
+}
+
+void UWeaponPuzzleMediator::SetRfBlasterBorderNum(int borderNum)
+{
+	RfBlasterBorderNum = borderNum;
+}
+
+void UWeaponPuzzleMediator::SetRfShotGunBorderNum(int borderNum)
+{
+	RfShotGunBorderNum = borderNum;
+}
+
+void UWeaponPuzzleMediator::SetRfBombGunBorderNum(int borderNum)
+{
+	RfBombGunBorderNum = borderNum;
 }
 
 WeaponType UWeaponPuzzleMediator::GetWeaponType()

@@ -49,9 +49,9 @@ void AGrid::Initialize()
 		widthNum = 0;
 		heightNum = 0;
 
-		powerBorderNum = 0;
-		rangeBorderNum = 0;
-		attributeBorderNum = 0;
+		blasterPieceNum = 0;
+		shotGunPieceNum = 0;
+		bombGunPieceNum = 0;
 
 		backUpNum = -1;
 
@@ -348,7 +348,7 @@ void AGrid::MoveSlot(float DeltaTime)
 {
 	if (selectPieceNum == -1 || pieces.Num() < selectPieceNum) return;
 
-	float adjust = panelSize * AdjustSlotPieceNum;
+	float adjust = AdjustSlotHeightOfLocation;
 	auto piecePos = GetLocation() - upVec * adjust;
 	auto pieceLocation = piecePos;
 	//auto pieceScale = gridScale;
@@ -366,7 +366,7 @@ void AGrid::MoveSlot(float DeltaTime)
 		auto slotLeftPiece = slotPieces[slotLeftNum];
 		auto location = pieceLocation;
 		{
-			location -= rightVec * (adjust * 0.75f);
+			location -= rightVec * AdjustSlotWidhtOfLocation;
 			location -= upVec * AdjustSideSlotPieceHeight;
 
 			AdjustSlotPiecePosFromOrigin(location, AdjustSlotPieceSize * 0.35f, pieceDatas[slotLeftNum].shape, 0);
@@ -382,7 +382,7 @@ void AGrid::MoveSlot(float DeltaTime)
 		auto slotRightPiece = slotPieces[slotRightNum];
 		auto location = pieceLocation;
 		{
-			location += rightVec * (adjust * 0.75f);
+			location += rightVec * AdjustSlotWidhtOfLocation;
 			location -= upVec * AdjustSideSlotPieceHeight;
 
 			AdjustSlotPiecePosFromOrigin(location, AdjustSlotPieceSize * 0.35f, pieceDatas[slotRightNum].shape, 0);
@@ -398,7 +398,7 @@ void AGrid::MoveSlot(float DeltaTime)
 		auto slotLeftPiece = slotPieces[slotMostLeftNum];
 		auto location = pieceLocation;
 		{
-			location -= rightVec * ((adjust * 0.75f) * 1.6f);
+			location -= rightVec * AdjustMostSlotWidhtOfLocation;
 			location -= upVec * AdjustSideSlotPieceHeight;
 
 			AdjustSlotPiecePosFromOrigin(location, AdjustSlotPieceSize * 0.35f, pieceDatas[slotMostLeftNum].shape, 0);
@@ -413,7 +413,7 @@ void AGrid::MoveSlot(float DeltaTime)
 		auto slotRightPiece = slotPieces[slotMostRightNum];
 		auto location = pieceLocation;
 		{
-			location += rightVec * ((adjust * 0.75f) * 1.6f);
+			location += rightVec * AdjustMostSlotWidhtOfLocation;
 			location -= upVec * AdjustSideSlotPieceHeight;
 
 			AdjustSlotPiecePosFromOrigin(location, AdjustSlotPieceSize * 0.35f, pieceDatas[slotMostRightNum].shape, 0);
@@ -700,16 +700,16 @@ void AGrid::PieceDecision(APieceOrigin* piece)
 
 		switch (placedPieceData.type)
 		{
-		case Power:
-			powerBorderNum += placedPieceData.placedPiecePanelNum;
+		case TypeBlaster:
+			blasterPieceNum += placedPieceData.placedPiecePanelNum;
 			break;
 
-		case Range:
-			rangeBorderNum += placedPieceData.placedPiecePanelNum;
+		case TypeShotGun:
+			shotGunPieceNum += placedPieceData.placedPiecePanelNum;
 			break;
 
-		case Attribute:
-			attributeBorderNum += placedPieceData.placedPiecePanelNum;
+		case TypeBombGun:
+			bombGunPieceNum += placedPieceData.placedPiecePanelNum;
 			break;
 
 		default: break;
@@ -826,16 +826,16 @@ void AGrid::PieceCancel(APieceOrigin* piece)
 	// •ŠíƒpƒYƒ‹‚Ìî•ñ‚à–ß‚·
 	switch (placedPieceData.type)
 	{
-	case Power:
-		powerBorderNum -= placedPieceData.placedPiecePanelNum;
+	case TypeBlaster:
+		blasterPieceNum -= placedPieceData.placedPiecePanelNum;
 		break;
 
-	case Range:
-		rangeBorderNum -= placedPieceData.placedPiecePanelNum;
+	case TypeShotGun:
+		shotGunPieceNum -= placedPieceData.placedPiecePanelNum;
 		break;
 
-	case Attribute:
-		attributeBorderNum -= placedPieceData.placedPiecePanelNum;
+	case TypeBombGun:
+		bombGunPieceNum -= placedPieceData.placedPiecePanelNum;
 		break;
 
 	default: break;
@@ -1000,10 +1000,10 @@ void AGrid::SelectSlotPiece(int currentPieceNum)
 
 	if (currentPieceNum == -1) return;
 
-	float adjust = panelSize * AdjustSlotPieceNum;
+	float adjust = AdjustSlotHeightOfLocation;
 	auto piecePos = GetLocation() - upVec * adjust;
 	auto pieceLocation = piecePos;
-	auto pieceScale = gridScale;
+	auto pieceScale = SlotPieceSize;
 
 	slotLeftNum = currentPieceNum;
 	for (int i = 0; i < slotPieces.Num(); ++i)
@@ -1053,7 +1053,7 @@ void AGrid::SelectSlotPiece(int currentPieceNum)
 		auto slotLeftPiece = slotPieces[slotLeftNum];
 		auto location = pieceLocation;
 		{
-			location -= rightVec * (adjust * 0.75f);
+			location -= rightVec * AdjustSlotWidhtOfLocation;
 			location -= upVec * AdjustSideSlotPieceHeight;
 
 			visibilitySlotPiece[slotLeftNum] = true;
@@ -1071,7 +1071,7 @@ void AGrid::SelectSlotPiece(int currentPieceNum)
 		auto slotRightPiece = slotPieces[slotRightNum];
 		auto location = pieceLocation;
 		{
-			location += rightVec * (adjust * 0.75f);
+			location += rightVec * AdjustSlotWidhtOfLocation;
 			location -= upVec * AdjustSideSlotPieceHeight;
 
 			visibilitySlotPiece[slotRightNum] = true;
@@ -1089,7 +1089,7 @@ void AGrid::SelectSlotPiece(int currentPieceNum)
 		auto slotLeftPiece = slotPieces[slotMostLeftNum];
 		auto location = pieceLocation;
 		{
-			location -= rightVec * ((adjust * 0.75f) * 1.6f);
+			location -= rightVec * AdjustMostSlotWidhtOfLocation;
 			location -= upVec * AdjustSideSlotPieceHeight;
 
 			visibilitySlotPiece[slotMostLeftNum] = true;
@@ -1107,7 +1107,7 @@ void AGrid::SelectSlotPiece(int currentPieceNum)
 		auto slotRightPiece = slotPieces[slotMostRightNum];
 		auto location = pieceLocation;
 		{
-			location += rightVec * ((adjust * 0.75f) * 1.6f);
+			location += rightVec * AdjustMostSlotWidhtOfLocation;
 			location -= upVec * AdjustSideSlotPieceHeight;
 
 			visibilitySlotPiece[slotMostRightNum] = true;
@@ -1636,13 +1636,13 @@ bool AGrid::CreatePieceO(PieceType type, FVector SpawnLocation)
 
 	switch (type)
 	{
-	case Power:
+	case TypeBlaster:
 		CreateO(PieceOBlue);
 		return true;
-	case Range:
+	case TypeShotGun:
 		CreateO(PieceOYellow);
 		return true;
-	case Attribute:
+	case TypeBombGun:
 		CreateO(PieceOPurple);
 		return true;
 	default: break;
@@ -1687,13 +1687,13 @@ bool AGrid::CreatePieceL(PieceType type, FVector SpawnLocation)
 
 	switch (type)
 	{
-	case Power:
+	case TypeBlaster:
 		CreateL(PieceLBlue);
 		return true;
-	case Range:
+	case TypeShotGun:
 		CreateL(PieceLYellow);
 		return true;
-	case Attribute:
+	case TypeBombGun:
 		CreateL(PieceLPurple);
 		return true;
 	default: break;
@@ -1738,13 +1738,13 @@ bool AGrid::CreatePieceI(PieceType type, FVector SpawnLocation)
 
 	switch (type)
 	{
-	case Power:
+	case TypeBlaster:
 		CreateI(PieceIBlue);
 		return true;
-	case Range:
+	case TypeShotGun:
 		CreateI(PieceIYellow);
 		return true;
-	case Attribute:
+	case TypeBombGun:
 		CreateI(PieceIPurple);
 		return true;
 	default: break;
@@ -1789,13 +1789,13 @@ bool AGrid::CreatePieceT(PieceType type, FVector SpawnLocation)
 
 	switch (type)
 	{
-	case Power:
+	case TypeBlaster:
 		CreateT(PieceTBlue);
 		return true;
-	case Range:
+	case TypeShotGun:
 		CreateT(PieceTYellow);
 		return true;
-	case Attribute:
+	case TypeBombGun:
 		CreateT(PieceTPurple);
 		return true;
 	default: break;
@@ -2151,17 +2151,17 @@ FPlacedPieceData AGrid::GetPlacedPieceData()
 	return placedPieceData;
 }
 
-int AGrid::GetPowerBorderNum()
+int AGrid::GetBlasterPieceNum()
 {
-	return powerBorderNum;
+	return blasterPieceNum;
 }
 
-int AGrid::GetRangeBorderNum()
+int AGrid::GetShotGunPieceNum()
 {
-	return rangeBorderNum;
+	return shotGunPieceNum;
 }
 
-int AGrid::GetAttributeBorderNum()
+int AGrid::GetBombGunPieceNum()
 {
-	return attributeBorderNum;
+	return bombGunPieceNum;
 }

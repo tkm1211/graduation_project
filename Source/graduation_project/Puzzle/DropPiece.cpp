@@ -34,7 +34,7 @@ void ADropPiece::BeginPlay()
 	
 	onHoming = false;
 	homingSpeed = 0.0f;
-	homingJumpRand = FMath::FRandRange(RandMin, RandMax);
+	homingJumpSpeed = FMath::FRandRange(HomingJumpRandMin, HomingJumpRandMax);
 	flySpeed = FMath::FRandRange(FlySpeedRandMin, FlySpeedRandMax);
 	unabsorbableTime = 0.0f;
 }
@@ -87,12 +87,15 @@ void ADropPiece::Homing()
 	auto playerLocation = playerCharacter->GetActorLocation();
 
 	auto dir = (playerLocation - location).GetSafeNormal() * homingSpeed;
-	dir.Z = homingJumpRand;
+	dir.Z = homingJumpSpeed;
 
 	SetActorLocation(location + dir);
 
 	homingSpeed += HomingAcceleration;
 	if (HomingMaxSpeed < homingSpeed) homingSpeed = HomingMaxSpeed;
+
+	homingJumpSpeed -= HomingJumpDownSpeed;
+	if (homingJumpSpeed < 0.0f) homingJumpSpeed = 0.0f;
 }
 
 void ADropPiece::JudgeAria()
