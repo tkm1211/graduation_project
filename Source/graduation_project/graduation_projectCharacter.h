@@ -156,6 +156,9 @@ protected:
 public:
 	virtual void Tick(float DeltaTime) override;
 
+	FVector GetWeaponePuzzulePosition();
+	FRotator GetWeaponePuzzuleRotation();
+
 	UFUNCTION(BlueprintCallable)
 		void ChangeWepon(ABaseWepon* nextWepon);
 
