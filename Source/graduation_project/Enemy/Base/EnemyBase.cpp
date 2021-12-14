@@ -69,9 +69,9 @@ bool AEnemyBase::Death(float DeltaTime)
 			UMaterialInterface* _MID = GetMesh()->GetMaterial(0);
 			MID = GetMesh()->CreateDynamicMaterialInstance(0, _MID);
 		}
-		if (FX_DeadActor)
+		if (FX_DeadClass)
 		{
-			GetWorld()->SpawnActor<AActor>(FX_DeadActor, GetActorLocation(), FRotator());
+			GetWorld()->SpawnActor<AActor>(FX_DeadClass, GetActorLocation(), FRotator());
 		}
 	}
 

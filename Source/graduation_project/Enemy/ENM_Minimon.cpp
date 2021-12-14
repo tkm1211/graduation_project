@@ -58,7 +58,7 @@ AENM_Minimon::AENM_Minimon()
     ATKSphere->OnComponentBeginOverlap.AddDynamic(this, &Super::OnHit);
 
     static ConstructorHelpers::FClassFinder<AActor> BP_Actor(TEXT("/Game/Enemy/Minimon/Blueprints/BP_NS_Dead"));
-    FX_DeadActor = BP_Actor.Class;
+    FX_DeadClass = BP_Actor.Class;
 
 }
 

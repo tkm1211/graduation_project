@@ -17,7 +17,7 @@ AENM_Chaichai::AENM_Chaichai()
     static ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshAsset(TEXT("/Game/Asset_Arita/Chaichai_Anim/Anim_chaichai_mesh"));
     USkeletalMesh* meshasset = MeshAsset.Object;
 
-    FVector float_pos = FVector(0.f, 0.f, 200.f);
+    FVector float_pos = FVector(0.f, 0.f, 180.f);
     GetMesh()->SetSkeletalMesh(meshasset);
     GetMesh()->SetWorldLocation(float_pos);
     GetMesh()->SetWorldRotation(FRotator(0.f, -90.f, 0.f));
@@ -47,6 +47,11 @@ AENM_Chaichai::AENM_Chaichai()
     GetCharacterMovement()->MaxFlySpeed = IDLE_WALK_SPEED;
 
     GetCharacterMovement()->DefaultLandMovementMode = EMovementMode::MOVE_Flying;
+
+    static ConstructorHelpers::FClassFinder<AActor> SpitAsset(TEXT("/Game/Enemy/ChaiChai/Blueprints/BP_FX_Spit"));
+    FX_SpitClass = SpitAsset.Class;
+
+
 }
 
 
@@ -67,6 +72,12 @@ void AENM_Chaichai::OnSeePlayer(APawn* Pawn)
 void AENM_Chaichai::BeginPlay()
 {
     Super::BeginPlay();
+
+    FX_SpitActor = GetWorld()->SpawnActor<AActor>(FX_SpitClass);
+
+    FX_SpitActor->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, false));
+
+    FX_SpitActor->SetActorRelativeLocation(GetMesh()->GetSocketLocation("SpitSocket"));
 
 }
 

@@ -54,7 +54,7 @@ AENM_ChaFireball::AENM_ChaFireball()
 		FAttachmentTransformRules transform_rules(EAttachmentRule::SnapToTarget, false);
 		NS_Fireball->AttachToComponent(RootComponent, transform_rules);
 
-		NS_Fireball->SetRelativeLocation(FVector(0.f, 0.f, 0.f));
+		NS_Fireball->SetWorldLocation(FVector(0.f, 0.f, 0.f));
 	}
 
 }

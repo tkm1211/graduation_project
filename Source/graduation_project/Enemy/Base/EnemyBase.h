@@ -32,7 +32,7 @@ public:
 	UPROPERTY(EditAnywhere, AdvancedDisplay, Category = DeadEffect)
 		class UMaterialInterface* DeadMatarial;
 	UPROPERTY(EditAnywhere, Category = DeadEffect)
-		TSubclassOf<class AActor> FX_DeadActor;
+		TSubclassOf<class AActor> FX_DeadClass;
 
 	class UMaterialInstanceDynamic* MID;
 

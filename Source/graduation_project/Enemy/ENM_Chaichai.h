@@ -22,6 +22,11 @@ class GRADUATION_PROJECT_API AENM_Chaichai : public AEnemyBase
 		UPROPERTY(EditAnywhere,  Category = "BodyCapsuleComp")
 			class UCapsuleComponent* body;
 
+		UPROPERTY(EditAnywhere, Category = FX)
+			TSubclassOf<class AActor> FX_SpitClass;
+		UPROPERTY(VisibleAnywhere, Category = FX)
+			class AActor* FX_SpitActor;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
