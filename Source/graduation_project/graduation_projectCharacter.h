@@ -23,8 +23,8 @@ private:
 		class USpringArmComponent* CameraBoom;
 
 	/** Follow camera */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-		class UCameraComponent* FollowCamera;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	//	class UCameraComponent* FollowCamera;
 
 	FVector directionCollision;
 
@@ -42,6 +42,9 @@ private:
 	bool onGimmickPuzzle;
 	bool useGimmickPuzzle;
 public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+		class UCameraComponent* camera;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Wepon")
 		ABaseWepon* useWepon;
 
@@ -156,6 +159,7 @@ public:
 	void Damage(float giveDamage, FVector hitPosition);
 
 	ABaseWepon* GetUseWepone() { return useWepon; }
+	class UCameraComponent* GetFollowCamera() { return camera; }
 
 	UFUNCTION()
 		void BeginOverlap(

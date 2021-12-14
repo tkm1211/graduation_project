@@ -16,6 +16,7 @@
 #include "../../Camera/CameraManager.h"
 #include "NiagaraComponent.h"
 #include "Components/SphereComponent.h"
+#include "Camera/CameraComponent.h"
 
 AShotgun::AShotgun()
 {
@@ -105,20 +106,34 @@ void AShotgun::SpawnShot()
 	for (int i = 0; i < 8; i++)
 	{
 		FVector _rayForward = _playerCharacter->GetActorForwardVector();
+		FVector _cameraForward = _playerCharacter->GetFollowCamera()->GetForwardVector();
+		FVector _cameraRight = _playerCharacter->GetFollowCamera()->GetRightVector();
+		FVector _cameraUp = _playerCharacter->GetFollowCamera()->GetUpVector();
 
 		float rad = 45.0f * i;
 		rad = FMath::DegreesToRadians(rad);
 		float adjustX = FMath::Cos(rad) * 10.0f;
 		float adjustY = FMath::Sin(rad) * 10.0f;
 
-		FVector right = firePoint->GetForwardVector();
-		FVector up = firePoint->GetUpVector();
+		FVector right, up;
+		if (_playerCharacter->isAim)
+		{
+			_rayForward = _cameraForward;
+			right = _cameraUp;
+			up = _cameraRight;
+		}
+		else
+		{
+			_rayForward = _playerCharacter->GetActorForwardVector();
+			right = firePoint->GetForwardVector();
+			up = firePoint->GetUpVector();
+		}
 
 		right = FVector(right.X * adjustX, right.Y * adjustX, right.Z * adjustX);
 		up = FVector(up.X * adjustY, up.Y * adjustY, up.Z * adjustY);
 
 		// レイのスタート位置取得(ホーミング用)
-		FVector _rayStart = firePoint->GetComponentLocation() + _rayForward+ right + up;
+		FVector _rayStart = firePoint->GetComponentLocation() + _rayForward + right + up;
 
 		adjustX = FMath::Cos(rad) * spawnAmmoSpace;
 		adjustY = FMath::Sin(rad) * spawnAmmoSpace;
@@ -130,17 +145,7 @@ void AShotgun::SpawnShot()
 		up = FVector(up.X * adjustY, up.Y * adjustY, up.Z * adjustY);
 
 		FVector _rayEnd = (firePoint->GetComponentLocation()) + (_rayForward * ammoRayCastRange) + right + up;
-
-		//// レイのヒットしたアクター保存用
-		//TArray<AActor*> IngoreActors;
-		//IngoreActors.Add(this);
-		//TArray<FHitResult> HitRetArray;
-
-		//// SphereCast
-		//bool isHit = UKismetSystemLibrary::LineTraceMulti(GetWorld(), _rayStart, _rayEnd, UEngineTypes::ConvertToTraceType(ECC_WorldStatic), false, IngoreActors, EDrawDebugTrace::Type::ForDuration, HitRetArray, true);
-		
-		// プレイヤーの向きと発射位置取得
-		// プレイヤーの向きと発射位置取得
+		// プレイヤーの向きと発射位置取得_newRotator
 		FRotator _newRotator = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
 		FVector _fireLoc = firePoint->GetComponentLocation();
 

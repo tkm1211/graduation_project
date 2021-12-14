@@ -47,9 +47,14 @@ Agraduation_projectCharacter::Agraduation_projectCharacter()
 	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 
 	// Create a follow camera
-	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
-	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+	//FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
+	//FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
+	//FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+
+	// Create a follow camera
+	camera = CreateDefaultSubobject<UCameraComponent>(TEXT("camera"));
+	camera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
+	camera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
 	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
 	GetCharacterMovement()->MaxAcceleration = 2048.0f;
@@ -123,17 +128,6 @@ void Agraduation_projectCharacter::SetupPlayerInputComponent(class UInputCompone
 void Agraduation_projectCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (FollowCamera)
-	{
-		FVector _newWeponePuzzleLoc = FVector(FollowCamera->GetSocketLocation(FName("None"))) + FollowCamera->GetForwardVector() * asjustWeponPuzzleLoc;
-		FRotator _newWeponePuzzleRot = UKismetMathLibrary::FindLookAtRotation(FollowCamera->GetSocketLocation(FName("None")), weaponPuzzle->GetActorLocation());
-		float tmp = _newWeponePuzzleRot.Pitch;
-		_newWeponePuzzleRot.Pitch = _newWeponePuzzleRot.Roll;
-		_newWeponePuzzleRot.Roll = tmp;
-		_newWeponePuzzleRot.Yaw += 90;
-		weaponPuzzle->SetActorLocation(_newWeponePuzzleLoc);
-		weaponPuzzle->SetActorRotation(_newWeponePuzzleRot);
-	}
 	
 	// 死んだ時の処理
 	if (isDead)
@@ -150,80 +144,91 @@ void Agraduation_projectCharacter::Tick(float DeltaTime)
 		}
 
 		CameraChange(DeltaTime);
-
-		return;
-	}
-	if (changePlayerInput) return;
-
-	// 無敵時間
-	static float _visibility = 0.8f;
-	if (isInvincible)
-	{
-		invincibleTime -= DeltaTime;
-		if (invincibleTime < _visibility)
-		{
-			if(GetMesh()->IsVisible()) GetMesh()->SetVisibility(false);
-			else GetMesh()->SetVisibility(true);
-			_visibility -= 0.2f;
-		}
-
-		if (invincibleTime <= 0)
-		{
-			invincibleTime = defaultInvincibleTime;
-			isInvincible = false;
-			GetMesh()->SetVisibility(true);
-			_visibility = 0.8f;
-		}
 	}
 
-	// 銃を構えるまたは、射撃中はカメラのほうにプレイヤーを固定
-	if (isAim || isFire)
+	if (!changePlayerInput || !isDead)
 	{
-		if (isAim)
+		// 無敵時間
+		static float _visibility = 0.8f;
+		if (isInvincible)
 		{
-			FRotator newRotor = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
-			newRotor.Pitch = 0.0f;
-			newRotor.Roll = 0.0f;
-			SetActorRotation(newRotor);
-			auto animInstance = GetMesh()->GetAnimInstance();
-			if (!animInstance->Montage_IsPlaying(aimMontages[weponNumber]) && !animInstance->Montage_IsPlaying(recoilMontages[weponNumber]))
+			invincibleTime -= DeltaTime;
+			if (invincibleTime < _visibility)
 			{
-				animInstance->Montage_Play(aimMontages[weponNumber], 1.0f);
+				if (GetMesh()->IsVisible()) GetMesh()->SetVisibility(false);
+				else GetMesh()->SetVisibility(true);
+				_visibility -= 0.2f;
+			}
+
+			if (invincibleTime <= 0)
+			{
+				invincibleTime = defaultInvincibleTime;
+				isInvincible = false;
+				GetMesh()->SetVisibility(true);
+				_visibility = 0.8f;
 			}
 		}
 
-		if (isFire && !isAim)
+		// 銃を構えるまたは、射撃中はカメラのほうにプレイヤーを固定
+		if (isAim || isFire)
 		{
-			// エイムのアニメーション再生
-			auto animInstance = GetMesh()->GetAnimInstance();
-			if (!animInstance->Montage_IsPlaying(aimMontages[weponNumber]) && !animInstance->Montage_IsPlaying(recoilMontages[weponNumber]))
+			if (isAim)
 			{
-				animInstance->Montage_Play(aimMontages[weponNumber], 1.0f);
+				FRotator newRotor = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
+				newRotor.Pitch = 0.0f;
+				newRotor.Roll = 0.0f;
+				SetActorRotation(newRotor);
+				auto animInstance = GetMesh()->GetAnimInstance();
+				if (!animInstance->Montage_IsPlaying(aimMontages[weponNumber]) && !animInstance->Montage_IsPlaying(recoilMontages[weponNumber]))
+				{
+					animInstance->Montage_Play(aimMontages[weponNumber], 1.0f);
+				}
+			}
+
+			if (isFire && !isAim)
+			{
+				// エイムのアニメーション再生
+				auto animInstance = GetMesh()->GetAnimInstance();
+				if (!animInstance->Montage_IsPlaying(aimMontages[weponNumber]) && !animInstance->Montage_IsPlaying(recoilMontages[weponNumber]))
+				{
+					animInstance->Montage_Play(aimMontages[weponNumber], 1.0f);
+				}
+			}
+
+		}
+
+		if (firstShotTrg)
+		{
+			isFire = true;
+			firstShotTrgTime -= DeltaTime;
+			if (firstShotTrgTime < 0)
+			{
+				firstShotTrg = false;
+			}
+		}
+		else
+		{
+			if (!isPressFire)
+			{
+				isFire = false;
+				useWepon->SetOnFire(isFire);
 			}
 		}
 
+		CameraChange(DeltaTime);
 	}
-
-	if (firstShotTrg)
+	if (camera)
 	{
-		isFire = true;
-		firstShotTrgTime -= DeltaTime;
-		if (firstShotTrgTime < 0)
-		{
-			firstShotTrg = false;
-		}
+		// Todo
+		FVector _newWeponePuzzleLoc = FVector(camera->GetSocketLocation(FName("None"))) + camera->GetForwardVector() * asjustWeponPuzzleLoc.X;
+		FRotator _newWeponePuzzleRot = UKismetMathLibrary::FindLookAtRotation(camera->GetSocketLocation(FName("None")), _newWeponePuzzleLoc);
+		float tmp = _newWeponePuzzleRot.Pitch;
+		_newWeponePuzzleRot.Pitch = _newWeponePuzzleRot.Roll;
+		_newWeponePuzzleRot.Roll = tmp;
+		_newWeponePuzzleRot.Yaw += 90;
+		weaponPuzzle->SetActorLocation(_newWeponePuzzleLoc);
+		weaponPuzzle->SetActorRotation(_newWeponePuzzleRot);
 	}
-	else
-	{
-		if (!isPressFire)
-		{
-			isFire = false;
-			useWepon->SetOnFire(isFire);
-		}
-	}
-
-	CameraChange(DeltaTime);
-
 }
 
 // ジャンプ処理
@@ -310,7 +315,14 @@ void Agraduation_projectCharacter::FireWepon()
 	if (!firstShotTrg)
 	{
 		firstShotTrg = true;
-		firstShotTrgTime = 0.301f;
+		if (isAim)
+		{
+			firstShotTrgTime = 1  - 0.25f * useWepon->MotionRate();
+		}
+		else
+		{
+			firstShotTrgTime = 0.31;
+		}
 		useWepon->FirstFire();
 	}
 }
@@ -460,9 +472,11 @@ void Agraduation_projectCharacter::WeponPuzzle()
 	{
 		weaponPuzzle->BeginPuzzle();
 		onWeponePuzzle = true;
+		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.2f);
 	}
 	else
 	{
+		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
 		weaponPuzzle->EndPuzzle();
 		onWeponePuzzle = false;
 	}

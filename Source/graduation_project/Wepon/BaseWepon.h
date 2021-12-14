@@ -74,6 +74,8 @@ public:
 	virtual void Fire();
 	virtual void ShotFire(float DeltaTime) {}
 
+	float GetFireDelayTime() { return fireDelayTime; }
+	float MotionRate() { return motionRate; }
 	bool FirstShotEnable();
 	void SetOnFire(bool flg) { onFire = flg; }
 };

@@ -63,7 +63,6 @@ void ABaseWepon:: Fire()
 	auto animInstance = _playerCharacter->GetMesh()->GetAnimInstance();
 	int _weapomNum = _playerCharacter->weponNumber;
 	animInstance->Montage_Play(_playerCharacter->recoilMontages[_weapomNum], motionRate);
-
 	// EffectSpawn
 	TArray<AActor*> foundActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEffectSystem::StaticClass(), foundActors);
