@@ -460,7 +460,7 @@ void Agraduation_projectCharacter::WeponPuzzle()
 	{
 		weaponPuzzle->BeginPuzzle();
 		onWeponePuzzle = true;
-		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.01f);
+		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.1f);
 	}
 	else
 	{
@@ -487,6 +487,7 @@ FVector Agraduation_projectCharacter::GetWeaponePuzzulePosition()
 		//weaponPuzzle->SetActorLocation(_newWeponePuzzleLoc);
 		//weaponPuzzle->SetActorRotation(_newWeponePuzzleRot);
 	}
+	return FVector(0.0f);
 }
 
 FRotator Agraduation_projectCharacter::GetWeaponePuzzuleRotation()
@@ -505,6 +506,7 @@ FRotator Agraduation_projectCharacter::GetWeaponePuzzuleRotation()
 		//weaponPuzzle->SetActorLocation(_newWeponePuzzleLoc);
 		//weaponPuzzle->SetActorRotation(_newWeponePuzzleRot);
 	}
+	return FRotator(0.0f);
 }
 
 void Agraduation_projectCharacter::GimmickPuzzle()

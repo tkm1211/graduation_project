@@ -2,6 +2,10 @@
 
 #include "WeaponPuzzle.h"
 #include "Grid.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "GameFramework/Character.h"
+#include "../graduation_projectCharacter.h"
 #include "WeaponPuzzleMediator.h"
 
 
@@ -47,6 +51,16 @@ void AWeaponPuzzle::BeginPlay()
 void AWeaponPuzzle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	CustomTimeDilation = 1;
+
+	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
+	auto location = _playerCharacter->GetWeaponePuzzulePosition();
+	auto rotate = _playerCharacter->GetWeaponePuzzuleRotation();
+
+	SetActorLocation(location);
+	SetActorRotation(rotate);
 
 	grid->SetActorLocation(GetActorLocation());
 	grid->SetActorRotation(GetActorRotation());
