@@ -217,18 +217,6 @@ void Agraduation_projectCharacter::Tick(float DeltaTime)
 
 		CameraChange(DeltaTime);
 	}
-	if (camera)
-	{
-		// Todo
-		FVector _newWeponePuzzleLoc = FVector(camera->GetSocketLocation(FName("None"))) + camera->GetForwardVector() * asjustWeponPuzzleLoc.X;
-		FRotator _newWeponePuzzleRot = UKismetMathLibrary::FindLookAtRotation(camera->GetSocketLocation(FName("None")), _newWeponePuzzleLoc);
-		float tmp = _newWeponePuzzleRot.Pitch;
-		_newWeponePuzzleRot.Pitch = _newWeponePuzzleRot.Roll;
-		_newWeponePuzzleRot.Roll = tmp;
-		_newWeponePuzzleRot.Yaw += 90;
-		weaponPuzzle->SetActorLocation(_newWeponePuzzleLoc);
-		weaponPuzzle->SetActorRotation(_newWeponePuzzleRot);
-	}
 }
 
 // ジャンプ処理
@@ -330,7 +318,7 @@ void Agraduation_projectCharacter::FireWepon()
 // エイム開始
 void Agraduation_projectCharacter::AimWepon()
 {
-	if (changePlayerInput || isDead) return;
+	if (isDead) return;
 
 	isAim = true;
 }
@@ -348,7 +336,7 @@ void Agraduation_projectCharacter::StopFireWepon()
 // エイム終了
 void Agraduation_projectCharacter::StopAimWepon()
 {
-	if (changePlayerInput || isDead) return;
+	if (isDead) return;
 
 	isAim = false;
 }
@@ -472,7 +460,7 @@ void Agraduation_projectCharacter::WeponPuzzle()
 	{
 		weaponPuzzle->BeginPuzzle();
 		onWeponePuzzle = true;
-		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.2f);
+		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.01f);
 	}
 	else
 	{
@@ -481,6 +469,42 @@ void Agraduation_projectCharacter::WeponPuzzle()
 		onWeponePuzzle = false;
 	}
 	Pause();
+}
+
+FVector Agraduation_projectCharacter::GetWeaponePuzzulePosition()
+{
+	if (camera)
+	{
+		// Todo
+		FVector _newWeponePuzzleLoc = FVector(cameraPosition + camera->GetForwardVector() * asjustWeponPuzzleLoc.X);
+		FRotator _newWeponePuzzleRot = UKismetMathLibrary::FindLookAtRotation(cameraPosition, _newWeponePuzzleLoc);
+		float tmp = _newWeponePuzzleRot.Pitch;
+		_newWeponePuzzleRot.Pitch = _newWeponePuzzleRot.Roll;
+		_newWeponePuzzleRot.Roll = tmp;
+		_newWeponePuzzleRot.Yaw += 90;
+
+		return _newWeponePuzzleLoc;
+		//weaponPuzzle->SetActorLocation(_newWeponePuzzleLoc);
+		//weaponPuzzle->SetActorRotation(_newWeponePuzzleRot);
+	}
+}
+
+FRotator Agraduation_projectCharacter::GetWeaponePuzzuleRotation()
+{
+	if (camera)
+	{
+		// Todo
+		FVector _newWeponePuzzleLoc = FVector(cameraPosition + camera->GetForwardVector() * asjustWeponPuzzleLoc.X);
+		FRotator _newWeponePuzzleRot = UKismetMathLibrary::FindLookAtRotation(cameraPosition, _newWeponePuzzleLoc);
+		float tmp = _newWeponePuzzleRot.Pitch;
+		_newWeponePuzzleRot.Pitch = _newWeponePuzzleRot.Roll;
+		_newWeponePuzzleRot.Roll = tmp;
+		_newWeponePuzzleRot.Yaw += 90;
+
+		return _newWeponePuzzleRot;
+		//weaponPuzzle->SetActorLocation(_newWeponePuzzleLoc);
+		//weaponPuzzle->SetActorRotation(_newWeponePuzzleRot);
+	}
 }
 
 void Agraduation_projectCharacter::GimmickPuzzle()

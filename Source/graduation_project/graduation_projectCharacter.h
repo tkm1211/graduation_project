@@ -45,6 +45,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 		class UCameraComponent* camera;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+		FVector cameraPosition;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Wepon")
 		ABaseWepon* useWepon;
 
