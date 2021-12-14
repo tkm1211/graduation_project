@@ -28,6 +28,8 @@ public:
 		float IDLE_WALK_SPEED = 100.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "STATUS")
 		float COMBAT_WALK_SPEED = 250.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "STATUS")
+		float ATK_RANGE = 250.f;
 
 	float deadtimer;
 	

@@ -61,6 +61,8 @@ void ABaseAIController::OnPossess(class APawn* InPawn)
 
 	BehaviorComp->StartTree(*BehaviorTree);
 
+
+	update_sight = true;
 	enm = Cast<AEnemyBase>(GetCharacter());
 }
 
@@ -104,4 +106,19 @@ void ABaseAIController::Tick(float Deltatime)
 			BlackboardComp->SetValueAsBool("IsDead", true);
 		}
 	}
+
+	if (update_sight)
+	{
+		if (AISight)
+		{
+			AISight->SightRadius = FindRange;
+			AISight->LoseSightRadius = LoseRange;
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, "Call : OnPossess");
+
+			AISensorComp->RequestStimuliListenerUpdate();
+
+			update_sight = false;
+		}
+	}
+
 }

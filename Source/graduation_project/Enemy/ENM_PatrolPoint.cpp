@@ -3,9 +3,12 @@
 
 #include "ENM_PatrolPoint.h"
 #include "Base/EnemyBase.h"
+#include "Base\BaseAIController.h"
 #include "Components/ArrowComponent.h"
 #include "Components/SplineComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Perception/AISenseConfig_Sight.h"
+
 // Sets default values
 AENM_PatrolPoint::AENM_PatrolPoint()
 {
@@ -59,6 +62,19 @@ void AENM_PatrolPoint::BeginPlay()
 			enm->SpawnDefaultController();
 			enm->lookat_patpt = spline->GetLocationAtSplinePoint(enm->current_patpt, ESplineCoordinateSpace::World);
 
+			enm->IDLE_WALK_SPEED = IDLE_MOVE_SPEED;
+			enm->COMBAT_WALK_SPEED = COMBAT_MOVE_SPEED;
+			/*enm->GetController()->*/
+			enm->ATK_RANGE = ATKRange;
+			
+			ABaseAIController* controller = Cast<ABaseAIController>(enm->GetController());
+			if (controller)
+			{
+				controller->FindRange = FindRange;
+				controller->LoseRange = LostRange;
+				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, "Call : SpawnEnemyToController");
+
+			}
 		}
 		else
 		{

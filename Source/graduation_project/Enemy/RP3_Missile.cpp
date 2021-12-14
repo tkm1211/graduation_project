@@ -10,8 +10,8 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "NiagaraComponent.h"
-#include "NiagaraSystem.h"
+//#include "NiagaraComponent.h"
+//#include "NiagaraSystem.h"
 
 
 // Sets default values

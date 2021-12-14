@@ -18,6 +18,10 @@ class GRADUATION_PROJECT_API ABaseAIController : public AAIController
 public:
 	ABaseAIController();
 
+	bool update_sight = true;
+	float FindRange = 0.f;
+	float LoseRange = 100.f;
+
 	UPROPERTY(EditDefaultsOnly, Category = AI)
 		class UBehaviorTree* BehaviorTree;
 
@@ -27,8 +31,11 @@ public:
 	
 	class AEnemyBase* enm;
 
-	UPROPERTY(VisibleDefaultsOnly, Category = "Sensor")
+	UPROPERTY(VisibleAnywhere, Category = "Sensor")
 		class UAIPerceptionComponent* AISensorComp;
+
+	UPROPERTY(VisibleAnywhere, Category = "Sensor")
+		class UAISenseConfig_Sight* AISight;
 
 	UPROPERTY(EditDefaultsOnly, Category = AI)
 		FName PlayerActorKeyName = "PlayerActor";

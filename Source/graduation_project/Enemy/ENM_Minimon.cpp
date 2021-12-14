@@ -79,12 +79,26 @@ void AENM_Minimon::BeginPlay()
 
     GetCharacterMovement()->MaxWalkSpeed = IDLE_WALK_SPEED;
 
+    ATKSphere->SetGenerateOverlapEvents(true);
+    ATKSphere->SetCollisionProfileName("Custom...");
+    ATKSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     FCollisionResponseContainer col_response;
     col_response.SetAllChannels(ECollisionResponse::ECR_Overlap);
     col_response.Camera = ECollisionResponse::ECR_Ignore;
     col_response.Visibility = ECollisionResponse::ECR_Ignore;
 
     ATKSphere->SetCollisionResponseToChannels(col_response);
+    ATKSphere->UpdateCollisionProfile();
+
+    GetCapsuleComponent()->SetGenerateOverlapEvents(true);
+    GetCapsuleComponent()->SetCollisionProfileName("Custom...");
+    GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+    col_response.SetAllChannels(ECollisionResponse::ECR_Block);
+    col_response.Camera = ECollisionResponse::ECR_Ignore;
+    col_response.Visibility = ECollisionResponse::ECR_Ignore;
+
+    GetCapsuleComponent()->SetCollisionResponseToChannels(col_response);
 
 }
 

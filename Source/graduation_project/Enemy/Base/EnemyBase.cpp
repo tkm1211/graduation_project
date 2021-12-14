@@ -85,6 +85,6 @@ void AEnemyBase::Damage(float _indamage)
 {
 	healthpoint -= _indamage;
 
-
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White, FString::Printf(TEXT("Damage")), true, FVector2D(1.0f, 1.0f));
 
 }

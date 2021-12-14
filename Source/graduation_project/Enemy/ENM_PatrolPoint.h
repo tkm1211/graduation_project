@@ -32,19 +32,19 @@ public:
 		class AEnemyBase* enm;
 
 	UPROPERTY(EditDefaultsOnly, Category = "STATUS")
-		float IDLE_MOVE_SPEED;
+		float IDLE_MOVE_SPEED = 100.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "STATUS")
-		float COMBAT_MOVE_SPEED;
+		float COMBAT_MOVE_SPEED = 200.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "STATUS")
-		float FindRange;
+		float FindRange = 1000.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "STATUS")
-		float LostRange;
+		float LostRange = 1400.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "STATUS")
-		float ATKRange;
+		float ATKRange = 250.f;
 
 
 protected:

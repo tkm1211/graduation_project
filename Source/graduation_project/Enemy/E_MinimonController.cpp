@@ -14,76 +14,82 @@
 
 AE_MinimonController::AE_MinimonController()
 {
-    BehaviorComp = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorComp"));
-    BlackboardComp = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackboardComp"));
-    AISensorComp = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerceptionComp"));
+	BehaviorComp = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorComp"));
+	BlackboardComp = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackboardComp"));
+	AISensorComp = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerceptionComp"));
 
-    UAISenseConfig_Sight* sensor_sight = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("Sensor_Sight"));
-    sensor_sight->SightRadius = 1200.f;
-    sensor_sight->LoseSightRadius = 1600.f;
-    sensor_sight->DetectionByAffiliation.bDetectEnemies = true;
-    sensor_sight->DetectionByAffiliation.bDetectNeutrals = true;
-    sensor_sight->DetectionByAffiliation.bDetectFriendlies = true;
+	UAISenseConfig_Sight* sensor_sight = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("Sensor_Sight"));
+	sensor_sight->SightRadius = 1200.f;
+	sensor_sight->LoseSightRadius = 1600.f;
+	sensor_sight->DetectionByAffiliation.bDetectEnemies = true;
+	sensor_sight->DetectionByAffiliation.bDetectNeutrals = true;
+	sensor_sight->DetectionByAffiliation.bDetectFriendlies = true;
 
-    AISensorComp->ConfigureSense(*sensor_sight);
-    //AISensorComp->GetSenseConfig
+	FAISenseID id = sensor_sight->GetSenseID();
+	AISensorComp->ConfigureSense(*sensor_sight);
 
-    ConstructorHelpers::FObjectFinder<UBehaviorTree> BTFinder(TEXT("/Game/Enemy/Minimon/Blueprints/BT_Minimon"));
-    BehaviorTree = BTFinder.Object;
+	AISight = Cast<UAISenseConfig_Sight>(AISensorComp->GetSenseConfig(id));
 
-    AISensorComp->OnPerceptionUpdated.AddDynamic(this, &AE_MinimonController::SearchPlayerActor);
-    AISensorComp->OnTargetPerceptionInfoUpdated.AddDynamic(this, &AE_MinimonController::LostPlayerActor);
 
-    bAttachToPawn = true;
+
+	ConstructorHelpers::FObjectFinder<UBehaviorTree> BTFinder(TEXT("/Game/Enemy/Minimon/Blueprints/BT_Minimon"));
+	BehaviorTree = BTFinder.Object;
+
+	AISensorComp->OnPerceptionUpdated.AddDynamic(this, &AE_MinimonController::SearchPlayerActor);
+	AISensorComp->OnTargetPerceptionInfoUpdated.AddDynamic(this, &AE_MinimonController::LostPlayerActor);
+
+	bAttachToPawn = true;
 }
 
 void AE_MinimonController::OnPossess(class APawn* InPawn)
 {
-    Super::OnPossess(InPawn);
+	Super::OnPossess(InPawn);
+
+
 }
 
 void AE_MinimonController::OnUnPossess()
 {
-    Super::OnUnPossess();
+	Super::OnUnPossess();
 }
 
 
 void AE_MinimonController::SearchPlayerActor(const TArray<AActor*>& actors)
 {
 
-    for (int i = 0; i < actors.Num(); i++)
-    {
-        FActorPerceptionBlueprintInfo info = {};
-        AISensorComp->GetActorsPerception(actors[i], info);
-        if (info.LastSensedStimuli[0].WasSuccessfullySensed())
-        {
-            APawn* PlayerPawn = Cast<Agraduation_projectCharacter>(actors[i]);
+	for (int i = 0; i < actors.Num(); i++)
+	{
+		FActorPerceptionBlueprintInfo info = {};
+		AISensorComp->GetActorsPerception(actors[i], info);
+		if (info.LastSensedStimuli[0].WasSuccessfullySensed())
+		{
+			APawn* PlayerPawn = Cast<Agraduation_projectCharacter>(actors[i]);
 
-            BlackboardComp->SetValueAsObject(PlayerActorKeyName, PlayerPawn);
+			BlackboardComp->SetValueAsObject(PlayerActorKeyName, PlayerPawn);
 
-            BlackboardComp->SetValueAsBool("FirstContact", true);
+			BlackboardComp->SetValueAsBool("FirstContact", true);
 
 
-            break;
-        }
+			break;
+		}
 
-    }
+	}
 
 }
 
 void AE_MinimonController::LostPlayerActor(const FActorPerceptionUpdateInfo& info)
 {
 
-    if (!info.Stimulus.WasSuccessfullySensed())
-    {
+	if (!info.Stimulus.WasSuccessfullySensed())
+	{
 
-        BlackboardComp->SetValueAsObject(PlayerActorKeyName, nullptr);
-    }
+		BlackboardComp->SetValueAsObject(PlayerActorKeyName, nullptr);
+	}
 
 }
 
 void AE_MinimonController::Tick(float Deltatime)
 {
-    Super::Tick(Deltatime);
+	Super::Tick(Deltatime);
 
 }
