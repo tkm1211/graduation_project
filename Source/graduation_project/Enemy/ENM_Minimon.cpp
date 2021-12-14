@@ -56,6 +56,10 @@ AENM_Minimon::AENM_Minimon()
     ATKSphere->UpdateCollisionProfile();
 
     ATKSphere->OnComponentBeginOverlap.AddDynamic(this, &Super::OnHit);
+
+    static ConstructorHelpers::FClassFinder<AActor> BP_Actor(TEXT("/Game/Enemy/Minimon/Blueprints/BP_NS_Dead"));
+    FX_DeadActor = BP_Actor.Class;
+
 }
 
 
@@ -159,7 +163,7 @@ void AENM_Minimon::OnHit(class UPrimitiveComponent* HitComp, class AActor* Other
 
         ATKSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White, FString::Printf(TEXT("Hit : Player")), true, FVector2D(1.0f, 1.0f));
+        //GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White, FString::Printf(TEXT("Hit : Player")), true, FVector2D(1.0f, 1.0f));
     }
 
 }
