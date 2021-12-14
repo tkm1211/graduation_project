@@ -113,7 +113,7 @@ void ABaseAIController::Tick(float Deltatime)
 		{
 			AISight->SightRadius = FindRange;
 			AISight->LoseSightRadius = LoseRange;
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, "Call : OnPossess");
+			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, "Call : OnPossess");
 
 			AISensorComp->RequestStimuliListenerUpdate();
 

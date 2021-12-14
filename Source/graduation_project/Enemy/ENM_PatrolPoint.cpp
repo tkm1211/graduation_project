@@ -72,7 +72,7 @@ void AENM_PatrolPoint::BeginPlay()
 			{
 				controller->FindRange = FindRange;
 				controller->LoseRange = LostRange;
-				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, "Call : SpawnEnemyToController");
+				//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, "Call : SpawnEnemyToController");
 
 			}
 		}
