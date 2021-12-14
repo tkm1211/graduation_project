@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "../DoOnce.h"
 #include "EnemyBase.generated.h"
 
 UCLASS()
@@ -16,14 +17,11 @@ public:
 	AEnemyBase();
 
 	FVector lookat_patpt;
-
 	int current_patpt;
-	
 	bool reachto_patpt = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "STATUS")
 		float healthpoint = 100.f;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "STATUS")
 		float IDLE_WALK_SPEED = 100.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "STATUS")
@@ -31,10 +29,22 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "STATUS")
 		float ATK_RANGE = 250.f;
 
+	UPROPERTY(EditAnywhere, AdvancedDisplay, Category = DeadEffect)
+		class UMaterialInterface* DeadMatarial;
+	UPROPERTY(EditAnywhere, Category = DeadEffect)
+		TSubclassOf<class AActor> FX_DeadActor;
+
+	class UMaterialInstanceDynamic* MID;
+
+
+	bool b_rigor;
+	float LIFETIMER;
 	float deadtimer;
 	
-	bool is_combat = false;
+	UPROPERTY(VisibleAnywhere)
+		FDoOnce DeadEffectDoOnce;
 
+	bool is_combat = false;
 	bool atk_collision_on = false;
 
 	virtual void CombatON(){}
