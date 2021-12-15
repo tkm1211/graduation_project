@@ -25,7 +25,8 @@ bool UBT_D_AttackableRange::CalculateRawConditionValue(UBehaviorTreeComponent& O
 	const UBlackboardComponent* BlackboardComp = OwnerComp.GetBlackboardComponent();
 	// note that this may produce unexpected logical results. FALSE is a valid return value here as well
 	// @todo signal it
-	return BlackboardComp && EvaluateOnBlackboard(*BlackboardComp);
+
+	return BlackboardComp && (EvaluateOnBlackboard(*BlackboardComp) ^ IsInversed());
 }
 
 
@@ -44,10 +45,6 @@ bool UBT_D_AttackableRange::EvaluateOnBlackboard(const UBlackboardComponent& Bla
 		bResult = dist <= enm->ATK_RANGE;
 	}
 		
-	if (Super::IsInversed())
-	{
-		bResult ^= bResult;
-	}
 
 	return bResult;
 }

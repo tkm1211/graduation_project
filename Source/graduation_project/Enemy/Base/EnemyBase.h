@@ -28,7 +28,12 @@ public:
 		float COMBAT_WALK_SPEED = 250.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "STATUS")
 		float ATK_RANGE = 250.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "STATUS")
+		float ATK_POWER = 10.f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "STATUS")
+		TArray<bool> bFire;
+	 
 	UPROPERTY(EditAnywhere, AdvancedDisplay, Category = DeadEffect)
 		class UMaterialInterface* DeadMatarial;
 	UPROPERTY(EditAnywhere, Category = DeadEffect)

@@ -103,7 +103,7 @@ void AEnemyBase::OnHit(class UPrimitiveComponent* HitComp, class AActor* OtherAc
 
 		float hitDamage = 20.f;
 
-		_player->Damage(hitDamage, SweepResult.Location);
+		_player->Damage(ATK_POWER, SweepResult.Location);
 	}
 
 }

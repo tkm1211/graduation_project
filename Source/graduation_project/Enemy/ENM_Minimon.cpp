@@ -103,6 +103,7 @@ void AENM_Minimon::BeginPlay()
     col_response.Visibility = ECollisionResponse::ECR_Ignore;
 
     GetCapsuleComponent()->SetCollisionResponseToChannels(col_response);
+    GetCapsuleComponent()->UpdateCollisionProfile();
 
 }
 
@@ -159,7 +160,7 @@ void AENM_Minimon::OnHit(class UPrimitiveComponent* HitComp, class AActor* Other
 
         float hitDamage = 1.f;
 
-        _player->Damage(hitDamage, SweepResult.Location);
+        _player->Damage(ATK_POWER, SweepResult.Location);
 
         ATKSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 

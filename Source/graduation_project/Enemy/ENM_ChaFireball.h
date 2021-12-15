@@ -31,6 +31,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Niagara")
 		class UNiagaraComponent* NS_Fireball;
 
+	UPROPERTY(VisibleAnywhere, Category = "STATUS")
+		float ATKPower = 1.f;
+
 	UFUNCTION()
 		void OnHit(class UPrimitiveComponent* HitComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 

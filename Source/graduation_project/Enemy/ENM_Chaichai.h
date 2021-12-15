@@ -22,10 +22,13 @@ class GRADUATION_PROJECT_API AENM_Chaichai : public AEnemyBase
 		UPROPERTY(EditAnywhere,  Category = "BodyCapsuleComp")
 			class UCapsuleComponent* body;
 
-		UPROPERTY(EditAnywhere, Category = FX)
-			TSubclassOf<class AActor> FX_SpitClass;
-		UPROPERTY(VisibleAnywhere, Category = FX)
-			class AActor* FX_SpitActor;
+		//UPROPERTY(EditAnywhere, Category = FX)
+		//	TSubclassOf<class AActor> FX_SpitClass;
+		//UPROPERTY(VisibleAnywhere, Category = FX)
+		//	class AActor* FX_SpitActor;
+
+		UPROPERTY(EditAnywhere, Category = Projectile)
+			TSubclassOf<class AENM_ChaFireball> FBireballClass;
 
 protected:
 	// Called when the game starts or when spawned
@@ -35,4 +38,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	enum PROJECTILE
+	{
+		FIREBALL,
+	};
 };
