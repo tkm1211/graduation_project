@@ -60,8 +60,7 @@ void ADropPiece::Tick(float DeltaTime)
 
 		flySpeed -= FlyDownSpeed;
 	}
-
-	if (UnabsorbableMaxTime < unabsorbableTime)
+	else if (UnabsorbableMaxTime < unabsorbableTime)
 	{
 		onHoming ? Homing() : JudgeAria();
 	}
@@ -95,7 +94,7 @@ void ADropPiece::Homing()
 	if (HomingMaxSpeed < homingSpeed) homingSpeed = HomingMaxSpeed;
 
 	homingJumpSpeed -= HomingJumpDownSpeed;
-	if (homingJumpSpeed < 0.0f) homingJumpSpeed = 0.0f;
+	//if (homingJumpSpeed < 0.0f) homingJumpSpeed = 0.0f;
 }
 
 void ADropPiece::JudgeAria()
@@ -110,6 +109,7 @@ void ADropPiece::JudgeAria()
 	{
 		onHoming = true;
 		homingSpeed = 0.0f;
+		//SphereCollision->SetSimulatePhysics(false);
 	}
 }
 
