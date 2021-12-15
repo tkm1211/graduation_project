@@ -26,13 +26,21 @@ enum PieceType
 };
 
 USTRUCT(BlueprintType)
-struct FPlacedPieceData
+struct FGridData
 {
 	GENERATED_USTRUCT_BODY();
 
 	int widthNum = 0;
 
 	int heightNum = 0;
+};
+
+USTRUCT(BlueprintType)
+struct FPlacedPieceData
+{
+	GENERATED_USTRUCT_BODY();
+
+	FGridData gridData;
 
 	int placedPanelNum = 0;
 
@@ -46,6 +54,14 @@ struct FPlacedPieceData
 
 	// Ží—Þ
 	PieceType type = PieceType::TypeBlaster;
+};
+
+USTRUCT(BlueprintType)
+struct FRemovePieceData
+{
+	GENERATED_USTRUCT_BODY();
+
+	int placedPanelNum = 0;
 };
 
 UCLASS()

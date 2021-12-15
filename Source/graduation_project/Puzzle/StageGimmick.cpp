@@ -15,41 +15,16 @@ AStageGimmick::AStageGimmick()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	//Cube = CreateDefaultSubobject<UStaticMeshComponent>("Cube");
-
-	//static ConstructorHelpers::FObjectFinder<UStaticMesh> cubeMesh(TEXT("/Game/Geometry/Meshes/1M_Cube.1M_Cube"));
-	//static ConstructorHelpers::FObjectFinder<UMaterial> cubeMaterial(TEXT("/Game/AssetAtsuki/BossStage/Shield/M_Shield_Inst_3.M_Shield_Inst_3"));
-
-	//if (cubeMesh.Succeeded())
-	//{
-	//	/*if (cubeMaterial.Succeeded())
-	//	{
-	//		cubeMesh.Object->SetMaterial(0, cubeMaterial.Object);
-	//	}*/
-
-	//	Cube->SetStaticMesh(cubeMesh.Object);
-	//}
-
-	/*const FString FilePath = "Tool\\Data\\Document\\Puzzle\\";
-
-	const auto JsonObject = UJsonFunctionLibrary::LoadJsonObject(FilePath + PanelFilePath);
-	if (!JsonObject.IsValid())
-	{
-		return;
-	}
-
-	widthNum = JsonObject->GetIntegerField("widthNum");
-	heightNum = JsonObject->GetIntegerField("heightNum");*/
-
-	//Cube->SetWorldScale3D(FVector(widthNum, 1.0f, heightNum));
 }
 
 // Called when the game starts or when spawned
 void AStageGimmick::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	// ゲームインスタンスからギミック用のMediator（仲介役）を取得
+	UGameInstance* instance = GetWorld()->GetGameInstance();
+	gimmickMediator = instance->GetSubsystem<UGimmickMediator>();
 }
 
 // Called every frame
@@ -57,16 +32,18 @@ void AStageGimmick::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// グリッドメッシュを配置
+	CreateGridMesh();
+
 	// ギミックピースを配置
 	PlacePieceBlock();
+
+	// ギミックピースを除去
+	RemovePieceBlock();
 }
 
 void AStageGimmick::PlacePieceBlock()
 {
-	// ゲームインスタンスからギミック用のMediator（仲介役）を取得
-	UGameInstance* instance = GetWorld()->GetGameInstance();
-	auto gimmickMediator = instance->GetSubsystem<UGimmickMediator>();
-
 	// グループIDが初期値ではないか？
 	if (GroupID == -1) return;
 
@@ -81,8 +58,44 @@ void AStageGimmick::PlacePieceBlock()
 	CreatePieceBlock(placeedPiece);
 }
 
-void AStageGimmick::CreatePieceBlock(FPlacedPieceData data)
+void AStageGimmick::RemovePieceBlock()
 {
+	// グループIDが初期値ではないか？
+	if (GroupID == -1) return;
+
+	// グループIDが一致しているか？
+	if (GroupID != gimmickMediator->GetGroupID()) return;
+
+	// パズル画面でピースが取り除かれたか？
+	if (!gimmickMediator->DidRemovePiece()) return;
+
+	// パズル画面で取り除かれたピースをステージから除去
+	auto removePiece = gimmickMediator->GetRemovePieceData();
+
+	// ピースブロックを削除
+	for (auto data : pieceBlocks)
+	{
+		if (data.pieceData.placedPanelNum != removePiece.placedPanelNum) continue;
+		if (!data.pieceBlock) continue;
+
+		data.pieceBlock->Destroy();
+	}
+}
+
+void AStageGimmick::CreateGridMesh()
+{
+	// グループIDが初期値ではないか？
+	if (GroupID == -1) return;
+
+	// グループIDが一致しているか？
+	if (GroupID != gimmickMediator->GetGroupID()) return;
+
+	// パズル画面でグリッドパネルが生成されたか？
+	if (!gimmickMediator->DidCreateGrid()) return;
+
+	// パズル画面で配置されたグリッドパネルをステージにスポーン
+	auto data = gimmickMediator->GetGridData();
+
 	FVector location = GetActorLocation();
 	FRotator rotation = GetActorRotation();
 	FVector scale = GetActorScale();
@@ -96,12 +109,40 @@ void AStageGimmick::CreatePieceBlock(FPlacedPieceData data)
 	location -= rightVec * adjustWidht;
 	location += upVec * adjustHeight;
 
-	bool hit = false;
 	for (int j = 0; j < data.heightNum; ++j)
 	{
 		for (int i = 0; i < data.widthNum; ++i)
 		{
-			int num = data.widthNum * j + i;
+			GetWorld()->SpawnActor<AGridMesh>(GridMesh, location, FRotator(0.0f));
+			location += rightVec * BlockSize;
+		}
+		
+		location -= rightVec * (BlockSize * static_cast<float>(data.widthNum));
+		location -= upVec * BlockSize;
+	}
+}
+
+void AStageGimmick::CreatePieceBlock(FPlacedPieceData data)
+{
+	FVector location = GetActorLocation();
+	FRotator rotation = GetActorRotation();
+	FVector scale = GetActorScale();
+
+	FVector rightVec = GetActorForwardVector();
+	FVector upVec = GetActorUpVector();
+
+	float adjustWidht = BlockSize * (static_cast<float>(data.gridData.widthNum - 1) * 0.5f);
+	float adjustHeight = BlockSize * (static_cast<float>(data.gridData.heightNum - 1) * 0.5f);
+
+	location -= rightVec * adjustWidht;
+	location += upVec * adjustHeight;
+
+	bool hit = false;
+	for (int j = 0; j < data.gridData.heightNum; ++j)
+	{
+		for (int i = 0; i < data.gridData.widthNum; ++i)
+		{
+			int num = data.gridData.widthNum * j + i;
 			if (num == data.placedPanelNum)
 			{
 				hit = true;
@@ -121,48 +162,65 @@ void AStageGimmick::CreatePieceBlock(FPlacedPieceData data)
 
 	FRotator addRotation = FRotator(90.0f * data.turnCnt * -1.0f, 0.0f, 0.0f);
 
+	AActor* pieceBlock = nullptr;
 	switch (data.shape)
 	{
 	case O:
-		CreatePieceBlockO(location, rotation, addRotation, scale);
+		pieceBlock = CreatePieceBlockO(location, rotation, addRotation, scale);
 		break;
 
 	case L:
-		CreatePieceBlockL(location, rotation, addRotation, scale);
+		pieceBlock = CreatePieceBlockL(location, rotation, addRotation, scale);
 		break;
 
 	case I:
-		CreatePieceBlockI(location, rotation, addRotation, scale);
+		pieceBlock = CreatePieceBlockI(location, rotation, addRotation, scale);
 		break;
 
 	case T:
-		CreatePieceBlockT(location, rotation, addRotation, scale);
+		pieceBlock = CreatePieceBlockT(location, rotation, addRotation, scale);
 		break;
 
 	default: break;
 	}
+
+	FSpawnPieceBlockData spawnPieceBlockData;
+	{
+		spawnPieceBlockData.pieceBlock = pieceBlock;
+		spawnPieceBlockData.pieceData = data;
+	}
+
+	pieceBlocks.Add(spawnPieceBlockData);
 }
 
-void AStageGimmick::CreatePieceBlockO(FVector location, FRotator rotation, FRotator addRotation, FVector scale)
+AActor* AStageGimmick::CreatePieceBlockO(FVector location, FRotator rotation, FRotator addRotation, FVector scale)
 {
 	auto tempO = GetWorld()->SpawnActor<APieceBlockO>(PieceBlockO, location, rotation);
 	tempO->AddActorLocalRotation(addRotation, false, 0, ETeleportType::TeleportPhysics);
+
+	return tempO;
 }
 
-void AStageGimmick::CreatePieceBlockL(FVector location, FRotator rotation, FRotator addRotation, FVector scale)
+AActor* AStageGimmick::CreatePieceBlockL(FVector location, FRotator rotation, FRotator addRotation, FVector scale)
 {
 	auto tempL = GetWorld()->SpawnActor<APieceBlockL>(PieceBlockL, location, rotation);
 	tempL->AddActorLocalRotation(addRotation, false, 0, ETeleportType::TeleportPhysics);
+
+	return tempL;
 }
 
-void AStageGimmick::CreatePieceBlockI(FVector location, FRotator rotation, FRotator addRotation, FVector scale)
+AActor* AStageGimmick::CreatePieceBlockI(FVector location, FRotator rotation, FRotator addRotation, FVector scale)
 {
 	auto tempI = GetWorld()->SpawnActor<APieceBlockI>(PieceBlockI, location, rotation);
 	tempI->AddActorLocalRotation(addRotation, false, 0, ETeleportType::TeleportPhysics);
+
+	return tempI;
 }
 
-void AStageGimmick::CreatePieceBlockT(FVector location, FRotator rotation, FRotator addRotation, FVector scale)
+AActor* AStageGimmick::CreatePieceBlockT(FVector location, FRotator rotation, FRotator addRotation, FVector scale)
 {
 	auto tempT = GetWorld()->SpawnActor<APieceBlockT>(PieceBlockT, location, rotation);
 	tempT->AddActorLocalRotation(addRotation, false, 0, ETeleportType::TeleportPhysics);
+
+	return tempT;
 }

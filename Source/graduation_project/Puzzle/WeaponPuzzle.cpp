@@ -36,6 +36,7 @@ void AWeaponPuzzle::BeginPlay()
 	}
 
 	grid->VisibleGridMesh(false);
+	grid->SetPuzzleType(PuzzleType::TypeWeaponPuzzle);
 
 	if (onPuzzle)
 	{
@@ -52,7 +53,7 @@ void AWeaponPuzzle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	CustomTimeDilation = 1;
+	//CustomTimeDilation = 1;
 
 	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);

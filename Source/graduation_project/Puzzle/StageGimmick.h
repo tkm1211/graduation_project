@@ -13,7 +13,20 @@ class APieceBlockO;
 class APieceBlockL;
 class APieceBlockI;
 class APieceBlockT;
+class AGridMesh;
+class UGimmickMediator;
 class UInstancedStaticMeshComponent;
+
+
+USTRUCT(BlueprintType)
+struct FSpawnPieceBlockData
+{
+	GENERATED_USTRUCT_BODY();
+
+	AActor* pieceBlock = nullptr;
+
+	FPlacedPieceData pieceData;
+};
 
 
 UCLASS()
@@ -26,6 +39,9 @@ public:
 	//UStaticMeshComponent* Cube;
 
 private:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Block Type", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<AGridMesh> GridMesh; // グリッドブロック（エディタで設定）
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Block Type", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<APieceBlockO> PieceBlockO; // Lのピースブロック（エディタで設定）
 
@@ -44,12 +60,10 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Gimmick|Debug", meta = (AllowPrivateAccess = "true"))
 	float BlockSize = 0.0f; // 1ブロックの大きさ（エディタで設定）
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Gimmick", meta = (AllowPrivateAccess = "true"))
-	FString PanelFilePath = "BackData03";
-
 private:
-	int widthNum = 0;
-	int heightNum = 0;
+	UGimmickMediator* gimmickMediator;
+
+	TArray<FSpawnPieceBlockData> pieceBlocks;
 
 public:	
 	// Sets default values for this actor's properties
@@ -65,9 +79,11 @@ public:
 
 private:
 	void PlacePieceBlock();
+	void RemovePieceBlock();
+	void CreateGridMesh();
 	void CreatePieceBlock(FPlacedPieceData data);
-	void CreatePieceBlockO(FVector location, FRotator rotation, FRotator addRotation, FVector scale);
-	void CreatePieceBlockL(FVector location, FRotator rotation, FRotator addRotation, FVector scale);
-	void CreatePieceBlockI(FVector location, FRotator rotation, FRotator addRotation, FVector scale);
-	void CreatePieceBlockT(FVector location, FRotator rotation, FRotator addRotation, FVector scale);
+	AActor* CreatePieceBlockO(FVector location, FRotator rotation, FRotator addRotation, FVector scale);
+	AActor* CreatePieceBlockL(FVector location, FRotator rotation, FRotator addRotation, FVector scale);
+	AActor* CreatePieceBlockI(FVector location, FRotator rotation, FRotator addRotation, FVector scale);
+	AActor* CreatePieceBlockT(FVector location, FRotator rotation, FRotator addRotation, FVector scale);
 };

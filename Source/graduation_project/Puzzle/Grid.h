@@ -16,6 +16,14 @@ class APieceI;
 class APieceT;
 
 
+// Œ`
+UENUM()
+enum PuzzleType
+{
+	TypeWeaponPuzzle,
+	TypeGimmickPuzzle,
+};
+
 USTRUCT(BlueprintType)
 struct FPieceData
 {
@@ -174,9 +182,13 @@ private:
 
 	FString panelFilePath = "BackData03";
 
+	FGridData gridData;
 	FPlacedPieceData placedPieceData;
+	FRemovePieceData removePieceData;
 
 	UPieceResourceManager* resourceManager;
+
+	PuzzleType puzzleType;
 
 	int inputYAxisTimer = 0;
 	int inputXAxisTimer = 0;
@@ -221,9 +233,12 @@ private:
 	bool onPieceSlotLeft = false;
 	bool onPieceSlotRight = false;
 
+	bool onVisible = false;
 	bool onPieceInPiece = false;
 	bool canPieceDecision = false;
+	bool didCreateGrid = false;
 	bool didPlacePiece = false;
+	bool didRemovePiece = false;
 
 public:	
 	// Sets default values for this actor's properties
@@ -246,8 +261,13 @@ public:
 	void SetAdjustLen(float len);
 	void SetPuzzle(bool puzzle);
 	void SetGridFlieName(FString fileName);
+	void SetPuzzleType(PuzzleType type);
+	bool DidCreateGrid();
 	bool DidPlacePiece();
+	bool DidRemovePiece();
+	FGridData GetGridData();
 	FPlacedPieceData GetPlacedPieceData();
+	FRemovePieceData GetRemovePieceData();
 
 	// WeaponPuzzle—p
 	int GetBlasterPieceNum();

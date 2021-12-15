@@ -27,14 +27,22 @@ void AGimmickPuzzle::BeginPlay()
 
 	onGimmickPuzzle = false;
 	grid->VisibleGridMesh(true);
-	//grid->VisibleGrid(false);
-	//grid->SetActorHiddenInGame(true);
+	grid->SetPuzzleType(PuzzleType::TypeGimmickPuzzle);
+
+	// ゲームインスタンスからギミック用のMediator（仲介役）を取得
+	UGameInstance* instance = GetWorld()->GetGameInstance();
+	gimmickMediator = instance->GetSubsystem<UGimmickMediator>();
 }
 
 // Called every frame
 void AGimmickPuzzle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// グリッド生成
+	{
+		CreateGrid();
+	}
 
 	// グリッド更新
 	{
@@ -50,6 +58,11 @@ void AGimmickPuzzle::Tick(float DeltaTime)
 	{
 		PlacePieceBlock();
 	}
+
+	// ピースブロック除去
+	{
+		RemovePieceBlock();
+	}
 }
 
 void AGimmickPuzzle::UpdateGrid()
@@ -63,6 +76,15 @@ void AGimmickPuzzle::UpdateGrid()
 	{
 		RotateGrid();
 	}
+}
+
+void AGimmickPuzzle::CreateGrid()
+{
+	if (!grid->DidCreateGrid()) return;
+
+	// パズル画面で配置されたグリッドパネルの情報を渡す
+	auto gridData = grid->GetGridData();
+	gimmickMediator->SetGridData(GroupID, gridData);
 }
 
 void AGimmickPuzzle::MoveGrid()
@@ -128,13 +150,19 @@ void AGimmickPuzzle::PlacePieceBlock()
 	if (!onGimmickPuzzle) return;
 	if (!grid->DidPlacePiece()) return;
 
-	// ゲームインスタンスからギミック用のMediator（仲介役）を取得
-	UGameInstance* instance = GetWorld()->GetGameInstance();
-	auto gimmickMediator = instance->GetSubsystem<UGimmickMediator>();
-
 	// パズル画面で配置されたピースの情報を渡す
 	auto placedPieceData = grid->GetPlacedPieceData();
 	gimmickMediator->AddPlacePiece(GroupID, placedPieceData);
+}
+
+void AGimmickPuzzle::RemovePieceBlock()
+{
+	if (!onGimmickPuzzle) return;
+	if (!grid->DidRemovePiece()) return;
+
+	// パズル画面で取り除かれたピースの情報を渡す
+	auto removePieceData = grid->GetRemovePieceData();
+	gimmickMediator->SetRemovePiece(GroupID, removePieceData);
 }
 
 void AGimmickPuzzle::DoBeginPuzzle()
@@ -143,9 +171,6 @@ void AGimmickPuzzle::DoBeginPuzzle()
 
 	APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
 	playerController->SetViewTargetWithBlend(puzzleCamera, 1.0f, VTBlend_Linear, 10.0f, true);
-
-	//grid->VisibleGrid(true);
-	//grid->SetActorHiddenInGame(false);
 }
 
 void AGimmickPuzzle::DoEndPuzzle()
@@ -155,7 +180,4 @@ void AGimmickPuzzle::DoEndPuzzle()
 	APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
 	ACharacter* playerCharacter = UGameplayStatics::GetPlayerCharacter(this, 0);
 	playerController->SetViewTargetWithBlend(playerCharacter, 1.0f, VTBlend_Linear, 10.0f, true);
-
-	//grid->VisibleGrid(false);
-	//grid->SetActorHiddenInGame(true);
 }

@@ -8,6 +8,8 @@
 
 
 class AGrid;
+class UGimmickMediator;
+
 
 UCLASS()
 class GRADUATION_PROJECT_API AGimmickPuzzle : public APuzzleOrigin
@@ -22,6 +24,8 @@ private:
 	int GroupID = -1; // StageGimmickと紐づけるための番号（エディタで設定）
 
 private:
+	UGimmickMediator* gimmickMediator;
+
 	bool onGimmickPuzzle = false;
 
 public:	
@@ -37,6 +41,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
+	void CreateGrid();
 	void UpdateGrid();
 	void MoveGrid();
 	void RotateGrid();
@@ -44,6 +49,7 @@ private:
 	void UpdateCamera();
 
 	void PlacePieceBlock();
+	void RemovePieceBlock();
 
 	void DoBeginPuzzle() override;
 	void DoEndPuzzle() override;

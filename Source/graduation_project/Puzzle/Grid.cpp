@@ -76,8 +76,15 @@ void AGrid::Initialize()
 		onPieceSlotLeft = false;
 		onPieceSlotRight = false;
 
+		onVisible = false;
 		onPieceInPiece = false;
 		canPieceDecision = false;
+
+		didCreateGrid = false;
+		didPlacePiece = false;
+		didRemovePiece = false;
+
+		puzzleType = PuzzleType::TypeGimmickPuzzle;
 
 		panelSize = OriginPanelSize * gridScale.X;
 		originPiecePos = FVector(0.0f, 0.0f, 0.0f);
@@ -100,6 +107,15 @@ void AGrid::Initialize()
 	{
 		FVector SpawnLocation = GetLocation();
 		CreatePanels(SpawnLocation);
+	}
+
+	// パネルデータをステージギミックに渡す
+	{
+		didCreateGrid = true;
+		{
+			gridData.widthNum = widthNum;
+			gridData.heightNum = heightNum;
+		}
 	}
 
 	// 入力バインド
@@ -137,6 +153,9 @@ void AGrid::Tick(float DeltaTime)
 	rightVec = GetActorForwardVector();
 	upVec = GetActorUpVector();
 
+	// グリッド移動
+	MoveGrid(DeltaTime); // ピース情報が無くても表示するため
+
 	// リソースマネージャーからピース情報を取得
 	LoadPieces();
 
@@ -149,9 +168,6 @@ void AGrid::Tick(float DeltaTime)
 	}
 
 #if 1
-	// グリッド移動
-	MoveGrid(DeltaTime);
-
 	// ピース移動
 	MovePiece(DeltaTime);
 
@@ -322,15 +338,15 @@ void AGrid::MovePiece(float DeltaTime)
 
 		AdjustPiecePosFromOrigin(piecePos, (panelSize * 0.5f), pieceDatas[pieceNum].shape, piece->GetTurnCnt());
 		piece->PieceMove(piecePos, location, rightVec, upVec);
+		piece->SetActorRotation(GetActorRotation());
 
 		FRotator rotate;
 		FVector rotateVec;
-		float rotateX = 0.0f;
+		float rotateY = 0.0f;
 
-		rotateVec = GetActorRotation().Euler();
-		rotateX = 90.0f * piece->GetTurnCnt() * -1.0f;
-		rotate = FRotator(rotateX, rotateVec.Z, rotateVec.X);
-		piece->SetActorRotation(rotate);
+		rotateY = 90.0f * piece->GetTurnCnt() * -1.0f;
+		rotate = FRotator(rotateY, 0.0f, 0.0f);
+		piece->AddActorLocalRotation(rotate, false, 0, ETeleportType::None);
 	};
 
 	SetPanelNumAtOriginPiece(panelNumAtOriginPiece);
@@ -689,8 +705,8 @@ void AGrid::PieceDecision(APieceOrigin* piece)
 
 		didPlacePiece = true;
 		{
-			placedPieceData.widthNum = widthNum;
-			placedPieceData.heightNum = heightNum;
+			placedPieceData.gridData.widthNum = widthNum;
+			placedPieceData.gridData.heightNum = heightNum;
 			placedPieceData.placedPanelNum = panelNumAtOriginPiece;
 			placedPieceData.placedPiecePanelNum = piece->GetPieceNums().Num();
 			placedPieceData.turnCnt = piece->GetTurnCnt();
@@ -795,6 +811,14 @@ void AGrid::PieceDecision(int pieceNum)
 	if (pieceNum != selectPieceNum)
 	{
 		SetVisiblePiece(selectPieceNum, true, pieces[pastSelectPieceNum]->GetActorLocation());
+		if (!onVisible && puzzleType == PuzzleType::TypeWeaponPuzzle)
+		{
+			pieces[selectPieceNum]->GetRenderComponent()->SetVisibility(false);
+			for (int i = 0; i < slotPieces.Num(); ++i)
+			{
+				slotPieces[i]->GetRenderComponent()->SetVisibility(false);
+			}
+		}
 		SetUpPiece(pieces[selectPieceNum], pieceDatas[selectPieceNum].shape);
 	}
 	else
@@ -809,6 +833,7 @@ void AGrid::PieceDecision(int pieceNum)
 void AGrid::PieceCancel(APieceOrigin* piece)
 {
 	if (!onPieceCancel) return; // 入力判定
+	if (didPlacePiece) return; // 配置されていない場合
 	if (backUpNum < 0) return; // 一個前に情報がない場合
 
 	// 現在、選択中のピースを非表示
@@ -822,6 +847,9 @@ void AGrid::PieceCancel(APieceOrigin* piece)
 	selectPieceNum = decisionPieces[backUpNum].pieceNum;
 	panelNumAtOriginPiece = decisionPieces[backUpNum].panelNum;
 	onDecisionPieces[selectPieceNum] = false;
+
+	didRemovePiece = true;
+	removePieceData.placedPanelNum = panelNumAtOriginPiece;
 
 	// 武器パズルの情報も戻す
 	switch (placedPieceData.type)
@@ -1882,6 +1910,14 @@ void AGrid::LoadPieces()
 		{
 			SetPanelNumAtOriginPiece(panelPositions.Num() / 2);
 			SetVisiblePiece(selectPieceNum, true, pieces[selectPieceNum]->GetActorLocation());
+			if (!onVisible && puzzleType == PuzzleType::TypeWeaponPuzzle)
+			{
+				pieces[selectPieceNum]->GetRenderComponent()->SetVisibility(false);
+				for (int i = 0; i < slotPieces.Num(); ++i)
+				{
+					slotPieces[i]->GetRenderComponent()->SetVisibility(false);
+				}
+			}
 		}
 	}
 
@@ -2063,6 +2099,7 @@ void AGrid::OnPieceXAxis(float value)
 
 void AGrid::VisibleGrid(bool visible)
 {
+	onVisible = visible;
 	if (visible)
 	{
 		for (int i = 0; i < panels.Num(); ++i)
@@ -2138,6 +2175,19 @@ void AGrid::SetGridFlieName(FString fileName)
 	panelFilePath = fileName;
 }
 
+void AGrid::SetPuzzleType(PuzzleType type)
+{
+	puzzleType = type;
+}
+
+bool AGrid::DidCreateGrid()
+{
+	bool result = didCreateGrid;
+	didCreateGrid = false; // true時の呼び出し後、falseに戻し忘れがないようにするためにここで初期化
+
+	return result;
+}
+
 bool AGrid::DidPlacePiece()
 {
 	bool result = didPlacePiece;
@@ -2146,9 +2196,27 @@ bool AGrid::DidPlacePiece()
 	return result;
 }
 
+bool AGrid::DidRemovePiece()
+{
+	bool result = didRemovePiece;
+	didRemovePiece = false; // true時の呼び出し後、falseに戻し忘れがないようにするためにここで初期化
+
+	return result;
+}
+
+FGridData AGrid::GetGridData()
+{
+	return gridData;
+}
+
 FPlacedPieceData AGrid::GetPlacedPieceData()
 {
 	return placedPieceData;
+}
+
+FRemovePieceData AGrid::GetRemovePieceData()
+{
+	return removePieceData;
 }
 
 int AGrid::GetBlasterPieceNum()
