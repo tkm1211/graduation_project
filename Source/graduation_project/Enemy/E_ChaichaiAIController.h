@@ -32,5 +32,9 @@ class GRADUATION_PROJECT_API AE_ChaichaiAIController : public ABaseAIController
 
 	virtual void OnUnPossess() override;
 
+public:
+	void SearchPlayerActor(const TArray<AActor*>& actors) override;
+
+	void LostPlayerActor(const FActorPerceptionUpdateInfo& info) override;
 
 };

@@ -33,7 +33,7 @@ AENM_ChaFireball::AENM_ChaFireball()
 		// Use this component to drive this projectile's movement.
 		ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
 		ProjectileMovementComponent->SetUpdatedComponent(CollisionComponent);
-		//ProjectileMovementComponent->InitialSpeed = 3000.0f;
+		ProjectileMovementComponent->InitialSpeed = 300.0f;
 		//ProjectileMovementComponent->MaxSpeed = 3000.0f;
 		//ProjectileMovementComponent->bRotationFollowsVelocity = true;
 		//ProjectileMovementComponent->bShouldBounce = false;
@@ -51,10 +51,6 @@ AENM_ChaFireball::AENM_ChaFireball()
 
 		NS_Fireball->SetAsset(NS_hitasset);
 
-		FAttachmentTransformRules transform_rules(EAttachmentRule::SnapToTarget, false);
-		NS_Fireball->AttachToComponent(RootComponent, transform_rules);
-
-		NS_Fireball->SetWorldLocation(FVector(0.f, 0.f, 0.f));
 	}
 
 }
@@ -75,6 +71,10 @@ void AENM_ChaFireball::BeginPlay()
 
 	CollisionComponent->SetCollisionResponseToChannels(col_response);
 
+	FAttachmentTransformRules transform_rules(EAttachmentRule::KeepRelative, false);
+	NS_Fireball->AttachToComponent(RootComponent, transform_rules);
+
+
 	NS_Fireball->SetRelativeLocation(FVector(0.f, 0.f, 0.f));
 }
 
@@ -87,14 +87,15 @@ void AENM_ChaFireball::Tick(float DeltaTime)
 
 void AENM_ChaFireball::OnHit(class UPrimitiveComponent* HitComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-
-	if (OtherComp->ComponentTags[0] == "Player")
+	if (OtherComp->ComponentTags.Num() > 0)
 	{
-		Agraduation_projectCharacter* _player = Cast<Agraduation_projectCharacter>(OtherActor);
+		if (OtherComp->ComponentTags[0] == "Player")
+		{
+			Agraduation_projectCharacter* _player = Cast<Agraduation_projectCharacter>(OtherActor);
 
-		float hitDamage = 20.f;
+			//float hitDamage = 20.f;
 
-		_player->Damage(hitDamage, SweepResult.Location);
+			_player->Damage(ATKPower, SweepResult.Location);
+		}
 	}
-
 }

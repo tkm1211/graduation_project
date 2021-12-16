@@ -66,6 +66,7 @@ void AENM_PatrolPoint::BeginPlay()
 			enm->COMBAT_WALK_SPEED = COMBAT_MOVE_SPEED;
 			/*enm->GetController()->*/
 			enm->ATK_RANGE = ATKRange;
+			enm->ATK_POWER = ATKPower;
 			
 			ABaseAIController* controller = Cast<ABaseAIController>(enm->GetController());
 			if (controller)

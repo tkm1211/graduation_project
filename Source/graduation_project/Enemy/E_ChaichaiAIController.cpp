@@ -8,6 +8,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
+#include "../graduation_projectCharacter.h"
 
 AE_ChaichaiAIController::AE_ChaichaiAIController()
 {
@@ -25,7 +26,7 @@ AE_ChaichaiAIController::AE_ChaichaiAIController()
 
     AISensorComp->ConfigureSense(*sensor_sight);
 
-    ConstructorHelpers::FObjectFinder<UBehaviorTree> BTFinder(TEXT("/Game/Enemy/Minimon/Blueprints/BT_Minimon"));
+    ConstructorHelpers::FObjectFinder<UBehaviorTree> BTFinder(TEXT("/Game/Enemy/Chaichai/Blueprints/BT_Chaichai"));
     BehaviorTree = BTFinder.Object;
 
     AISensorComp->OnPerceptionUpdated.AddDynamic(this, &ABaseAIController::SearchPlayerActor);
@@ -43,3 +44,36 @@ void AE_ChaichaiAIController::OnUnPossess()
     Super::OnUnPossess();
 }
 
+void AE_ChaichaiAIController::SearchPlayerActor(const TArray<AActor*>& actors)
+{
+
+    for (int i = 0; i < actors.Num(); i++)
+    {
+        FActorPerceptionBlueprintInfo info = {};
+        AISensorComp->GetActorsPerception(actors[i], info);
+        if (info.LastSensedStimuli[0].WasSuccessfullySensed())
+        {
+            APawn* PlayerPawn = Cast<Agraduation_projectCharacter>(actors[i]);
+
+            BlackboardComp->SetValueAsObject(PlayerActorKeyName, PlayerPawn);
+
+            BlackboardComp->SetValueAsBool("FirstContact", true);
+
+
+            break;
+        }
+
+    }
+
+}
+
+void AE_ChaichaiAIController::LostPlayerActor(const FActorPerceptionUpdateInfo& info)
+{
+
+    if (!info.Stimulus.WasSuccessfullySensed())
+    {
+
+        BlackboardComp->SetValueAsObject(PlayerActorKeyName, nullptr);
+    }
+
+}

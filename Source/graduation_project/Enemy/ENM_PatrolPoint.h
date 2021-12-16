@@ -46,6 +46,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "STATUS")
 		float ATKRange = 250.f;
 
+	UPROPERTY(EditDefaultsOnly, Category = "STATUS")
+		float ATKPower = 10.f;
+
 
 protected:
 	// Called when the game starts or when spawned
