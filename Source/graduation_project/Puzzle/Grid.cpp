@@ -1231,13 +1231,25 @@ void AGrid::AdjustPiecePos(FVector& piecePos, PieceShape type, int turnCnt)
 
 	auto AdjustPieceI = [&]()
 	{
-		if (turnCnt % 2 == 0)
+		switch (turnCnt)
 		{
+		case 0: // Å®
 			piecePos -= rightVec * (panelSize * 0.5f);
-		}
-		else
-		{
+			break;
+
+		case 1: // Å´
+			piecePos += upVec * (panelSize * 0.5f);
+			break;
+
+		case 2: // Å©
+			piecePos += rightVec * (panelSize * 0.5f);
+			break;
+
+		case 3: // Å™
 			piecePos -= upVec * (panelSize * 0.5f);
+			break;
+
+		default: break;
 		}
 	};
 
@@ -1298,13 +1310,25 @@ void AGrid::AdjustPiecePosFromOrigin(FVector& piecePos, float adjustSize, PieceS
 
 	auto AdjustPieceI = [&]()
 	{
-		if (turnCnt % 2 == 0)
+		switch (turnCnt)
 		{
-			piecePos += rightVec * adjustSize;
-		}
-		else
-		{
-			piecePos += upVec * adjustSize;
+		case 0: // Å®
+			piecePos += rightVec * (panelSize * 0.5f);
+			break;
+
+		case 1: // Å´
+			piecePos -= upVec * (panelSize * 0.5f);
+			break;
+
+		case 2: // Å©
+			piecePos -= rightVec * (panelSize * 0.5f);
+			break;
+
+		case 3: // Å™
+			piecePos += upVec * (panelSize * 0.5f);
+			break;
+
+		default: break;
 		}
 	};
 

@@ -43,15 +43,29 @@ void APieceI::DoTurnLeft()
 {
 	FVector pos = GetActorLocation();
 
-	if (mainData.turnCnt % 2 == 0)
+	switch (mainData.turnCnt)
 	{
+	case 0: // Å®
 		pos += panelRightVec * (pieceSize * 0.5f);
 		pos -= panelUpVec * (pieceSize * 0.5f);
-	}
-	else
-	{
+		break;
+
+	case 1: // Å´
+		pos -= panelRightVec * (pieceSize * 0.5f);
+		pos -= panelUpVec * (pieceSize * 0.5f);
+		break;
+
+	case 2: // Å©
+		pos -= panelRightVec * (pieceSize * 0.5f);
+		pos -= panelUpVec * (pieceSize * 0.5f);
+		break;
+
+	case 3: // Å™
 		pos -= panelRightVec * (pieceSize * 0.5f);
 		pos += panelUpVec * (pieceSize * 0.5f);
+		break;
+
+	default: break;
 	}
 
 	SetActorLocation(pos);
@@ -61,15 +75,29 @@ void APieceI::DoTurnRight()
 {
 	FVector pos = GetActorLocation();
 
-	if (mainData.turnCnt % 2 == 0)
+	switch (mainData.turnCnt)
 	{
+	case 0: // Å®
+		pos += panelRightVec * (pieceSize * 0.5f);
+		pos -= panelUpVec * (pieceSize * 0.5f);
+		break;
+
+	case 1: // Å´
 		pos -= panelRightVec * (pieceSize * 0.5f);
 		pos -= panelUpVec * (pieceSize * 0.5f);
-	}
-	else
-	{
-		pos += panelRightVec * (pieceSize * 0.5f);
+		break;
+
+	case 2: // Å©
+		pos -= panelRightVec * (pieceSize * 0.5f);
+		pos -= panelUpVec * (pieceSize * 0.5f);
+		break;
+
+	case 3: // Å™
+		pos -= panelRightVec * (pieceSize * 0.5f);
 		pos += panelUpVec * (pieceSize * 0.5f);
+		break;
+
+	default: break;
 	}
 
 	SetActorLocation(pos);
@@ -77,18 +105,36 @@ void APieceI::DoTurnRight()
 
 void APieceI::SelectPieceNum(int selectPieceNum)
 {
-	if (mainData.turnCnt % 2 == 0)
+	switch (mainData.turnCnt)
 	{
+	case 0: // Å®
 		mainData.pieceNums[0] = selectPieceNum;
 		mainData.pieceNums[1] = mainData.pieceNums[0] - 1;
 		mainData.pieceNums[2] = mainData.pieceNums[0] + 1;
 		mainData.pieceNums[3] = mainData.pieceNums[0] + 2;
-	}
-	else
-	{
+		break;
+
+	case 1: // Å´
+		mainData.pieceNums[0] = selectPieceNum;
+		mainData.pieceNums[1] = mainData.pieceNums[0] + panelWidth;
+		mainData.pieceNums[2] = mainData.pieceNums[0] + panelWidth * 2.0f;
+		mainData.pieceNums[3] = mainData.pieceNums[0] - panelWidth;
+		break;
+
+	case 2: // Å©
+		mainData.pieceNums[0] = selectPieceNum;
+		mainData.pieceNums[1] = mainData.pieceNums[0] + 1;
+		mainData.pieceNums[2] = mainData.pieceNums[0] - 1;
+		mainData.pieceNums[3] = mainData.pieceNums[0] - 2;
+		break;
+
+	case 3: // Å™
 		mainData.pieceNums[0] = selectPieceNum;
 		mainData.pieceNums[1] = mainData.pieceNums[0] - panelWidth;
 		mainData.pieceNums[2] = mainData.pieceNums[0] - panelWidth * 2.0f;
 		mainData.pieceNums[3] = mainData.pieceNums[0] + panelWidth;
+		break;
+
+	default: break;
 	}
 }
