@@ -16,9 +16,26 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ammo")
 		TSubclassOf<ABaseAmmo> ammoClass;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AmmoDetails")
+		float defaultSpawnAmmoSpace;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AmmoDetails")
+		float contractionSpeed;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AmmoDetails")
+		float amplificationSpeed;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AmmoDetails")
+		float minSpawnAmmoSpace;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ammo")
+		float ammoRayCastRange;
+
 public:
 	ARfShotgun();
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AmmoDetails")
+		float spawnAmmoSpace;
+private:
+	void SpawnShot();
+	bool isAimTrg;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -28,6 +45,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void Fire() override;
+	void FirstFire() override;
 	void ShotFire(float DeltaTime) override;
 
 };

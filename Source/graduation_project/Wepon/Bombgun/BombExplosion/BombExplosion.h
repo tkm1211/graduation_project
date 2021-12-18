@@ -21,6 +21,8 @@ public:
 
 	float life;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Damage")
+		float damage;
 public:	
 	// Sets default values for this actor's properties
 	ABombExplosion();
@@ -32,6 +34,8 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	void SetDamage(float _damage) { damage = _damage; }
 
 	UFUNCTION()
 		void OnHit(class UPrimitiveComponent* HitComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

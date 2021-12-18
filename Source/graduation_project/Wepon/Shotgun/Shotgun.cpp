@@ -155,8 +155,5 @@ void AShotgun::SpawnShot()
 		_tempAmmoBase->SetOwner(this);
 		_tempAmmoBase->SetParameter(damage, effectiveRange, rangeMag, lifeTime);
 	}
-
-
-
 }
 

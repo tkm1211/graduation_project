@@ -22,10 +22,6 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class USpringArmComponent* CameraBoom;
 
-	/** Follow camera */
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	//	class UCameraComponent* FollowCamera;
-
 	FVector directionCollision;
 
 	bool changePlayerInput = false;
@@ -41,12 +37,18 @@ private:
 	AGimmickPuzzle* gimmickPuzzle;
 	bool onGimmickPuzzle;
 	bool useGimmickPuzzle;
+
+	class UWeaponPuzzleMediator* weaponMediator;
+
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 		class UCameraComponent* camera;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
 		FVector cameraPosition;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wepon")
+		AActor* hormingTarget;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Wepon")
 		ABaseWepon* useWepon;
@@ -63,7 +65,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wepon")
 		int32 weponNumber;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wepon")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "WeaponPuzzle")
+		float postEffectSaturateValue = 1.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "WeaponPuzzle")
 		AWeaponPuzzle* weaponPuzzle;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wepon")
@@ -88,16 +93,20 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Horming)
 		bool isInvincible;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "WeponPuzzle")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "WeaponPuzzle")
 		FVector asjustWeponPuzzleLoc;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "WeponPuzzle")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "WeaponPuzzle")
 		TSubclassOf<AWeaponPuzzle> weponPuzzleClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AnimMontage")
 		TArray<UAnimMontage*> recoilMontages;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AnimMontage")
 		TArray<UAnimMontage*> aimMontages;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wepon")
+		TArray<ABaseWepon*> weaponArray;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AnimMontage")
 		UAnimMontage* deadMontages;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AnimMontage")
@@ -122,6 +131,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Horming)
 		bool hotmingTargetRockOn = false;
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -153,6 +163,11 @@ protected:
 
 	void WeponPuzzle();
 	void GimmickPuzzle();
+
+	void UseBlaster();
+	void UseShotGun();
+	void UseBombGun();
+	void CreateWeapone();
 public:
 	virtual void Tick(float DeltaTime) override;
 

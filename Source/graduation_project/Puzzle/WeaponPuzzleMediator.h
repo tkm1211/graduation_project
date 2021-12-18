@@ -11,7 +11,6 @@
 UENUM()
 enum WeaponType
 {
-	NoneType,
 
 	Blaster,
 	ShotGun,
@@ -23,7 +22,9 @@ enum WeaponType
 
 	BlasterAndShotGun,
 	ShotGunAndBombGun,
-	BombGunAndBlaster
+	BombGunAndBlaster,
+
+	NoneType
 };
 
 

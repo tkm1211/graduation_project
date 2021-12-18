@@ -9,6 +9,7 @@
 #include "UObject/NameTypes.h"
 #include "Components/ArrowComponent.h"
 #include "CameraManager.h"
+#include "../Enemy/Base/EnemyBase.h"
 
 // Sets default values
 ACameraManager::ACameraManager()
@@ -60,7 +61,7 @@ void ACameraManager::SphereCastFrontCamera()
 
 
 	// レイのスタート位置取得(ホーミング用)
-	FVector _rayStart = GetActorLocation();
+	FVector _rayStart = GetActorLocation() + GetActorUpVector() * hormingCastRadius;
 	FVector _rayForward = GetActorForwardVector();
 
 	// レイのヒットしたアクター保存用
@@ -69,7 +70,7 @@ void ACameraManager::SphereCastFrontCamera()
 	TArray<FHitResult> HitRetArray;
 
 	// SphereCast
-	bool isHit = UKismetSystemLibrary::SphereTraceMultiByProfile(GetWorld(), _rayStart, _rayStart + (_rayForward * hormingCastRange), hormingCastRadius, TEXT("BlockAll"), false, IngoreActors, EDrawDebugTrace::Type::None, HitRetArray, true);
+	bool isHit = UKismetSystemLibrary::SphereTraceMultiByProfile(GetWorld(), _rayStart, _rayStart + (_rayForward * hormingCastRange), hormingCastRadius, TEXT("WorldDynamic"), false, IngoreActors, EDrawDebugTrace::Type::None, HitRetArray, true);
 
 	if (isHit)
 	{
@@ -80,8 +81,10 @@ void ACameraManager::SphereCastFrontCamera()
 		{
 			// PlayerとTagがEnemyじゃないときはContinue
 			if (!Hit.Actor->ActorHasTag(FName("Enemy"))) continue;
-
+			_playerCharacter->hormingTarget = Hit.GetActor();
 			_rockOnEnemyCount++;
+
+			break;
 
 		} //  for (auto& Hit : HitRetArray)
 

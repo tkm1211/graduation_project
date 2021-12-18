@@ -15,7 +15,7 @@ public:
 	// 弾薬をエディット側で設定させる
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ammo")
 		TSubclassOf<ABaseAmmo> ammoClass;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ammo")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AmmoDetails")
 		float spawnAmmoSpace;
 
 protected:

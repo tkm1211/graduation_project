@@ -27,7 +27,12 @@ void AEffectSystem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	//Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
 
+	//UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), shotGunMuzzuleFlash, _playerCharacter->GetActorLocation(), FRotator(0.0f, a, 0), FVector(1, 1, 1));
+
+	//a++;
 }
 
 void AEffectSystem::SpawnEffect(EffectType type, FVector location)
@@ -58,9 +63,9 @@ void AEffectSystem::SpawnEffect(EffectType type, FVector location)
 		{
 			ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 			Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
-			float Z = _playerCharacter->GetActorRotation().Yaw * -1.0f;
+			float Z = _playerCharacter->GetActorRotation().Yaw;
 			float X = _playerCharacter->GetUseWepone()->GetFirePoint()->GetSocketRotation(FName("None")).Roll * -1;
-			UNiagaraFunctionLibrary::SpawnSystemAttached(shotGunMuzzuleFlash, RootComponent, FName("None"), location, FRotator(0.0f, 0.0f, Z), EAttachLocation::Type::KeepWorldPosition, false);
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), shotGunMuzzuleFlash, location, FRotator(0.0f, Z, 0), FVector(1, 1, 1));
 		}
 		break;
 

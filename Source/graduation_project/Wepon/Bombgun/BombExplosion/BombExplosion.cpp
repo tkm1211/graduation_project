@@ -2,6 +2,7 @@
 
 
 #include "Components/SphereComponent.h"
+#include "../../../Enemy/Base/EnemyBase.h"
 #include "BombExplosion.h"
 // 
 // Sets default values
@@ -48,6 +49,8 @@ void ABombExplosion::OnHit(class UPrimitiveComponent* HitComp, class AActor* Oth
 			if (OtherComp->ComponentTags[0] == "Wepon") return;
 			if (OtherComp->ComponentTags[0] == "Boss")
 			{
+				AEnemyBase* _enemy = Cast<AEnemyBase>(OtherActor);
+				_enemy->Damage(damage);
 			}
 		}
 	}

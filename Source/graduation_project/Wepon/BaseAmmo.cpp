@@ -37,7 +37,7 @@ void ABaseAmmo::BeginPlay()
 {
 	Super::BeginPlay();
 
-	mesh->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+	//	mesh->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
 }
 
 // Called every frame
@@ -47,10 +47,10 @@ void ABaseAmmo::Tick(float DeltaTime)
 
 	life += DeltaTime;
 
-	if (life > 0.03)
-	{
-		mesh->SetCollisionEnabled(ECollisionEnabled::Type::QueryOnly);
-	}
+	//if (life > 0.03)
+	//{
+	//	mesh->SetCollisionEnabled(ECollisionEnabled::Type::QueryOnly);
+	//}
 
 	if (life > defaultLife)
 	{
@@ -81,8 +81,13 @@ void ABaseAmmo::BeginOverlap(
 	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
 
 	if (!OtherActor && OtherActor != this && OtherActor != GetOwner()) return;
+	float hitDamage;
+	if (effectiveRange > life)
+	{
+		hitDamage = damage;
+	}
+	else hitDamage = damage - damage * ((rangeMag / effectiveRange) * (rangeMag / effectiveRange)) * life;
 
-	float hitDamage = damage - ((rangeMag * effectiveRange) * (rangeMag * effectiveRange)) * life;
 	if (OtherComp->ComponentTags.Max() > 0)
 	{
 		if (OtherComp->ComponentTags[0] == "Ammo") return;
@@ -112,7 +117,7 @@ void ABaseAmmo::OnHit(
 
 	if (OtherActor && OtherActor != this && OtherActor != GetOwner() && OtherActor != _playerCharacter)
 	{
-		float hitDamage = damage - ((rangeMag * effectiveRange) * (rangeMag * effectiveRange)) * life;
+		float hitDamage = damage - damage * ((rangeMag / effectiveRange) * (rangeMag / effectiveRange)) * life;
 		if (OtherComp->ComponentTags.Max() > 0)
 		{
 			if (OtherComp->ComponentTags[0] == "Ammo") return;

@@ -14,6 +14,8 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Puzzle/WeaponPuzzle.h"
 #include "Puzzle/GimmickPuzzle.h"
+#include "Puzzle/WeaponPuzzleMediator.h"
+#include "Engine/PostProcessVolume.h"
 
 //////////////////////////////////////////////////////////////////////////
 // Agraduation_projectCharacter
@@ -45,11 +47,6 @@ Agraduation_projectCharacter::Agraduation_projectCharacter()
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->TargetArmLength = 300.0f; // The camera follows at this distance behind the character	
 	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
-
-	// Create a follow camera
-	//FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	//FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
-	//FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
 	// Create a follow camera
 	camera = CreateDefaultSubobject<UCameraComponent>(TEXT("camera"));
@@ -113,6 +110,10 @@ void Agraduation_projectCharacter::SetupPlayerInputComponent(class UInputCompone
 
 	PlayerInputComponent->BindAction("WeponPuzzle", IE_Pressed, this, &Agraduation_projectCharacter::WeponPuzzle);
 	PlayerInputComponent->BindAction("GimmickPuzzle", IE_Pressed, this, &Agraduation_projectCharacter::GimmickPuzzle);
+
+	PlayerInputComponent->BindAction("useBlaster", IE_Pressed, this, &Agraduation_projectCharacter::UseBlaster);
+	PlayerInputComponent->BindAction("useShotGun", IE_Pressed, this, &Agraduation_projectCharacter::UseShotGun);
+	PlayerInputComponent->BindAction("useBombGun", IE_Pressed, this, &Agraduation_projectCharacter::UseBombGun);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &Agraduation_projectCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &Agraduation_projectCharacter::MoveRight);
@@ -216,6 +217,17 @@ void Agraduation_projectCharacter::Tick(float DeltaTime)
 		}
 
 		CameraChange(DeltaTime);
+	}
+
+	if (onWeponePuzzle)
+	{
+		postEffectSaturateValue -= 10 * DeltaTime;
+		if (postEffectSaturateValue <= 0.0f) postEffectSaturateValue = 0.0f;
+	}
+	else
+	{
+		postEffectSaturateValue += 10 * DeltaTime;
+		if (postEffectSaturateValue >= 1.0f) postEffectSaturateValue = 1.0f;
 	}
 }
 
@@ -456,17 +468,27 @@ void Agraduation_projectCharacter::CameraChange(float DeltaTime)
 void Agraduation_projectCharacter::WeponPuzzle()
 {
 	if (!weaponPuzzle) return;
+	if (onGimmickPuzzle) return;
+
 	if (!onWeponePuzzle)
 	{
 		weaponPuzzle->BeginPuzzle();
 		onWeponePuzzle = true;
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.1f);
+		CameraBoom->bEnableCameraLag = false;
 	}
 	else
 	{
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
 		weaponPuzzle->EndPuzzle();
 		onWeponePuzzle = false;
+		CameraBoom->bEnableCameraLag = true;
+
+		UGameInstance* instance = GetWorld()->GetGameInstance();
+		weaponMediator = instance->GetSubsystem<UWeaponPuzzleMediator>();
+		{
+			weaponMediator->GetWeaponType();
+		}
 	}
 	Pause();
 }
@@ -512,17 +534,20 @@ FRotator Agraduation_projectCharacter::GetWeaponePuzzuleRotation()
 void Agraduation_projectCharacter::GimmickPuzzle()
 {
 	if (!gimmickPuzzle) return;
+	if (onWeponePuzzle) return;
 
 	if (!onGimmickPuzzle)
 	{
 		if (!useGimmickPuzzle) return;
 		gimmickPuzzle->BeginPuzzle();
 		onGimmickPuzzle = true;
+		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.1f);
 	}
 	else
 	{
 		gimmickPuzzle->EndPuzzle();
 		onGimmickPuzzle = false;
+		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
 	}
 	Pause();
 }
@@ -566,4 +591,32 @@ void Agraduation_projectCharacter::EndOverlap
 			useGimmickPuzzle = false;
 		}
 	}
+}
+
+void Agraduation_projectCharacter::UseBlaster()
+{
+	ABaseWepon* tmp = useWepon;
+	tmp->mesh->SetVisibility(false);
+	useWepon = weaponArray[0];
+	useWepon->mesh->SetVisibility(true);
+}
+
+void Agraduation_projectCharacter::UseShotGun()
+{
+	ABaseWepon* tmp = useWepon;
+	tmp->mesh->SetVisibility(false);
+	useWepon = weaponArray[1];
+	useWepon->mesh->SetVisibility(true);
+}
+
+void Agraduation_projectCharacter::UseBombGun()
+{
+	ABaseWepon* tmp = useWepon;
+	tmp->mesh->SetVisibility(false);
+	useWepon = weaponArray[2];
+	useWepon->mesh->SetVisibility(true);
+}
+
+void Agraduation_projectCharacter::CreateWeapone()
+{
 }

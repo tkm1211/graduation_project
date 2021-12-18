@@ -47,6 +47,7 @@ class GRADUATION_PROJECT_API AEffectSystem : public AActor
 	GENERATED_BODY()
 	
 private:
+	float a;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "BlasterAmmoExplosion", meta = (AllowPrivateAccess = "true"))
 		UNiagaraSystem* blasterAmmoExplosion;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "BlasterMuzzuleFlash", meta = (AllowPrivateAccess = "true"))

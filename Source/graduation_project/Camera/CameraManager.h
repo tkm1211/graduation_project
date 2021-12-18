@@ -25,6 +25,7 @@ public:
 		float hormingCastDelay = 0.1f;
 private:
 		float hormingCastDelayTimer = 0.0f;
+
 private:
 	void SphereCastFrontCamera();
 

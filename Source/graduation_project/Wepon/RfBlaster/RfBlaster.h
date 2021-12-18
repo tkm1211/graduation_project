@@ -15,14 +15,12 @@ public:
 	// 弾薬をエディット側で設定させる
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ammo")
 		TSubclassOf<ABaseAmmo> ammoClass;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 private:
 	void SpawnShot();
-	void HormingRayPick();
 
 public:
 	ARfBlaster();
@@ -32,5 +30,4 @@ public:
 	void Fire() override;
 	void FirstFire() override;
 	void ShotFire(float DeltaTime) override;
-
 };
