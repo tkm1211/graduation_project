@@ -186,6 +186,15 @@ void AGrid::Tick(float DeltaTime)
 
 	// フラグのリセット
 	ResetFlags();
+
+	// 再度、位置回転更新（上記でデータ上更新されていても描画が反映されていないと違和感が出るのでここで反映する。特に回転が変になる。）
+	{
+		// ピース移動
+		MovePiece(DeltaTime);
+
+		// スロット移動
+		MoveSlot(DeltaTime);
+	}
 }
 
 void AGrid::UpdatePuzzle(float DeltaTime)
@@ -341,11 +350,10 @@ void AGrid::MovePiece(float DeltaTime)
 		piece->SetActorRotation(GetActorRotation());
 
 		FRotator rotate;
-		FVector rotateVec;
-		float rotateY = 0.0f;
+		float rotateX = 0.0f;
 
-		rotateY = 90.0f * piece->GetTurnCnt() * -1.0f;
-		rotate = FRotator(rotateY, 0.0f, 0.0f);
+		rotateX = 90.0f * piece->GetTurnCnt() * -1.0f;
+		rotate = FRotator(rotateX, 0.0f, 0.0f);
 		piece->AddActorLocalRotation(rotate, false, 0, ETeleportType::None);
 	};
 

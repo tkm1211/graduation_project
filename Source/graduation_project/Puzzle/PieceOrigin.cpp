@@ -148,17 +148,4 @@ void APieceOrigin::TurnPiece(int addTurnCnt)
 	mainData.turnCnt += addTurnCnt;
 	if (mainData.turnCnt < 0) mainData.turnCnt = 3;
 	if (3 < mainData.turnCnt) mainData.turnCnt = 0;
-
-	/*float addRotateX = 90.0f * addTurnCnt * -1.0f;
-
-	FRotator rotation = FRotator(addRotateX, 0.0f, 0.0f);
-	AddActorLocalRotation(rotation, false, 0, ETeleportType::TeleportPhysics);*/
-
-	/*float rotateY = 90.0f * mainData.turnCnt * 1.0f;
-
-	auto rotate = FRotator(0.0f, rotateY, 0.0f);
-	SetActorRotation(rotate);*/
-
-	//UE_LOG(LogTemp, Display, TEXT("turnCnt : %f"), mainData.turnCnt);
-	//UE_LOG(LogTemp, Display, TEXT("rotateX : %f"), rotateX);
 }
