@@ -84,12 +84,15 @@ void AGimmickPuzzle::CreateGrid()
 
 	// パズル画面で配置されたグリッドパネルの情報を渡す
 	auto gridData = grid->GetGridData();
-	gimmickMediator->SetGridData(GroupID, gridData);
+	gimmickMediator->AddGridData(GroupID, gridData);
 }
 
 void AGimmickPuzzle::MoveGrid()
 {
-	auto playerLocation = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorLocation();
+	auto player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	if (!player) return;
+
+	auto playerLocation = player->GetActorLocation();
 	{
 		FVector Location = GetActorLocation();
 
@@ -105,7 +108,11 @@ void AGimmickPuzzle::MoveGrid()
 void AGimmickPuzzle::RotateGrid()
 {
 	auto Location = GetActorLocation();
-	auto playerLocation = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorLocation();
+
+	auto player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	if (!player) return;
+
+	auto playerLocation = player->GetActorLocation();
 
 	Location.Z = playerLocation.Z = 0.0f;
 
@@ -127,7 +134,10 @@ void AGimmickPuzzle::UpdateCamera()
 		return;
 	}
 
-	auto playerLocation = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorLocation();
+	auto player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	if (!player) return;
+
+	auto playerLocation = player->GetActorLocation();
 	{
 		FVector Location = GetActorLocation();
 		FVector LocationXY = Location;
@@ -170,7 +180,9 @@ void AGimmickPuzzle::DoBeginPuzzle()
 	onGimmickPuzzle = true;
 
 	APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
-	playerController->SetViewTargetWithBlend(puzzleCamera, 1.0f, VTBlend_Linear, 10.0f, true);
+	if (!playerController) return;
+
+	playerController->SetViewTargetWithBlend(puzzleCamera, 0.1f, VTBlend_Linear, 10.0f, true);
 }
 
 void AGimmickPuzzle::DoEndPuzzle()
@@ -178,6 +190,10 @@ void AGimmickPuzzle::DoEndPuzzle()
 	onGimmickPuzzle = false;
 
 	APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
+	if (!playerController) return;
+
 	ACharacter* playerCharacter = UGameplayStatics::GetPlayerCharacter(this, 0);
+	if (!playerCharacter) return;
+
 	playerController->SetViewTargetWithBlend(playerCharacter, 1.0f, VTBlend_Linear, 10.0f, true);
 }

@@ -87,14 +87,14 @@ void AStageGimmick::CreateGridMesh()
 	// グループIDが初期値ではないか？
 	if (GroupID == -1) return;
 
-	// グループIDが一致しているか？
-	if (GroupID != gimmickMediator->GetGroupID()) return;
+	// データが存在するか？
+	if (!gimmickMediator->HitGroupID(GroupID)) return;
 
 	// パズル画面でグリッドパネルが生成されたか？
-	if (!gimmickMediator->DidCreateGrid()) return;
+	if (!gimmickMediator->DidCreateGrid(GroupID)) return;
 
 	// パズル画面で配置されたグリッドパネルをステージにスポーン
-	auto data = gimmickMediator->GetGridData();
+	auto data = gimmickMediator->GetGridData(GroupID);
 
 	FVector location = GetActorLocation();
 	FRotator rotation = GetActorRotation();
@@ -113,7 +113,7 @@ void AStageGimmick::CreateGridMesh()
 	{
 		for (int i = 0; i < data.widthNum; ++i)
 		{
-			GetWorld()->SpawnActor<AGridMesh>(GridMesh, location, FRotator(0.0f));
+			GetWorld()->SpawnActor<AGridMesh>(GridMesh, location, rotation);
 			location += rightVec * BlockSize;
 		}
 		

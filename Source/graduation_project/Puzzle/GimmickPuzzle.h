@@ -26,6 +26,7 @@ private:
 private:
 	UGimmickMediator* gimmickMediator;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Gimmick", meta = (AllowPrivateAccess = "true"))
 	bool onGimmickPuzzle = false;
 
 public:	

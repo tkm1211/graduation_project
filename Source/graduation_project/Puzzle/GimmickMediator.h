@@ -16,29 +16,30 @@ class GRADUATION_PROJECT_API UGimmickMediator : public UGameInstanceSubsystem
 	GENERATED_BODY()
 
 private:
-	bool didCreateGrid = false;
 	bool didPlacePiece = false;
 	bool didRemovePiece = false;
 
 	int currentGroupID = -1;
 
-	FGridData gridData;
+	TMap<int, bool> didCreateGridDatas;
+	TMap<int, FGridData> gridDatas;
 	TMap<int, FPlacedPieceData> placedPieceDatas;
 	FRemovePieceData removePieceData;
 	
 public:
-	void SetGridData(int groupID, const FGridData& data);
+	void AddGridData(int groupID, const FGridData& data);
 	void AddPlacePiece(int groupID, const FPlacedPieceData& data);
 	void SetRemovePiece(int groupID, const FRemovePieceData& data);
 
 public:
-	bool DidCreateGrid();
+	bool DidCreateGrid(int groupID);
 	bool DidPlacePiece();
 	bool DidRemovePiece();
 
 	int GetGroupID();
+	bool HitGroupID(int groupID);
 
-	FGridData GetGridData();
+	FGridData GetGridData(int groupID);
 	FPlacedPieceData GetPlacedPieceData(int groupID);
 	FRemovePieceData GetRemovePieceData();
 };
