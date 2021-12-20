@@ -115,6 +115,7 @@ void AGrid::Initialize()
 		{
 			gridData.widthNum = widthNum;
 			gridData.heightNum = heightNum;
+			gridData.onPanel = onPanel;
 		}
 	}
 

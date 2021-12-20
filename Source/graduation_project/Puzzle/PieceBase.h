@@ -33,6 +33,9 @@ struct FGridData
 	int widthNum = 0;
 
 	int heightNum = 0;
+
+	// ƒpƒlƒ‹‚ªŒ©‚¦‚Ä‚¢‚é‚©H
+	TArray<bool> onPanel;
 };
 
 USTRUCT(BlueprintType)

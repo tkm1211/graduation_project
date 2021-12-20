@@ -140,12 +140,18 @@ void AStageGimmick::CreateGridMesh()
 	location -= rightVec * adjustWidht;
 	location += upVec * adjustHeight;
 
+	int cnt = 0;
 	for (int j = 0; j < data.heightNum; ++j)
 	{
 		for (int i = 0; i < data.widthNum; ++i)
 		{
-			GetWorld()->SpawnActor<AGridMesh>(GridMesh, location, rotation);
+			if (data.onPanel[cnt])
+			{
+				GetWorld()->SpawnActor<AGridMesh>(GridMesh, location, rotation);
+			}
+
 			location += rightVec * BlockSize;
+			++cnt;
 		}
 		
 		location -= rightVec * (BlockSize * static_cast<float>(data.widthNum));
@@ -227,7 +233,7 @@ void AStageGimmick::CreatePieceBlock(FPlacedPieceData data)
 AActor* AStageGimmick::CreatePieceBlockO(FVector location, FRotator rotation, FRotator addRotation, FVector scale)
 {
 	auto tempO = GetWorld()->SpawnActor<APieceBlockO>(PieceBlockO, location, rotation);
-	tempO->AddActorLocalRotation(addRotation, false, 0, ETeleportType::TeleportPhysics);
+	//tempO->AddActorLocalRotation(addRotation, false, 0, ETeleportType::TeleportPhysics);
 
 	return tempO;
 }
