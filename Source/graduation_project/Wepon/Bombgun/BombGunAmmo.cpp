@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "BombGunAmmo.h"
 #include "Components/SphereComponent.h"
 #include "../../graduation_projectCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "BombExplosion/BombExplosion.h"
-#include "BombGunAmmo.h"
 
 ABombGunAmmo::ABombGunAmmo()
 {

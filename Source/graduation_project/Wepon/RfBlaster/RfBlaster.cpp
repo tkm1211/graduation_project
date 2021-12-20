@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "RfBlaster.h"
 #include "Engine/World.h"
 #include "../../graduation_projectCharacter.h"
 #include "Components/CapsuleComponent.h"
@@ -12,7 +13,6 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "UObject/NameTypes.h"
-#include "RfBlaster.h"
 
 
 ARfBlaster::ARfBlaster()

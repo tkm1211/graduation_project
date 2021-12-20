@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "BombExplosion.h"
 #include "Components/SphereComponent.h"
 #include "../../../Enemy/Base/EnemyBase.h"
-#include "BombExplosion.h"
 // 
 // Sets default values
 ABombExplosion::ABombExplosion()
@@ -47,7 +47,7 @@ void ABombExplosion::OnHit(class UPrimitiveComponent* HitComp, class AActor* Oth
 		{
 			if (OtherComp->ComponentTags[0] == "Ammo") return;
 			if (OtherComp->ComponentTags[0] == "Wepon") return;
-			if (OtherComp->ComponentTags[0] == "Boss")
+			if (OtherComp->ComponentTags[0] == "Enemy")
 			{
 				AEnemyBase* _enemy = Cast<AEnemyBase>(OtherActor);
 				_enemy->Damage(damage);

@@ -38,14 +38,14 @@ AENM_Minimon::AENM_Minimon()
 
     deadtimer = 0.f;
 
-    ATKSphere = CreateDefaultSubobject<USphereComponent>("ATKSphere");
+    ATKSphere = CreateDefaultSubobject<USphereComponent>(TEXT("ATKSphere"));
     ATKSphere->SetSphereRadius(50.f);
 
     FVector bite_pos = GetMesh()->GetSocketLocation(TEXT("BitingSocket"));
     ATKSphere->SetWorldLocation(bite_pos);
     //ATKSphere->SetCollisionProfileName("Trigger");
     ATKSphere->SetGenerateOverlapEvents(true);
-    ATKSphere->SetCollisionProfileName("Custom...");
+    ATKSphere->SetCollisionProfileName(TEXT("Custom..."));
     ATKSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     FCollisionResponseContainer col_response;
     col_response.SetAllChannels(ECollisionResponse::ECR_Overlap);
@@ -53,7 +53,7 @@ AENM_Minimon::AENM_Minimon()
     col_response.Visibility = ECollisionResponse::ECR_Ignore;
     
     ATKSphere->SetCollisionResponseToChannels(col_response);
-    ATKSphere->UpdateCollisionProfile();
+    //ATKSphere->UpdateCollisionProfile();
 
     ATKSphere->OnComponentBeginOverlap.AddDynamic(this, &Super::OnHit);
 
@@ -84,7 +84,7 @@ void AENM_Minimon::BeginPlay()
     GetCharacterMovement()->MaxWalkSpeed = IDLE_WALK_SPEED;
 
     ATKSphere->SetGenerateOverlapEvents(true);
-    ATKSphere->SetCollisionProfileName("Custom...");
+    ATKSphere->SetCollisionProfileName(TEXT("Custom..."));
     ATKSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     FCollisionResponseContainer col_response;
     col_response.SetAllChannels(ECollisionResponse::ECR_Overlap);
@@ -92,10 +92,10 @@ void AENM_Minimon::BeginPlay()
     col_response.Visibility = ECollisionResponse::ECR_Ignore;
 
     ATKSphere->SetCollisionResponseToChannels(col_response);
-    ATKSphere->UpdateCollisionProfile();
+    //ATKSphere->UpdateCollisionProfile();
 
     GetCapsuleComponent()->SetGenerateOverlapEvents(true);
-    GetCapsuleComponent()->SetCollisionProfileName("Custom...");
+    GetCapsuleComponent()->SetCollisionProfileName(TEXT("Custom..."));
     GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
     col_response.SetAllChannels(ECollisionResponse::ECR_Block);
@@ -103,7 +103,7 @@ void AENM_Minimon::BeginPlay()
     col_response.Visibility = ECollisionResponse::ECR_Ignore;
 
     GetCapsuleComponent()->SetCollisionResponseToChannels(col_response);
-    GetCapsuleComponent()->UpdateCollisionProfile();
+    //GetCapsuleComponent()->UpdateCollisionProfile();
 
 }
 

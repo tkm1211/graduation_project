@@ -1,5 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "RfShotgun.h"
 #include "Engine/World.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/ArrowComponent.h"
@@ -11,7 +12,6 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "UObject/NameTypes.h"
-#include "RfShotgun.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "../../Camera/CameraManager.h"
 #include "NiagaraComponent.h"

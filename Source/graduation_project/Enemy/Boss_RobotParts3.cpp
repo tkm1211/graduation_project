@@ -29,7 +29,7 @@ ABoss_RobotParts3::ABoss_RobotParts3()
 
 	healthpoint = 1000.f;
 
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshAsset(TEXT("/Game/Asset_Arita/Boss_Anim/Anim_Boss_Beam"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshAsset(TEXT("/Game/Asset_Arita/Boss_Anim/Rig_RP3_ver2"));
 	USkeletalMesh* meshasset = MeshAsset.Object;
 
 	GetMesh()->SetSkeletalMesh(meshasset);
@@ -183,13 +183,11 @@ void ABoss_RobotParts3::OnLeftFireON()
 {
 	LFireCapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 
-	LFireCapsuleComp->SetHiddenInGame(false);
 }
 
 void ABoss_RobotParts3::OnLeftFireOFF()
 {
 	LFireCapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	LFireCapsuleComp->SetHiddenInGame(true);
 }
 
 void ABoss_RobotParts3::OnRightFireON()
@@ -205,28 +203,28 @@ void ABoss_RobotParts3::OnRightFireOFF()
 void ABoss_RobotParts3::Damage(float giveDamage)
 {
 	float defence = 0.f;
-	switch (WitchAtk)
-	{
-	case ABoss_RobotParts3::IDLE:
-		defence = giveDamage * 0.8f;
-		break;
-	case ABoss_RobotParts3::SLAM_ATK:
-		defence = giveDamage * 0.5f;
-		break;
-	case ABoss_RobotParts3::FLAME_FIRE:
-		defence = giveDamage * 0.3f;
-		break;
-	case ABoss_RobotParts3::MISSILE_FIRE:
-		defence = giveDamage * 0.5f;
-		break;
-	case ABoss_RobotParts3::WIDERANGEBEEM:
-		defence = giveDamage * 0.7f;
-		break;
-	default:
-		break;
-	}
+	//switch (WitchAtk)
+	//{
+	//case ABoss_RobotParts3::IDLE:
+	//	defence = giveDamage * 0.8f;
+	//	break;
+	//case ABoss_RobotParts3::SLAM_ATK:
+	//	defence = giveDamage * 0.5f;
+	//	break;
+	//case ABoss_RobotParts3::FLAME_FIRE:
+	//	defence = giveDamage * 0.3f;
+	//	break;
+	//case ABoss_RobotParts3::MISSILE_FIRE:
+	//	defence = giveDamage * 0.5f;
+	//	break;
+	//case ABoss_RobotParts3::WIDERANGEBEEM:
+	//	defence = giveDamage * 0.7f;
+	//	break;
+	//default:
+	//	break;
+	//}
 
-	if (ForceNextAtk == WIDERANGEBEEM)
+	if (WitchAtk == WIDERANGEBEEM || ForceNextAtk == WIDERANGEBEEM)
 	{
 		defence = giveDamage * 0.99f;
 	}
@@ -259,19 +257,36 @@ void ABoss_RobotParts3::BeginPlay()
 
 
 
-	LFireCapsuleComp->SetCollisionProfileName("Custom...");
+	LFireCapsuleComp->SetCollisionProfileName(TEXT("Custom..."));
 	LFireCapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	LFireCapsuleComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 	LFireCapsuleComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
 	LFireCapsuleComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	LFireCapsuleComp->SetGenerateOverlapEvents(true);
 
-	RFireCapsuleComp->SetCollisionProfileName("Custom...");
+	RFireCapsuleComp->SetCollisionProfileName(TEXT("Custom..."));
 	RFireCapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	RFireCapsuleComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 	RFireCapsuleComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
 	RFireCapsuleComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	RFireCapsuleComp->SetGenerateOverlapEvents(true);
+
+
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("NoCollision"));
+	GetMesh()->SetGenerateOverlapEvents(true);
+	GetMesh()->SetCollisionProfileName(TEXT("Custom..."));
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+	FCollisionResponseContainer col_response;
+	col_response.SetAllChannels(ECollisionResponse::ECR_Block);
+	col_response.Camera = ECollisionResponse::ECR_Ignore;
+	col_response.Visibility = ECollisionResponse::ECR_Ignore;
+
+	GetMesh()->SetCollisionResponseToChannels(col_response);
+	//GetMesh()->UpdateCollisionProfile();
+
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), FindIgnoreActor, IgnoreActors);
+
 }
 
 // Called every frame
@@ -286,7 +301,7 @@ void ABoss_RobotParts3::Tick(float DeltaTime)
 	if (healthpoint < 0)
 	{
 
-		UGameplayStatics::OpenLevel(GetWorld(), FName("BossDead"));
+		UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("BossDead")));
 		return;
 	}
 
@@ -301,6 +316,7 @@ void ABoss_RobotParts3::NS_COL_BeemBlock(UCapsuleComponent* FireCapComp, UNiagar
 	int Re;
 
 
+
 	WitchHand == LEFT_HAND ? Re = 1 : Re = -1;
 
 	FTransform t = GetMesh()->GetSocketTransform(SocketName[WitchHand]);
@@ -310,7 +326,7 @@ void ABoss_RobotParts3::NS_COL_BeemBlock(UCapsuleComponent* FireCapComp, UNiagar
 
 
 	UKismetSystemLibrary::SphereTraceSingle(GetWorld(), start, end, radius,
-		ETraceTypeQuery::TraceTypeQuery1, true, actors, EDrawDebugTrace::Type::None, Hit, true, FLinearColor::Red, FLinearColor::Yellow);
+		ETraceTypeQuery::TraceTypeQuery1, true, IgnoreActors, EDrawDebugTrace::Type::None, Hit, true, FLinearColor::Red, FLinearColor::Yellow);
 
 
 	FVector Range = Hit.Location - start;
@@ -393,8 +409,8 @@ void ABoss_RobotParts3::ModifyCollision()
 	case MISSILE_FIRE:
 		break;
 	case WIDERANGEBEEM:
-		NS_COL_BeemBlock(LFireCapsuleComp, NS_LeftLaserHit, LEFT_HAND, 250.f);
-		NS_COL_BeemBlock(RFireCapsuleComp, NS_RightLaserHit, RIGHT_HAND, 250.f);
+		NS_COL_BeemBlock(LFireCapsuleComp, NS_LeftLaserHit, LEFT_HAND);
+		NS_COL_BeemBlock(RFireCapsuleComp, NS_RightLaserHit, RIGHT_HAND);
 		break;
 	default:
 		break;

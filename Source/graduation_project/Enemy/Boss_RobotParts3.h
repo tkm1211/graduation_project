@@ -59,6 +59,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ATK")
 		int ForceNextAtk = 0;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ATK")
+		int WitchAtk = 0;
+	UPROPERTY(EditAnywhere, AdvancedDisplay, Category = "ATK")
+		TSubclassOf<class AActor> FindIgnoreActor;
+	UPROPERTY(EditAnywhere, AdvancedDisplay, Category = "ATK")
+		TArray<class AActor*> IgnoreActors;
 
 
 	UPROPERTY(EditDefaultsOnly, Category = Socket)
@@ -96,8 +102,6 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "AI")
 		bool IsFocusToPlayer = true;
 
-	UPROPERTY(VisibleAnywhere, Category = "AI")
-		int WitchAtk = 0;
 
 	UFUNCTION()
 		void Damage(float giveDamage);

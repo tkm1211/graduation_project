@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "EffectSystem.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
-#include "EffectSystem.h"
 #include "../graduation_projectCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "../Wepon/BaseWepon.h"

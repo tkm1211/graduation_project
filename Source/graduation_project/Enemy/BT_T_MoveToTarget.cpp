@@ -1,5 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "BT_T_MoveToTarget.h"
 #include "Engine.h"
 #include "BehaviorTree/BTTaskNode.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
@@ -7,7 +8,6 @@
 #include "BehaviorTree/Blackboard/BlackboardKeyAllTypes.h"
 #include "MyEnemyAIController.h"
 
-#include "BT_T_MoveToTarget.h"
 
 EBTNodeResult::Type UBT_T_MoveToTarget::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {

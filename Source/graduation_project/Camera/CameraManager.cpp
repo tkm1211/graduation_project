@@ -1,4 +1,5 @@
 
+#include "CameraManager.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -8,7 +9,6 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "UObject/NameTypes.h"
 #include "Components/ArrowComponent.h"
-#include "CameraManager.h"
 #include "../Enemy/Base/EnemyBase.h"
 
 // Sets default values

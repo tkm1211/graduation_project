@@ -18,11 +18,11 @@ AEnemyBase::AEnemyBase()
 
 	DeadEffectDoOnce.Reset();
 
-	Tags.Add("Enemy");
+	Tags.Add(TEXT("Enemy"));
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
-	GetCapsuleComponent()->ComponentTags.Add("Enemy");
+	GetCapsuleComponent()->ComponentTags.Add(TEXT("Enemy"));
 
 	//GetMesh()->SetCollisionProfileName("NoCollision");
 
@@ -38,7 +38,7 @@ void AEnemyBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetMesh()->SetCollisionProfileName("NoCollision");
+	GetMesh()->SetCollisionProfileName(TEXT("NoCollision"));
 }
 
 // Called every frame
@@ -113,7 +113,7 @@ bool AEnemyBase::Death(float DeltaTime)
 		float rate = 1.f - (deadtimer / LIFETIMER);
 		if (rate < 0.f)rate = 0.f;
 
-		MID->SetScalarParameterValue("Dead", rate);
+		MID->SetScalarParameterValue(TEXT("Dead"), rate);
 	}
 	
 	if (LIFETIMER <= deadtimer)
@@ -128,7 +128,7 @@ bool AEnemyBase::Death(float DeltaTime)
 void AEnemyBase::OnHit(class UPrimitiveComponent* HitComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 
-	if (OtherComp->ComponentTags[0] == "Player")
+	if (OtherComp->ComponentTags[0] == TEXT("Player"))
 	{
 		Agraduation_projectCharacter* _player = Cast<Agraduation_projectCharacter>(OtherActor);
 
