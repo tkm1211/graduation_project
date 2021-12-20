@@ -110,6 +110,7 @@ void ABlaster::SpawnShot()
 
 	//　スポーンさせる
 	ABaseAmmo* _tempAmmoBase = GetWorld()->SpawnActor<ABaseAmmo>(ammoClass, _fireLoc, _newRotator);
+	if (!_tempAmmoBase) return;
 	_tempAmmoBase->SetOwner(this);
 	_tempAmmoBase->SetParameter(damage, effectiveRange, rangeMag, lifeTime);
 }
