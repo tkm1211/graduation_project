@@ -8,7 +8,7 @@
 
 void UANS_UpdateLocation::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)
 {
-	boss = Cast<ABoss_RobotParts3>(MeshComp);
+	boss = Cast<ABoss_RobotParts3>(MeshComp->GetOwner());
 
 	if (boss)
 	{

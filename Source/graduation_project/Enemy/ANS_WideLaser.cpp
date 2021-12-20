@@ -7,7 +7,7 @@
 
 void UANS_WideLaser::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)
 {
-	boss = Cast<ABoss_RobotParts3>(MeshComp);
+	boss = Cast<ABoss_RobotParts3>(MeshComp->GetOwner());
 
 	UNiagaraComponent* ns_laser = Cast<UNiagaraComponent>(SpawnEffect(MeshComp, Animation));
 	if (boss && ns_laser)

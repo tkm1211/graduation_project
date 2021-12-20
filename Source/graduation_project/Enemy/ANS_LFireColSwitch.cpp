@@ -12,7 +12,7 @@ UANS_LFireColSwitch::UANS_LFireColSwitch()
 
 void UANS_LFireColSwitch::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)
 {
-	boss = Cast<ABoss_RobotParts3>(MeshComp);
+	boss = Cast<ABoss_RobotParts3>(MeshComp->GetOwner());
 
 	if (boss)
 	{

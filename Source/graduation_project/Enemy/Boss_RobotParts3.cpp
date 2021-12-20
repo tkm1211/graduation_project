@@ -182,11 +182,14 @@ void ABoss_RobotParts3::FireMissile()
 void ABoss_RobotParts3::OnLeftFireON()
 {
 	LFireCapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+
+	LFireCapsuleComp->SetHiddenInGame(false);
 }
 
 void ABoss_RobotParts3::OnLeftFireOFF()
 {
 	LFireCapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	LFireCapsuleComp->SetHiddenInGame(true);
 }
 
 void ABoss_RobotParts3::OnRightFireON()
@@ -385,7 +388,7 @@ void ABoss_RobotParts3::ModifyCollision()
 		RFireCapsuleComp->SetWorldRotation(CapRotator);
 		break;
 	case FLAME_FIRE:
-		NS_COL_BeemBlock(LFireCapsuleComp, nullptr, LEFT_HAND, 400.f);
+		NS_COL_BeemBlock(LFireCapsuleComp, nullptr, LEFT_HAND, 250.f);
 		break;
 	case MISSILE_FIRE:
 		break;
