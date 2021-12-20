@@ -75,7 +75,7 @@ private:
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
-	void Homing();
+	void Homing(float DeltaTime);
 	void JudgeAria();
 
 	void AddPiece();

@@ -46,23 +46,25 @@ void ADropPiece::Tick(float DeltaTime)
 
 	unabsorbableTime += DeltaTime;
 
+	float delta = DeltaTime * 60.0f;
+
 	if (0.0f <= flySpeed)
 	{
 		auto newLocation = GetActorLocation();
 
 		FVector flyVector = flyDirection.GetSafeNormal();
-		FVector vector = flyVector * flySpeed;
-		vector.Z = flySpeed;
+		FVector vector = flyVector * (flySpeed * delta);
+		vector.Z = (flySpeed * delta);
 
 		newLocation += vector;
 
 		SetActorLocation(newLocation);
 
-		flySpeed -= FlyDownSpeed;
+		flySpeed -= (FlyDownSpeed * delta);
 	}
 	else if (UnabsorbableMaxTime < unabsorbableTime)
 	{
-		onHoming ? Homing() : JudgeAria();
+		onHoming ? Homing(delta) : JudgeAria();
 	}
 }
 
@@ -79,21 +81,21 @@ void ADropPiece::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UP
 	}
 }
 
-void ADropPiece::Homing()
+void ADropPiece::Homing(float DeltaTime)
 {
 	auto location = GetActorLocation();
 	auto playerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	auto playerLocation = playerCharacter->GetActorLocation();
 
-	auto dir = (playerLocation - location).GetSafeNormal() * homingSpeed;
-	dir.Z = homingJumpSpeed;
+	auto dir = (playerLocation - location).GetSafeNormal() * (homingSpeed * DeltaTime);
+	dir.Z = (homingJumpSpeed * DeltaTime);
 
 	SetActorLocation(location + dir);
 
-	homingSpeed += HomingAcceleration;
+	homingSpeed += (HomingAcceleration * DeltaTime);
 	if (HomingMaxSpeed < homingSpeed) homingSpeed = HomingMaxSpeed;
 
-	homingJumpSpeed -= HomingJumpDownSpeed;
+	homingJumpSpeed -= (HomingJumpDownSpeed * DeltaTime);
 	//if (homingJumpSpeed < 0.0f) homingJumpSpeed = 0.0f;
 }
 
