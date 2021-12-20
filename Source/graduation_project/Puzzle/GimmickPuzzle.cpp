@@ -63,6 +63,11 @@ void AGimmickPuzzle::Tick(float DeltaTime)
 	{
 		RemovePieceBlock();
 	}
+
+	// フラグ更新
+	{
+		UpdateFlag();
+	}
 }
 
 void AGimmickPuzzle::UpdateGrid()
@@ -173,6 +178,11 @@ void AGimmickPuzzle::RemovePieceBlock()
 	// パズル画面で取り除かれたピースの情報を渡す
 	auto removePieceData = grid->GetRemovePieceData();
 	gimmickMediator->SetRemovePiece(GroupID, removePieceData);
+}
+
+void AGimmickPuzzle::UpdateFlag()
+{
+	gimmickMediator->SetOnGimmickPuzzle(GroupID, onGimmickPuzzle);
 }
 
 void AGimmickPuzzle::DoBeginPuzzle()

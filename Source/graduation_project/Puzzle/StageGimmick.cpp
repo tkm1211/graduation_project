@@ -7,6 +7,8 @@
 #include "PieceBlockL.h"
 #include "PieceBlockI.h"
 #include "PieceBlockT.h"
+#include "Components/SceneComponent.h"
+#include "Components/SceneCaptureComponent2D.h"
 #include "../FileStream/JsonFunctionLibrary.h"
 
 
@@ -15,12 +17,26 @@ AStageGimmick::AStageGimmick()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	Scene = CreateDefaultSubobject<USceneComponent>(TEXT("Scene"));
+	RootComponent = Scene;
+
+	Capture = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("Capture"));
+	Capture->SetupAttachment(RootComponent);
+
+	Capture->SetRelativeLocation(FVector(-1.148438f, 633.789124f, 0.0f));
+	Capture->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
+	Capture->bCaptureEveryFrame = false;
 }
 
 // Called when the game starts or when spawned
 void AStageGimmick::BeginPlay()
 {
 	Super::BeginPlay();
+
+	Capture->SetRelativeLocation(FVector(-1.148438f, 633.789124f, 0.0f));
+	Capture->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
+	Capture->bCaptureEveryFrame = false;
 
 	// ゲームインスタンスからギミック用のMediator（仲介役）を取得
 	UGameInstance* instance = GetWorld()->GetGameInstance();
@@ -40,6 +56,9 @@ void AStageGimmick::Tick(float DeltaTime)
 
 	// ギミックピースを除去
 	RemovePieceBlock();
+
+	// キャプチャ更新
+	UpdateCapture();
 }
 
 void AStageGimmick::PlacePieceBlock()
@@ -80,6 +99,18 @@ void AStageGimmick::RemovePieceBlock()
 
 		data.pieceBlock->Destroy();
 	}
+}
+
+void AStageGimmick::UpdateCapture()
+{
+	// グループIDが初期値ではないか？
+	if (GroupID == -1) return;
+
+	// プレイヤーがギミックパズルを起動しているか？
+	if (!gimmickMediator->OnGimmickPuzzle(GroupID)) return;
+
+	// 現在のシーンをキャプチャする
+	Capture->CaptureScene();
 }
 
 void AStageGimmick::CreateGridMesh()

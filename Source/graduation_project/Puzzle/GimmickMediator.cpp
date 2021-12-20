@@ -8,6 +8,7 @@ void UGimmickMediator::AddGridData(int groupID, const FGridData& data)
 {
 	currentGroupID = groupID;
 
+	onGimmickPuzzles.Add(groupID, false);
 	didCreateGridDatas.Add(groupID, true);
 	gridDatas.Add(groupID, data);
 }
@@ -26,6 +27,15 @@ void UGimmickMediator::SetRemovePiece(int groupID, const FRemovePieceData& data)
 	currentGroupID = groupID;
 
 	removePieceData = data;
+}
+
+void UGimmickMediator::SetOnGimmickPuzzle(int groupID, bool onPuzzle)
+{
+	if (onGimmickPuzzles.Find(groupID) == nullptr)
+	{
+		return;
+	}
+	onGimmickPuzzles[groupID] = onPuzzle;
 }
 
 bool UGimmickMediator::DidCreateGrid(int groupID)
@@ -79,4 +89,13 @@ FPlacedPieceData UGimmickMediator::GetPlacedPieceData(int groupID)
 FRemovePieceData UGimmickMediator::GetRemovePieceData()
 {
 	return removePieceData;
+}
+
+bool UGimmickMediator::OnGimmickPuzzle(int groupID)
+{
+	if (onGimmickPuzzles.Find(groupID) == nullptr)
+	{
+		return false;
+	}
+	return onGimmickPuzzles[groupID];
 }

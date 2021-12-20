@@ -52,6 +52,8 @@ private:
 	void PlacePieceBlock();
 	void RemovePieceBlock();
 
+	void UpdateFlag();
+
 	void DoBeginPuzzle() override;
 	void DoEndPuzzle() override;
 };

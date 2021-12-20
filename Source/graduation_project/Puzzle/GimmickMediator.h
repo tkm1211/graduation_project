@@ -21,6 +21,7 @@ private:
 
 	int currentGroupID = -1;
 
+	TMap<int, bool> onGimmickPuzzles;
 	TMap<int, bool> didCreateGridDatas;
 	TMap<int, FGridData> gridDatas;
 	TMap<int, FPlacedPieceData> placedPieceDatas;
@@ -30,6 +31,7 @@ public:
 	void AddGridData(int groupID, const FGridData& data);
 	void AddPlacePiece(int groupID, const FPlacedPieceData& data);
 	void SetRemovePiece(int groupID, const FRemovePieceData& data);
+	void SetOnGimmickPuzzle(int groupID, bool onPuzzle);
 
 public:
 	bool DidCreateGrid(int groupID);
@@ -42,4 +44,5 @@ public:
 	FGridData GetGridData(int groupID);
 	FPlacedPieceData GetPlacedPieceData(int groupID);
 	FRemovePieceData GetRemovePieceData();
+	bool OnGimmickPuzzle(int groupID);
 };

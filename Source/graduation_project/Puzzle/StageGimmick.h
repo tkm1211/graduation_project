@@ -9,6 +9,9 @@
 #include "StageGimmick.generated.h"
 
 
+class USceneComponent;
+class USceneCaptureComponent2D;
+
 class APieceBlockO;
 class APieceBlockL;
 class APieceBlockI;
@@ -34,9 +37,12 @@ class GRADUATION_PROJECT_API AStageGimmick : public AActor
 {
 	GENERATED_BODY()
 
-public:
-	//UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Cube")
-	//UStaticMeshComponent* Cube;
+private:
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Component", meta = (AllowPrivateAccess = "true"))
+	USceneComponent* Scene;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Component", meta = (AllowPrivateAccess = "true"))
+	USceneCaptureComponent2D* Capture;
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Block Type", meta = (AllowPrivateAccess = "true"))
@@ -80,6 +86,7 @@ public:
 private:
 	void PlacePieceBlock();
 	void RemovePieceBlock();
+	void UpdateCapture();
 	void CreateGridMesh();
 	void CreatePieceBlock(FPlacedPieceData data);
 	AActor* CreatePieceBlockO(FVector location, FRotator rotation, FRotator addRotation, FVector scale);
