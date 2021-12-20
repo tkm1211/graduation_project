@@ -67,6 +67,13 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void LookAtPlayer();
+
+	float turntimer;
+	float TimeToTurn;
+	FRotator PrevRotation;
+	void TurnToPlayer();
+
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 

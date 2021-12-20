@@ -2,15 +2,14 @@
 
 
 #include "ANS_RFireColSwitch.h"
-#include "TestBoss_MK1.h"
-
+#include "Boss_RobotParts3.h"
 UANS_RFireColSwitch::UANS_RFireColSwitch()
 {
 }
 
 void UANS_RFireColSwitch::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)
 {
-	boss = Cast<ATestBoss_MK1>(MeshComp);
+	boss = Cast<ABoss_RobotParts3>(MeshComp);
 	
 
 	if (boss)

@@ -6,6 +6,9 @@
 #include "E_ChaichaiAIController.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "../graduation_projectCharacter.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 
 AENM_Chaichai::AENM_Chaichai()
 {
@@ -77,7 +80,7 @@ void AENM_Chaichai::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (UPrimitiveComponent* underspace = FindComponentByClass<UPrimitiveComponent>())
+	if (UPrimitiveComponent* underspace = GetCapsuleComponent())
 	{
 		//UCapsuleComponent* underspace = GetCapsuleComponent();
 		underspace->SetCollisionProfileName("Custom...");
@@ -97,6 +100,11 @@ void AENM_Chaichai::BeginPlay()
 
 	//FX_SpitActor->SetActorRelativeLocation(GetMesh()->GetSocketLocation("SpitSocket"));
 
+	if (GetWorld())
+	{
+		pl = Cast<Agraduation_projectCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	}
+
 }
 
 // Called every frame
@@ -110,6 +118,10 @@ void AENM_Chaichai::Tick(float DeltaTime)
 		{
 			FVector pos = GetMesh()->GetSocketLocation("SpitSocket");
 			FRotator rot = GetMesh()->GetSocketRotation("SpitSocket");
+			if (pl)
+			{
+				rot = UKismetMathLibrary::FindLookAtRotation(pos, pl->GetActorLocation());
+			}
 			GetWorld()->SpawnActor<AENM_ChaFireball>(FBireballClass, pos, rot);
 
 			bFire[FIREBALL] = false;

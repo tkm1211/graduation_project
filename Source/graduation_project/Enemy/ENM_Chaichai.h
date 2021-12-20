@@ -30,6 +30,8 @@ class GRADUATION_PROJECT_API AENM_Chaichai : public AEnemyBase
 		UPROPERTY(EditAnywhere, Category = Projectile)
 			TSubclassOf<class AENM_ChaFireball> FBireballClass;
 
+		class Agraduation_projectCharacter* pl;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

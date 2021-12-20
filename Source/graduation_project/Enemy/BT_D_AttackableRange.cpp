@@ -26,7 +26,7 @@ bool UBT_D_AttackableRange::CalculateRawConditionValue(UBehaviorTreeComponent& O
 	// note that this may produce unexpected logical results. FALSE is a valid return value here as well
 	// @todo signal it
 
-	return BlackboardComp && (EvaluateOnBlackboard(*BlackboardComp) ^ IsInversed());
+	return BlackboardComp && (EvaluateOnBlackboard(*BlackboardComp));
 }
 
 

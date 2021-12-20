@@ -11,7 +11,7 @@
 /**
  * 
  */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FBLookAtPlayer);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE(FBLookAtPlayer);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FBLFireColON);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FBLFireColOFF);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FBRFireColON);
@@ -41,8 +41,8 @@ public:
 		BOTH_HANDS,
 	};
 
-	UPROPERTY(BlueprintAssignable)
-		FBLookAtPlayer lookAtPlayer;
+	//UPROPERTY(BlueprintAssignable)
+	//	FBLookAtPlayer lookAtPlayer;
 	UPROPERTY(BlueprintAssignable)
 		FBLFireColON LFireColON;
 	UPROPERTY(BlueprintAssignable)
@@ -54,7 +54,7 @@ public:
 
 
 	UPROPERTY(EditAnywhere, Category = "Projectile")
-		TSubclassOf<class APrototypeMissile> ProjectileClass;
+		TSubclassOf<class ARP3_Missile> ProjectileClass;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ATK")

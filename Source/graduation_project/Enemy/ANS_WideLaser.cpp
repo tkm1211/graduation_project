@@ -2,23 +2,23 @@
 
 
 #include "ANS_WideLaser.h"
-#include "TestBoss_MK1.h"
+#include "Boss_RobotParts3.h"
 #include "NiagaraComponent.h"
 
 void UANS_WideLaser::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)
 {
-	boss = Cast<ATestBoss_MK1>(MeshComp);
+	boss = Cast<ABoss_RobotParts3>(MeshComp);
 
 	UNiagaraComponent* ns_laser = Cast<UNiagaraComponent>(SpawnEffect(MeshComp, Animation));
 	if (boss && ns_laser)
 	{
 		if (isLeft)
 		{
-			boss->NS_Laser[ATestBoss_MK1::LEFT_HAND] = ns_laser;
+			boss->NS_Laser[ABoss_RobotParts3::LEFT_HAND] = ns_laser;
 		}
 		else
 		{
-			boss->NS_Laser[ATestBoss_MK1::RIGHT_HAND] = ns_laser;
+			boss->NS_Laser[ABoss_RobotParts3::RIGHT_HAND] = ns_laser;
 		}
 	}
 	Super::Super::NotifyBegin(MeshComp, Animation, TotalDuration);
