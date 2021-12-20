@@ -127,6 +127,7 @@ void APrototypeMissile::OnHit(class UPrimitiveComponent* HitComp, class AActor* 
 {
 	Agraduation_projectCharacter* pl = Cast<Agraduation_projectCharacter>(OtherActor);
 
+	if (HitComp->ComponentHasTag("Enemy"))return;
 	if (!pl)
 	{
 

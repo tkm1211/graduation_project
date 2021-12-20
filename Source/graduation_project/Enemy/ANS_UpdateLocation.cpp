@@ -3,16 +3,12 @@
 
 #include "ANS_UpdateLocation.h"
 #include "Math/UnrealMathVectorCommon.h"
-#include "TestBoss_MK1.h"
+#include "Boss_RobotParts3.h"
 
-float lerp(float begin, float end, float rate)
-{
-	return begin + (end - begin) * rate;
-}
 
 void UANS_UpdateLocation::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)
 {
-	boss = Cast<ATestBoss_MK1>(MeshComp);
+	boss = Cast<ABoss_RobotParts3>(MeshComp);
 
 	if (boss)
 	{

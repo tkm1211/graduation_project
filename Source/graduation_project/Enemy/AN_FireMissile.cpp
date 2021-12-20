@@ -2,12 +2,12 @@
 
 
 #include "AN_FireMissile.h"
-#include "TestBoss_MK1.h"
+#include "Boss_RobotParts3.h"
 
 
 void UAN_FireMissile::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
-	boss = Cast<ATestBoss_MK1>(MeshComp->GetOwner());
+	boss = Cast<ABoss_RobotParts3>(MeshComp->GetOwner());
 
 	if (!boss)return;
 

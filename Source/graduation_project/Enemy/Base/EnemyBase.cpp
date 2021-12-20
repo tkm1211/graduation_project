@@ -6,6 +6,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "../Anim/AnimIns_EnemyBase.h"
 #include "../../graduation_projectCharacter.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Kismet/GameplayStatics.h"
 #include "Materials/MaterialInstance.h"
 
 // Sets default values
@@ -45,6 +47,35 @@ void AEnemyBase::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 
+}
+
+void AEnemyBase::LookAtPlayer()
+{
+	Agraduation_projectCharacter* Target = Cast<Agraduation_projectCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+
+	FRotator current_rot = this->GetActorRotation();
+	FVector start = { this->GetActorLocation().X, this->GetActorLocation().Y, 0.f };
+	FVector target = { Target->GetActorLocation().X, Target->GetActorLocation().Y, 0.f };
+	FRotator target_rot = UKismetMathLibrary::FindLookAtRotation(start, target);
+
+	this->SetActorRotation(target_rot);
+}
+
+void AEnemyBase::TurnToPlayer()
+{
+	if (TimeToTurn >= 0.f)
+	{
+		Agraduation_projectCharacter* Target = Cast<Agraduation_projectCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+
+		FRotator current_rot = this->GetActorRotation();
+		FVector start = { this->GetActorLocation().X, this->GetActorLocation().Y, 0.f };
+		FVector target = { Target->GetActorLocation().X, Target->GetActorLocation().Y, 0.f };
+		FRotator target_rot = UKismetMathLibrary::FindLookAtRotation(start, target);
+
+		target_rot = FMath::Lerp(PrevRotation, target_rot, turntimer / TimeToTurn);
+
+		this->SetActorRotation(target_rot);
+	}
 }
 
 // Called to bind functionality to input

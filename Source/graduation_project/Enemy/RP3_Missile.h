@@ -15,8 +15,8 @@ public:
 	// Sets default values for this actor's properties
 	ARP3_Missile();
 
-	UPROPERTY(VisibleDefaultsOnly, Category = "Mesh")
-		class UStaticMeshComponent* MeshComp;
+	//UPROPERTY(VisibleDefaultsOnly, Category = "Mesh")
+	//	class UStaticMeshComponent* MeshComp;
 protected:
 	float StartHoming_Time;
 	float currentTime;

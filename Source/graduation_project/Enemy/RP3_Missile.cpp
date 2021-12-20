@@ -42,17 +42,17 @@ ARP3_Missile::ARP3_Missile()
 		RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("ProjectileSceneComponent"));
 	}
 
-	if (!MeshComp)
-	{
-		MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
+	//if (!MeshComp)
+	//{
+	//	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 
-		static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshAsset(TEXT("/Game/Enemy/Boss/RP3/Meshes/Missile/MDL_Boss_MissileAmmo"));
-		UStaticMesh* asset = MeshAsset.Object;
+	//	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshAsset(TEXT("/Game/Enemy/Boss/RP3/Meshes/Missile/MDL_Boss_MissileAmmo"));
+	//	UStaticMesh* asset = MeshAsset.Object;
 
-		MeshComp->SetStaticMesh(asset);
+	//	MeshComp->SetStaticMesh(asset);
+	//}
 
-
-	}
+	
 
 	if (!CollisionComponent)
 	{
@@ -60,6 +60,8 @@ ARP3_Missile::ARP3_Missile()
 		CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
 		// Set the sphere's collision radius.
 		CollisionComponent->InitSphereRadius(15.0f);
+
+		CollisionComponent->ComponentTags.Emplace("ENM_AMMO");
 		// Set the root component to be the collision component.
 		RootComponent = CollisionComponent;
 	}
@@ -94,6 +96,7 @@ void ARP3_Missile::BeginPlay()
 	static int current_num = 0;
 
 	player = Cast<Agraduation_projectCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+
 
 
 	currentTime = 0.f;
@@ -146,6 +149,9 @@ void ARP3_Missile::OnHit(class UPrimitiveComponent* HitComp, class AActor* Other
 {
 	Agraduation_projectCharacter* pl = Cast<Agraduation_projectCharacter>(OtherActor);
 
+	if (OtherComp->ComponentHasTag("Enemy"))return;
+	if (OtherComp->ComponentHasTag("ENM_AMMO"))return;
+
 	if (!pl)
 	{
 
@@ -157,5 +163,6 @@ void ARP3_Missile::OnHit(class UPrimitiveComponent* HitComp, class AActor* Other
 
 	marker->SetDestroy();
 	Destroy();
+
 
 }

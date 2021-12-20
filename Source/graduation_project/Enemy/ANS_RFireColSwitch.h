@@ -14,7 +14,7 @@ class GRADUATION_PROJECT_API UANS_RFireColSwitch : public UANS_ATKCollisionSwitc
 {
 	GENERATED_BODY()
 
-		class ATestBoss_MK1* boss;
+		class ABoss_RobotParts3* boss;
 
 		UANS_RFireColSwitch();
 

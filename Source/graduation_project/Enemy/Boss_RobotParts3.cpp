@@ -41,11 +41,11 @@ ABoss_RobotParts3::ABoss_RobotParts3()
 
 	GetMesh()->SetAnimClass(animclass);
 
-	//AIControllerClass = ABoss_RP3AIController::StaticClass();
-	ProjectileClass = ARP3_Missile::StaticClass();
+	static ConstructorHelpers::FClassFinder<ARP3_Missile> MissileAsset(TEXT("/Game/Enemy/Boss/RP3/Blueprints/BP_RP3_Missile"));
+	ProjectileClass = MissileAsset.Class;
 
 
-	lookAtPlayer.AddDynamic(this, &ABoss_RobotParts3::OnSeePlayer);
+	//lookAtPlayer.AddDynamic(this, &ABoss_RobotParts3::OnSeePlayer);
 	LFireColON.AddDynamic(this, &ABoss_RobotParts3::OnLeftFireON);
 	LFireColOFF.AddDynamic(this, &ABoss_RobotParts3::OnLeftFireOFF);
 	RFireColON.AddDynamic(this, &ABoss_RobotParts3::OnRightFireON);
@@ -167,8 +167,8 @@ void ABoss_RobotParts3::FireMissile()
 			SpawnParams.Instigator = GetInstigator();
 
 			// Spawn the projectile at the muzzle.
-			World->SpawnActor<APrototypeMissile>(ProjectileClass, LMuzzleLocation, LMuzzleRotation, SpawnParams);
-			World->SpawnActor<APrototypeMissile>(ProjectileClass, RMuzzleLocation, RMuzzleRotation, SpawnParams);
+			World->SpawnActor<ARP3_Missile>(ProjectileClass, LMuzzleLocation, LMuzzleRotation);
+			World->SpawnActor<ARP3_Missile>(ProjectileClass, RMuzzleLocation, RMuzzleRotation);
 			//if (Projectile)
 			{
 				// Set the projectile's initial trajectory.

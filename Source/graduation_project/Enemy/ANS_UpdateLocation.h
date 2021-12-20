@@ -19,7 +19,7 @@ class GRADUATION_PROJECT_API UANS_UpdateLocation : public UAnimNotifyState
 	UPROPERTY(EditAnywhere, Category = "Goal")
 		float UpOffset;
 
-	class ATestBoss_MK1* boss;
+	class ABoss_RobotParts3* boss;
 	FVector prev, goal;
 	FTransform transform;
 	float total_time;

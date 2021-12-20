@@ -14,7 +14,7 @@ class GRADUATION_PROJECT_API UAN_FireMissile : public UAnimNotify
 {
 	GENERATED_BODY()
 
-		class ATestBoss_MK1* boss;
+		class ABoss_RobotParts3* boss;
 
 		virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation);
 
