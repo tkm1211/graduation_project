@@ -360,10 +360,13 @@ void Agraduation_projectCharacter::ChangeWepon(ABaseWepon* nextWepon)
 
 	// –¼‘O‚©‚ç•Ší‚Ì”Ô†Žæ“¾
 	FString weponName = UKismetSystemLibrary::GetObjectName(useWepon);
-	weponName = weponName.Right(5);
-	weponName = weponName.Left(1);
+	//weponName = weponName.Right(5);
+	//weponName = weponName.Left(1);
 
-	weponNumber = FCString::Atoi(*weponName);
+	if (weponName == FString("ShotgunBP_1_C_0")) weponNumber = 1;
+	else weponNumber = 0;
+
+	//weponNumber = FCString::Atoi(*weponName);
 
 }
 
@@ -599,6 +602,8 @@ void Agraduation_projectCharacter::UseBlaster()
 	tmp->mesh->SetVisibility(false);
 	useWepon = weaponArray[0];
 	useWepon->mesh->SetVisibility(true);
+
+	ChangeWepon(useWepon);
 }
 
 void Agraduation_projectCharacter::UseShotGun()
@@ -607,6 +612,7 @@ void Agraduation_projectCharacter::UseShotGun()
 	tmp->mesh->SetVisibility(false);
 	useWepon = weaponArray[1];
 	useWepon->mesh->SetVisibility(true);
+	ChangeWepon(useWepon);
 }
 
 void Agraduation_projectCharacter::UseBombGun()
@@ -615,6 +621,7 @@ void Agraduation_projectCharacter::UseBombGun()
 	tmp->mesh->SetVisibility(false);
 	useWepon = weaponArray[2];
 	useWepon->mesh->SetVisibility(true);
+	ChangeWepon(useWepon);
 }
 
 void Agraduation_projectCharacter::CreateWeapone()

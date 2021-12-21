@@ -46,3 +46,8 @@ void UPieceResourceManager::AddPiece(PieceShape shape, PieceType type)
 	}
 	pieceDatas.Add(data);
 }
+
+bool UPieceResourceManager::CanGetPieceResourceData(int index)
+{
+	return index < pieceDatas.Num();
+}

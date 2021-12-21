@@ -53,6 +53,8 @@ void AEnemyBase::LookAtPlayer()
 {
 	Agraduation_projectCharacter* Target = Cast<Agraduation_projectCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
+	if (!Target) return;
+
 	FRotator current_rot = this->GetActorRotation();
 	FVector start = { this->GetActorLocation().X, this->GetActorLocation().Y, 0.f };
 	FVector target = { Target->GetActorLocation().X, Target->GetActorLocation().Y, 0.f };

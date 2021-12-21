@@ -50,5 +50,5 @@ public:
 	FPieceResourceData GetPieceResourceData(int index) { return pieceDatas[index]; }
 
 	// ピースを取得できるか？
-	bool CanGetPieceResourceData(int index) { return index != pieceDatas.Num(); }
+	bool CanGetPieceResourceData(int index);
 };
