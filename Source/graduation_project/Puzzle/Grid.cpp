@@ -157,8 +157,6 @@ void AGrid::Tick(float DeltaTime)
 	// グリッド移動
 	MoveGrid(DeltaTime); // ピース情報が無くても表示するため
 
-	UE_LOG(LogTemp, Warning, TEXT("MoveGrid"));
-
 	// リソースマネージャーからピース情報を取得
 	LoadPieces();
 
@@ -170,16 +168,12 @@ void AGrid::Tick(float DeltaTime)
 		PieceDecision(i);
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("PieceDecision"));
-
 #if 1
 	// ピース移動
 	MovePiece(DeltaTime);
-	UE_LOG(LogTemp, Warning, TEXT("MovePiece"));
 
 	// スロット移動
 	MoveSlot(DeltaTime);
-	UE_LOG(LogTemp, Warning, TEXT("MoveSlot"));
 #endif
 
 	// パズルシーン以外、早期リターン
@@ -187,25 +181,20 @@ void AGrid::Tick(float DeltaTime)
 
 	// パズル更新
 	UpdatePuzzle(DeltaTime);
-	UE_LOG(LogTemp, Warning, TEXT("UpdatePuzzle"));
 
 	// ピーススロット更新
 	UpdateSlot(DeltaTime);
-	UE_LOG(LogTemp, Warning, TEXT("UpdateSlot"));
 
 	// フラグのリセット
 	ResetFlags();
-	UE_LOG(LogTemp, Warning, TEXT("ResetFlags"));
 
 	// 再度、位置回転更新（上記でデータ上更新されていても描画が反映されていないと違和感が出るのでここで反映する。特に回転が変になる。）
 	{
 		// ピース移動
 		MovePiece(DeltaTime);
-		UE_LOG(LogTemp, Warning, TEXT("MovePiece2"));
 
 		// スロット移動
 		MoveSlot(DeltaTime);
-		UE_LOG(LogTemp, Warning, TEXT("MoveSlot2"));
 	}
 }
 
@@ -347,16 +336,8 @@ void AGrid::MovePiece(float DeltaTime)
 
 	auto MovePiece = [&](int pieceNum, int panelNum, bool onAdjust)
 	{
-		if (pieceNum == -1 || pieces.Num() <= pieceNum)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("pieces"));
-			return;
-		}
-		if (panelNum == -1 || panelPositions.Num() <= panelNum)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("panelPositions"));
-			return;
-		}
+		if (pieceNum == -1 || pieces.Num() <= pieceNum) return;
+		if (panelNum == -1 || panelPositions.Num() <= panelNum) return;
 
 		auto piecePos = panelPositions[panelNum];
 		auto piece = pieces[pieceNum];
@@ -984,15 +965,12 @@ void AGrid::MoveCantBeDecision(APieceOrigin* piece, bool atInitialize)
 void AGrid::SetVisiblePiece(int currentPieceNum, bool isVisible, FVector currntPiecePos)
 {
 	auto piece = pieces[currentPieceNum];
-	UE_LOG(LogTemp, Warning, TEXT("SetVisiblePiece::pieces"));
 	{
 		piece->GetRenderComponent()->SetVisibility(isVisible);
 		visibilityPiece[currentPieceNum] = isVisible;
-		UE_LOG(LogTemp, Warning, TEXT("SetVisiblePiece::visibilityPiece"));
 	}
 
 	auto data = pieceDatas[currentPieceNum];
-	UE_LOG(LogTemp, Warning, TEXT("SetVisiblePiece::pieceDatas"));
 	{
 		data.isVisible = isVisible;
 	}
@@ -1019,12 +997,7 @@ void AGrid::SetPanelNumAtOriginPiece(int newPanelNum)
 		panelNumAtOriginPiece = pastPanelNum;
 	}
 
-	if (0 < panelPositions.Num() && panelNumAtOriginPiece < panelPositions.Num())
-	{
-		originPiecePos = panelPositions[panelNumAtOriginPiece];
-	}
-
-	UE_LOG(LogTemp, Warning, TEXT("SetPanelNumAtOriginPiece::panelPositions"));
+	originPiecePos = panelPositions[panelNumAtOriginPiece];
 }
 
 void AGrid::AddPanelNumAtOriginPiece(int addPanelNum)
@@ -1062,8 +1035,6 @@ void AGrid::SelectSlotPiece(int currentPieceNum)
 		visibilitySlotPiece[i] = false;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("slotPieces&visibilitySlotPiece"));
-
 	if (currentPieceNum == -1) return;
 
 	float adjust = AdjustSlotHeightOfLocation;
@@ -1079,8 +1050,6 @@ void AGrid::SelectSlotPiece(int currentPieceNum)
 		if (!pieceDatas[slotLeftNum].isPlacement) break;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("SelectSlotPiece::pieceDatas1"));
-
 	slotRightNum = currentPieceNum;
 	for (int i = 0; i < slotPieces.Num(); ++i)
 	{
@@ -1088,8 +1057,6 @@ void AGrid::SelectSlotPiece(int currentPieceNum)
 		if (slotPieces.Num() - 1 < slotRightNum) slotRightNum = 0;
 		if (!pieceDatas[slotRightNum].isPlacement) break;
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("SelectSlotPiece::pieceDatas2"));
 
 	slotMostLeftNum = slotLeftNum;
 	for (int i = 0; i < slotPieces.Num(); ++i)
@@ -1099,8 +1066,6 @@ void AGrid::SelectSlotPiece(int currentPieceNum)
 		if (!pieceDatas[slotMostLeftNum].isPlacement) break;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("SelectSlotPiece::pieceDatas3"));
-
 	slotMostRightNum = slotRightNum;
 	for (int i = 0; i < slotPieces.Num(); ++i)
 	{
@@ -1109,16 +1074,11 @@ void AGrid::SelectSlotPiece(int currentPieceNum)
 		if (!pieceDatas[slotMostRightNum].isPlacement) break;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("SelectSlotPiece::pieceDatas4"));
-
 	auto slotPiece = slotPieces[currentPieceNum];
-	UE_LOG(LogTemp, Warning, TEXT("SelectSlotPiece::slotPieces1"));
 	{
 		visibilitySlotPiece[currentPieceNum] = true;
-		UE_LOG(LogTemp, Warning, TEXT("SelectSlotPiece::visibilitySlotPiece1"));
 
 		AdjustSlotPiecePosFromOrigin(piecePos, AdjustSlotPieceSize, pieceDatas[currentPieceNum].shape, 0);
-		UE_LOG(LogTemp, Warning, TEXT("SelectSlotPiece::pieceDatas5"));
 
 		slotPiece->GetRenderComponent()->SetVisibility(true);
 		slotPiece->SetActorLocation(piecePos);
@@ -1128,18 +1088,14 @@ void AGrid::SelectSlotPiece(int currentPieceNum)
 	if (currentPieceNum != slotLeftNum)
 	{
 		auto slotLeftPiece = slotPieces[slotLeftNum];
-		UE_LOG(LogTemp, Warning, TEXT("SelectSlotPiece::slotPieces2"));
-
 		auto location = pieceLocation;
 		{
 			location -= rightVec * AdjustSlotWidhtOfLocation;
 			location -= upVec * AdjustSideSlotPieceHeight;
 
 			visibilitySlotPiece[slotLeftNum] = true;
-			UE_LOG(LogTemp, Warning, TEXT("SelectSlotPiece::visibilitySlotPiece2"));
 
 			AdjustSlotPiecePosFromOrigin(location, AdjustSlotPieceSize * 0.35f, pieceDatas[slotLeftNum].shape, 0);
-			UE_LOG(LogTemp, Warning, TEXT("SelectSlotPiece::pieceDatas6"));
 
 			slotLeftPiece->GetRenderComponent()->SetVisibility(true);
 			slotLeftPiece->SetActorLocation(location);
@@ -1150,18 +1106,14 @@ void AGrid::SelectSlotPiece(int currentPieceNum)
 	if (currentPieceNum != slotRightNum)
 	{
 		auto slotRightPiece = slotPieces[slotRightNum];
-		UE_LOG(LogTemp, Warning, TEXT("SelectSlotPiece::slotPieces3"));
-
 		auto location = pieceLocation;
 		{
 			location += rightVec * AdjustSlotWidhtOfLocation;
 			location -= upVec * AdjustSideSlotPieceHeight;
 
 			visibilitySlotPiece[slotRightNum] = true;
-			UE_LOG(LogTemp, Warning, TEXT("SelectSlotPiece::visibilitySlotPiece3"));
 
 			AdjustSlotPiecePosFromOrigin(location, AdjustSlotPieceSize * 0.35f, pieceDatas[slotRightNum].shape, 0);
-			UE_LOG(LogTemp, Warning, TEXT("SelectSlotPiece::pieceDatas7"));
 
 			slotRightPiece->GetRenderComponent()->SetVisibility(true);
 			slotRightPiece->SetActorLocation(location);
@@ -1172,18 +1124,14 @@ void AGrid::SelectSlotPiece(int currentPieceNum)
 	if (currentPieceNum != slotMostLeftNum && slotLeftNum != slotMostLeftNum && slotRightNum != slotMostLeftNum)
 	{
 		auto slotLeftPiece = slotPieces[slotMostLeftNum];
-		UE_LOG(LogTemp, Warning, TEXT("SelectSlotPiece::slotPieces4"));
-
 		auto location = pieceLocation;
 		{
 			location -= rightVec * AdjustMostSlotWidhtOfLocation;
 			location -= upVec * AdjustSideSlotPieceHeight;
 
 			visibilitySlotPiece[slotMostLeftNum] = true;
-			UE_LOG(LogTemp, Warning, TEXT("SelectSlotPiece::visibilitySlotPiece4"));
 
 			AdjustSlotPiecePosFromOrigin(location, AdjustSlotPieceSize * 0.35f, pieceDatas[slotMostLeftNum].shape, 0);
-			UE_LOG(LogTemp, Warning, TEXT("SelectSlotPiece::pieceDatas8"));
 
 			slotLeftPiece->GetRenderComponent()->SetVisibility(true);
 			slotLeftPiece->SetActorLocation(location);
@@ -1194,18 +1142,14 @@ void AGrid::SelectSlotPiece(int currentPieceNum)
 	if (currentPieceNum != slotMostRightNum && slotRightNum != slotMostRightNum && slotLeftNum != slotMostRightNum)
 	{
 		auto slotRightPiece = slotPieces[slotMostRightNum];
-		UE_LOG(LogTemp, Warning, TEXT("SelectSlotPiece::slotPieces5"));
-
 		auto location = pieceLocation;
 		{
 			location += rightVec * AdjustMostSlotWidhtOfLocation;
 			location -= upVec * AdjustSideSlotPieceHeight;
 
 			visibilitySlotPiece[slotMostRightNum] = true;
-			UE_LOG(LogTemp, Warning, TEXT("SelectSlotPiece::visibilitySlotPiece5"));
 
 			AdjustSlotPiecePosFromOrigin(location, AdjustSlotPieceSize * 0.35f, pieceDatas[slotMostRightNum].shape, 0);
-			UE_LOG(LogTemp, Warning, TEXT("SelectSlotPiece::pieceDatas9"));
 
 			slotRightPiece->GetRenderComponent()->SetVisibility(true);
 			slotRightPiece->SetActorLocation(location);
@@ -1937,7 +1881,10 @@ void AGrid::CreatePiecePanel(FVector SpawnLocation)
 
 bool AGrid::LoadJson(const FString& Path)
 {
-	const auto JsonObject = UJsonFunctionLibrary::LoadJsonObject(FilePath + Path);
+	auto jsonFilePath = FilePath + Path;
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *jsonFilePath);
+
+	const auto JsonObject = UJsonFunctionLibrary::LoadJsonObject(jsonFilePath);
 	if (!JsonObject.IsValid())
 	{
 		return false;
@@ -1982,13 +1929,9 @@ void AGrid::LoadPieces()
 
 		while (resourceManager->CanGetPieceResourceData(currentResourceIndex))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("CanGetPieceResourceData"));
-
 			if (onDecisionPieces.Num() == pieces.Num()) onDecisionPieces.Add(false);
 
 			CreatePiece(resourceManager->GetPieceResourceData(currentResourceIndex), SpawnLocation);
-			UE_LOG(LogTemp, Warning, TEXT("GetPieceResourceData"));
-
 			++currentResourceIndex;
 			addPiece = true;
 		}
@@ -1998,14 +1941,11 @@ void AGrid::LoadPieces()
 		{
 			selectPieceNum = nextPieceNum;
 		}
-		UE_LOG(LogTemp, Warning, TEXT("pieceDatas"));
 
-		if ((0 < pieces.Num() && selectPieceNum < pieces.Num()) && addPiece)
+		if (0 < pieces.Num() && addPiece)
 		{
 			SetPanelNumAtOriginPiece(panelPositions.Num() / 2);
 			SetVisiblePiece(selectPieceNum, true, pieces[selectPieceNum]->GetActorLocation());
-			UE_LOG(LogTemp, Warning, TEXT("SetVisiblePiece"));
-
 			if (!onVisible && puzzleType == PuzzleType::TypeWeaponPuzzle)
 			{
 				pieces[selectPieceNum]->GetRenderComponent()->SetVisibility(false);
@@ -2022,10 +1962,7 @@ void AGrid::LoadPieces()
 		if (0 < pieces.Num() && addPiece)
 		{
 			auto piece = pieces[selectPieceNum];
-			UE_LOG(LogTemp, Warning, TEXT("pieces1"));
-
 			SetUpPiece(piece, pieceDatas[selectPieceNum].shape);
-			UE_LOG(LogTemp, Warning, TEXT("pieceDatas1"));
 		}
 	}
 }

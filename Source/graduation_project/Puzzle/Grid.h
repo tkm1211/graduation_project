@@ -69,7 +69,7 @@ private:
 	const int MaxWidthNum = 20;
 	const int MaxHeightNum = 20;
 	const int InputIntervalTime = 15;
-	const FString FilePath = "Tool\\Data\\Document\\Puzzle\\";
+	const FString FilePath = "Tool/Data/Document/Puzzle/";
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Puzzle", meta = (AllowPrivateAccess = "true"))
