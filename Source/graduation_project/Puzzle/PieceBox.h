@@ -4,34 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "PieceBlockDropper.h"
 #include "PieceBox.generated.h"
 
-
-class ADropPiece;
-
-USTRUCT(BlueprintType)
-struct FFixedDropPieceData
-{
-	GENERATED_USTRUCT_BODY();
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSubclassOf<ADropPiece> DropPiece;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	int SpawnNum = 1;
-};
-
-USTRUCT(BlueprintType)
-struct FRandomDropPieceData
-{
-	GENERATED_USTRUCT_BODY();
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSubclassOf<ADropPiece> DropPiece;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	int SpawnWeight = 0;
-};
 
 UCLASS()
 class GRADUATION_PROJECT_API APieceBox : public AActor
@@ -48,17 +23,11 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effect", meta = (AllowPrivateAccess = "true"))
 	class UNiagaraSystem* BreakEffect;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "FixedDrop", meta = (AllowPrivateAccess = "true"))
-	TArray<FFixedDropPieceData> FixedDropPieceDatas;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "DropPiece", meta = (AllowPrivateAccess = "true"))
+	FDropPieceData DropPieceData;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "RandomDrop", meta = (AllowPrivateAccess = "true"))
-	int RandomSpawnNum = 1;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "RandomDrop", meta = (AllowPrivateAccess = "true"))
-	TArray<FRandomDropPieceData> RandomDropPieceDatas;
-
-	float FlyDirectionRandMin = -1.0f;
-	float FlyDirectionRandMax = 1.0f;
+private:
+	UPieceBlockDropper* pieceBlockDropper;
 	
 public:	
 	// Sets default values for this actor's properties

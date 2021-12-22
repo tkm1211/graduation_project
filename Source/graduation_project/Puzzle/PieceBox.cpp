@@ -9,7 +9,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components.h"
-#include "DropPiece.h"
+#include "PieceBlockDropper.h"
 #include "NiagaraSystem.h"
 #include "../Wepon/BaseAmmo.h"
 
@@ -34,6 +34,9 @@ void APieceBox::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	// ゲームインスタンスからドロップ用のMediator（仲介役）を取得
+	UGameInstance* instance = GetWorld()->GetGameInstance();
+	pieceBlockDropper = instance->GetSubsystem<UPieceBlockDropper>();
 }
 
 // Called every frame
@@ -66,58 +69,5 @@ void APieceBox::SpawnEffect()
 
 void APieceBox::SpawnDropPieces()
 {
-	FVector location = GetActorLocation();
-	FRotator rotation = GetActorRotation();
-
-	auto SpawnPiece = [&](TSubclassOf<ADropPiece> DropPiece)
-	{
-		auto piece = GetWorld()->SpawnActor<ADropPiece>(DropPiece, GetActorTransform());
-		if (piece)
-		{
-			//piece->SetActorLocation(location);
-			//piece->SetActorRotation(rotation);
-
-			float randX = FMath::FRandRange(FlyDirectionRandMin, FlyDirectionRandMax);
-			float randY = FMath::FRandRange(FlyDirectionRandMin, FlyDirectionRandMax);
-
-			piece->SetFlyDirection(FVector(randX, randY, 0.0f));
-		}
-	};
-
-	if (FixedDropPieceDatas.Num() != 0)
-	{
-		for (auto data : FixedDropPieceDatas)
-		{
-			for (int i = 0; i < data.SpawnNum; ++i)
-			{
-				SpawnPiece(data.DropPiece);
-			}
-		}
-	}
-
-	if (RandomDropPieceDatas.Num() != 0)
-	{
-		for (int i = 0; i < RandomSpawnNum; ++i)
-		{
-			int total = 0;
-
-			for (auto data : RandomDropPieceDatas)
-			{
-				total += data.SpawnWeight;
-			}
-
-			int random = FMath::RandRange(0, total);
-
-			for (auto data : RandomDropPieceDatas)
-			{
-				if (random <= data.SpawnWeight)
-				{
-					SpawnPiece(data.DropPiece);
-					break;
-				}
-
-				random -= data.SpawnWeight;
-			}
-		}
-	}
+	pieceBlockDropper->SpawnDropPieces(DropPieceData, GetTransform());
 }
