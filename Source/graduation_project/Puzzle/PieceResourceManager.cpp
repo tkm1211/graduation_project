@@ -41,10 +41,17 @@ void UPieceResourceManager::AddPiece(PieceShape shape, PieceType type)
 {
 	FPieceResourceData data;
 	{
+		data.isPlacement = false;
 		data.shape = shape;
 		data.type = type;
 	}
 	pieceDatas.Add(data);
+}
+
+// ピースを配置した時
+void UPieceResourceManager::PlacementPiece(int index, bool isPlacement)
+{
+	pieceDatas[index].isPlacement = isPlacement;
 }
 
 bool UPieceResourceManager::CanGetPieceResourceData(int index)
