@@ -753,7 +753,6 @@ void AGrid::PieceDecision(APieceOrigin* piece)
 
 		++backUpNum;
 
-
 		piece->PieceDecision();
 		pieceDatas[selectPieceNum].isPlacement = true;
 
@@ -804,6 +803,7 @@ void AGrid::PieceDecision(int pieceNum)
 	pieces[pieceNum]->PieceDecision();
 	pieces[pieceNum]->GetRenderComponent()->SetVisibility(false);
 	pieceDatas[pieceNum].isPlacement = true;
+	visibilityPiece[pieceNum] = false;
 
 	if (pieceNum == selectPieceNum)
 	{
@@ -822,7 +822,7 @@ void AGrid::PieceDecision(int pieceNum)
 	if (pieceNum != selectPieceNum)
 	{
 		SetVisiblePiece(selectPieceNum, true, pieces[pastSelectPieceNum]->GetActorLocation());
-		if (!onVisible && puzzleType == PuzzleType::TypeWeaponPuzzle)
+		if (!onVisible && puzzleType == PuzzleType::TypeWeaponPuzzle) // ギミックパズルが終了後に武器パズルのピースを非表示にするため。
 		{
 			pieces[selectPieceNum]->GetRenderComponent()->SetVisibility(false);
 			for (int i = 0; i < slotPieces.Num(); ++i)

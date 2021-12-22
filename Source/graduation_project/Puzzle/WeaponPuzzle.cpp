@@ -53,8 +53,20 @@ void AWeaponPuzzle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//CustomTimeDilation = 1;
+	// グリッド移動
+	{
+		MoveGrid();
+	}
 
+	// 配置したピース情報を武器用のMediator（仲介役）に渡す
+	{
+		NotifyMediatorOfPlacedPieces();
+	}
+}
+
+// グリッド移動
+void AWeaponPuzzle::MoveGrid()
+{
 	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
 	auto location = _playerCharacter->GetWeaponePuzzulePosition();

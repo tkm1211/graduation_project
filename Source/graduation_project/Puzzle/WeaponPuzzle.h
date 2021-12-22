@@ -51,6 +51,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
+	// グリッド移動
+	void MoveGrid();
+
 	// 配置したピース情報を武器用のMediator（仲介役）に渡す
 	void NotifyMediatorOfPlacedPieces();
 
