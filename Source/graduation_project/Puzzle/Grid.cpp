@@ -723,6 +723,8 @@ void AGrid::PieceDecision(APieceOrigin* piece)
 			placedPieceData.type = pieceDatas[selectPieceNum].type;
 		}
 
+		resourceManager->PlacementPiece(selectPieceNum, true);
+
 		switch (placedPieceData.type)
 		{
 		case TypeBlaster:
@@ -856,6 +858,8 @@ void AGrid::PieceCancel(APieceOrigin* piece)
 	selectPieceNum = decisionPieces[backUpNum].pieceNum;
 	panelNumAtOriginPiece = decisionPieces[backUpNum].panelNum;
 	onDecisionPieces[selectPieceNum] = false;
+
+	resourceManager->PlacementPiece(selectPieceNum, false);
 
 	didRemovePiece = true;
 	removePieceData.placedPanelNum = panelNumAtOriginPiece;

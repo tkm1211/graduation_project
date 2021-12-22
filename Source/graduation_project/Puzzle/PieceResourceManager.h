@@ -13,6 +13,12 @@ struct FPieceResourceData
 {
 	GENERATED_USTRUCT_BODY();
 
+	// 表示
+	//bool isVisible = false;
+
+	// 配置
+	bool isPlacement = false;
+
 	// 形
 	PieceShape shape = PieceShape::T;
 
@@ -41,6 +47,9 @@ public:
 
 	// ピースを取得した時に追加
 	void AddPiece(PieceShape shape, PieceType type);
+
+	// ピースを配置した時
+	void PlacementPiece(int index, bool isPlacement);
 
 public:
 	// 現在、保持しているピースをすべて取得
