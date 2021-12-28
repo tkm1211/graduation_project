@@ -49,16 +49,40 @@ private:
 	TSubclassOf<AGridMesh> GridMesh; // グリッドブロック（エディタで設定）
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Block Type", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<APieceBlockO> PieceBlockO; // Lのピースブロック（エディタで設定）
+	TSubclassOf<APieceBlockO> PieceBlockOBlue; // 青色のO字のピースブロック（エディタで設定）
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Block Type", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<APieceBlockL> PieceBlockL; // Lのピースブロック（エディタで設定）
+	TSubclassOf<APieceBlockL> PieceBlockLBlue; // 青色のL字のピースブロック（エディタで設定）
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Block Type", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<APieceBlockI> PieceBlockI; // Lのピースブロック（エディタで設定）
+	TSubclassOf<APieceBlockI> PieceBlockIBlue; // 青色のI字のピースブロック（エディタで設定）
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Block Type", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<APieceBlockT> PieceBlockT; // Lのピースブロック（エディタで設定）
+	TSubclassOf<APieceBlockT> PieceBlockTBlue; // 青色のT字のピースブロック（エディタで設定）
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Block Type", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APieceBlockO> PieceBlockOYellow; // 黄色のO字のピースブロック（エディタで設定）
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Block Type", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APieceBlockL> PieceBlockLYellow; // 黄色のL字のピースブロック（エディタで設定）
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Block Type", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APieceBlockI> PieceBlockIYellow; // 黄色のI字のピースブロック（エディタで設定）
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Block Type", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APieceBlockT> PieceBlockTYellow; // 黄色のT字のピースブロック（エディタで設定）
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Block Type", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APieceBlockO> PieceBlockOPurple; // 紫色のO字のピースブロック（エディタで設定）
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Block Type", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APieceBlockL> PieceBlockLPurple; // 紫色のL字のピースブロック（エディタで設定）
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Block Type", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APieceBlockI> PieceBlockIPurple; // 紫色のI字のピースブロック（エディタで設定）
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Block Type", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APieceBlockT> PieceBlockTPurple; // 紫色のT字のピースブロック（エディタで設定）
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Gimmick", meta = (AllowPrivateAccess = "true"))
 	int GroupID = -1; // GimmickPuzzleと紐づけるための番号（エディタで設定）
@@ -89,8 +113,8 @@ private:
 	void UpdateCapture();
 	void CreateGridMesh();
 	void CreatePieceBlock(FPlacedPieceData data);
-	AActor* CreatePieceBlockO(FVector location, FRotator rotation, FRotator addRotation, FVector scale);
-	AActor* CreatePieceBlockL(FVector location, FRotator rotation, FRotator addRotation, FVector scale);
-	AActor* CreatePieceBlockI(FVector location, FRotator rotation, FRotator addRotation, FVector scale);
-	AActor* CreatePieceBlockT(FVector location, FRotator rotation, FRotator addRotation, FVector scale);
+	AActor* CreatePieceBlockO(PieceType type, FVector location, FRotator rotation, FRotator addRotation, FVector scale);
+	AActor* CreatePieceBlockL(PieceType type, FVector location, FRotator rotation, FRotator addRotation, FVector scale);
+	AActor* CreatePieceBlockI(PieceType type, FVector location, FRotator rotation, FRotator addRotation, FVector scale);
+	AActor* CreatePieceBlockT(PieceType type, FVector location, FRotator rotation, FRotator addRotation, FVector scale);
 };

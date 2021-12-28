@@ -194,28 +194,25 @@ void AStageGimmick::CreatePieceBlock(FPlacedPieceData data)
 		location -= upVec * BlockSize;
 	}
 
-	//FRotator pastRotate = rotation;
-	//rotation = FRotator(90.0f * data.turnCnt * -1.0f, pastRotate.Euler().Z , pastRotate.Euler().X);
-
+	AActor* pieceBlock = nullptr;
 	FRotator addRotation = FRotator(90.0f * data.turnCnt * -1.0f, 0.0f, 0.0f);
 
-	AActor* pieceBlock = nullptr;
 	switch (data.shape)
 	{
 	case O:
-		pieceBlock = CreatePieceBlockO(location, rotation, addRotation, scale);
+		pieceBlock = CreatePieceBlockO(data.type, location, rotation, addRotation, scale);
 		break;
 
 	case L:
-		pieceBlock = CreatePieceBlockL(location, rotation, addRotation, scale);
+		pieceBlock = CreatePieceBlockL(data.type, location, rotation, addRotation, scale);
 		break;
 
 	case I:
-		pieceBlock = CreatePieceBlockI(location, rotation, addRotation, scale);
+		pieceBlock = CreatePieceBlockI(data.type, location, rotation, addRotation, scale);
 		break;
 
 	case T:
-		pieceBlock = CreatePieceBlockT(location, rotation, addRotation, scale);
+		pieceBlock = CreatePieceBlockT(data.type, location, rotation, addRotation, scale);
 		break;
 
 	default: break;
@@ -230,34 +227,126 @@ void AStageGimmick::CreatePieceBlock(FPlacedPieceData data)
 	pieceBlocks.Add(spawnPieceBlockData);
 }
 
-AActor* AStageGimmick::CreatePieceBlockO(FVector location, FRotator rotation, FRotator addRotation, FVector scale)
+AActor* AStageGimmick::CreatePieceBlockO(PieceType type, FVector location, FRotator rotation, FRotator addRotation, FVector scale)
 {
-	auto tempO = GetWorld()->SpawnActor<APieceBlockO>(PieceBlockO, location, rotation);
-	//tempO->AddActorLocalRotation(addRotation, false, 0, ETeleportType::TeleportPhysics);
+	auto SpawnPieceBlock = [&](TSubclassOf<APieceBlockO> pieceBlockO)
+	{
+		auto temp = GetWorld()->SpawnActor<APieceBlockO>(pieceBlockO, location, rotation);
+		//temp->AddActorLocalRotation(addRotation, false, 0, ETeleportType::TeleportPhysics);
+
+		return temp;
+	};
+
+	APieceBlockO* tempO = nullptr;
+	switch (type)
+	{
+	case TypeBlaster:
+		tempO = SpawnPieceBlock(PieceBlockOBlue);
+		break;
+
+	case TypeShotGun:
+		tempO = SpawnPieceBlock(PieceBlockOYellow);
+		break;
+
+	case TypeBombGun:
+		tempO = SpawnPieceBlock(PieceBlockOPurple);
+		break;
+
+	default: break;
+	}
 
 	return tempO;
 }
 
-AActor* AStageGimmick::CreatePieceBlockL(FVector location, FRotator rotation, FRotator addRotation, FVector scale)
+AActor* AStageGimmick::CreatePieceBlockL(PieceType type, FVector location, FRotator rotation, FRotator addRotation, FVector scale)
 {
-	auto tempL = GetWorld()->SpawnActor<APieceBlockL>(PieceBlockL, location, rotation);
-	tempL->AddActorLocalRotation(addRotation, false, 0, ETeleportType::TeleportPhysics);
+	auto SpawnPieceBlock = [&](TSubclassOf<APieceBlockL> pieceBlock)
+	{
+		auto temp = GetWorld()->SpawnActor<APieceBlockL>(pieceBlock, location, rotation);
+		temp->AddActorLocalRotation(addRotation, false, 0, ETeleportType::TeleportPhysics);
+
+		return temp;
+	};
+
+	APieceBlockL* tempL = nullptr;
+	switch (type)
+	{
+	case TypeBlaster:
+		tempL = SpawnPieceBlock(PieceBlockLBlue);
+		break;
+
+	case TypeShotGun:
+		tempL = SpawnPieceBlock(PieceBlockLYellow);
+		break;
+
+	case TypeBombGun:
+		tempL = SpawnPieceBlock(PieceBlockLPurple);
+		break;
+
+	default: break;
+	}
 
 	return tempL;
 }
 
-AActor* AStageGimmick::CreatePieceBlockI(FVector location, FRotator rotation, FRotator addRotation, FVector scale)
+AActor* AStageGimmick::CreatePieceBlockI(PieceType type, FVector location, FRotator rotation, FRotator addRotation, FVector scale)
 {
-	auto tempI = GetWorld()->SpawnActor<APieceBlockI>(PieceBlockI, location, rotation);
-	tempI->AddActorLocalRotation(addRotation, false, 0, ETeleportType::TeleportPhysics);
+	auto SpawnPieceBlock = [&](TSubclassOf<APieceBlockI> pieceBlock)
+	{
+		auto temp = GetWorld()->SpawnActor<APieceBlockI>(pieceBlock, location, rotation);
+		temp->AddActorLocalRotation(addRotation, false, 0, ETeleportType::TeleportPhysics);
+
+		return temp;
+	};
+
+	APieceBlockI* tempI = nullptr;
+	switch (type)
+	{
+	case TypeBlaster:
+		tempI = SpawnPieceBlock(PieceBlockIBlue);
+		break;
+
+	case TypeShotGun:
+		tempI = SpawnPieceBlock(PieceBlockIYellow);
+		break;
+
+	case TypeBombGun:
+		tempI = SpawnPieceBlock(PieceBlockIPurple);
+		break;
+
+	default: break;
+	}
 
 	return tempI;
 }
 
-AActor* AStageGimmick::CreatePieceBlockT(FVector location, FRotator rotation, FRotator addRotation, FVector scale)
+AActor* AStageGimmick::CreatePieceBlockT(PieceType type, FVector location, FRotator rotation, FRotator addRotation, FVector scale)
 {
-	auto tempT = GetWorld()->SpawnActor<APieceBlockT>(PieceBlockT, location, rotation);
-	tempT->AddActorLocalRotation(addRotation, false, 0, ETeleportType::TeleportPhysics);
+	auto SpawnPieceBlock = [&](TSubclassOf<APieceBlockT> pieceBlock)
+	{
+		auto temp = GetWorld()->SpawnActor<APieceBlockT>(pieceBlock, location, rotation);
+		temp->AddActorLocalRotation(addRotation, false, 0, ETeleportType::TeleportPhysics);
+
+		return temp;
+	};
+
+	APieceBlockT* tempT = nullptr;
+	switch (type)
+	{
+	case TypeBlaster:
+		tempT = SpawnPieceBlock(PieceBlockTBlue);
+		break;
+
+	case TypeShotGun:
+		tempT = SpawnPieceBlock(PieceBlockTYellow);
+		break;
+
+	case TypeBombGun:
+		tempT = SpawnPieceBlock(PieceBlockTPurple);
+		break;
+
+	default: break;
+	}
 
 	return tempT;
 }
