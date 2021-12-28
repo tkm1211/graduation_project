@@ -66,28 +66,3 @@ struct FRemovePieceData
 
 	int placedPanelNum = 0;
 };
-
-UCLASS()
-class GRADUATION_PROJECT_API APieceBase : public AActor
-{
-	GENERATED_BODY()
-	
-protected:
-	PieceShape shape; // Œ`
-	PieceType type;   // Ží—Þ
-
-	// TODO : Add Mesh.
-
-public:	
-	// Sets default values for this actor's properties
-	APieceBase();
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-};
