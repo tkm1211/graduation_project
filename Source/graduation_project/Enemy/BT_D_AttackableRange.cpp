@@ -20,7 +20,7 @@ void UBT_D_AttackableRange::InitializeFromAsset(UBehaviorTree& Asset)
 bool UBT_D_AttackableRange::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const
 {
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White, FString::Printf(TEXT("CalculateRawConditionValue")), true, FVector2D(1.0f, 1.0f));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White, FString::Printf(TEXT("CalculateRawConditionValue")), true, FVector2D(1.0f, 1.0f));
 
 	const UBlackboardComponent* BlackboardComp = OwnerComp.GetBlackboardComponent();
 	// note that this may produce unexpected logical results. FALSE is a valid return value here as well

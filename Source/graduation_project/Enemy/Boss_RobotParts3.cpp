@@ -7,6 +7,7 @@
 #include "Engine.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Boss_RP3AIController.h"
+#include "BehaviorTree/BehaviorTreeComponent.h"
 #include "../graduation_projectCharacter.h"
 
 #include "Kismet/KismetMathLibrary.h"
@@ -298,13 +299,11 @@ void ABoss_RobotParts3::Tick(float DeltaTime)
 
 	ModifyCollision();
 
-	if (healthpoint < 0)
+
+	if (Death(DeltaTime))
 	{
 
-		UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("BossDead")));
-		return;
 	}
-
 
 }
 

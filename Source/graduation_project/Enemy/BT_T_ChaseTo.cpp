@@ -2,17 +2,33 @@
 
 
 #include "BT_T_ChaseTo.h"
+#include "AIController.h"
 #include "Base\EnemyBase.h"
 
+
+UBT_T_ChaseTo::UBT_T_ChaseTo(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+{
+	NodeName = "ChaseTo";
+}
 
 EBTNodeResult::Type UBT_T_ChaseTo::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 
 	if (!enm)
 	{
-		enm = Cast<AEnemyBase>(OwnerComp.GetOwner());
+		AAIController* controller = OwnerComp.GetAIOwner();
 
-		AcceptableRadius = enm->ATK_RANGE;
+		if (controller)
+		{
+			enm = Cast<AEnemyBase>(controller->GetCharacter());
+
+			if (enm)
+			{
+				AcceptableRadius = enm->ATK_RANGE;
+			}
+		}
+
+
 	}
 	else
 	{

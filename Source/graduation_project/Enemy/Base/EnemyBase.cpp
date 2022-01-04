@@ -38,7 +38,15 @@ void AEnemyBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	DeadEffectDoOnce.Reset();
+	PieceDropOnce.Reset();
+
 	GetMesh()->SetCollisionProfileName(TEXT("NoCollision"));
+
+	// ゲームインスタンスからドロップ用のMediator（仲介役）を取得
+	UGameInstance* instance = GetWorld()->GetGameInstance();
+	pieceBlockDropper = instance->GetSubsystem<UPieceBlockDropper>();
+
 }
 
 // Called every frame
@@ -91,6 +99,7 @@ bool AEnemyBase::Death(float DeltaTime)
 {
 	if (healthpoint > 0.f)return false;
 
+	if(PieceDropOnce.Execute())pieceBlockDropper->SpawnDropPieces(DropPieceData, GetTransform());
 
 	if (!b_rigor)return true;
 

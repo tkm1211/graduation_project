@@ -14,6 +14,8 @@ class GRADUATION_PROJECT_API UBT_T_ChaseTo : public UBTTask_MoveTo
 {
 	GENERATED_BODY()
 
+		UBT_T_ChaseTo(const FObjectInitializer& ObjectInitializer);
+
 		class AEnemyBase* enm;
 
 

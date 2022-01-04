@@ -127,5 +127,8 @@ void AENM_Chaichai::Tick(float DeltaTime)
 			bFire[FIREBALL] = false;
 		}
 	}
+
+	Death(DeltaTime);
+
 }
 
