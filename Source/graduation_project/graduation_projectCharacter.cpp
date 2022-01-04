@@ -15,7 +15,7 @@
 #include "Puzzle/WeaponPuzzle.h"
 #include "Puzzle/GimmickPuzzle.h"
 #include "Puzzle/WeaponPuzzleMediator.h"
-#include "Engine/PostProcessVolume.h"
+#include "Gacha/Gacha.h"
 
 //////////////////////////////////////////////////////////////////////////
 // Agraduation_projectCharacter
@@ -109,7 +109,7 @@ void Agraduation_projectCharacter::SetupPlayerInputComponent(class UInputCompone
 	PlayerInputComponent->BindAction("Pause", IE_Released, this, &Agraduation_projectCharacter::ReleasePause);
 
 	PlayerInputComponent->BindAction("WeponPuzzle", IE_Pressed, this, &Agraduation_projectCharacter::WeponPuzzle);
-	PlayerInputComponent->BindAction("GimmickPuzzle", IE_Pressed, this, &Agraduation_projectCharacter::GimmickPuzzle);
+	PlayerInputComponent->BindAction("GimmickPuzzle", IE_Pressed, this, &Agraduation_projectCharacter::OnGimmick);
 
 	PlayerInputComponent->BindAction("useBlaster", IE_Pressed, this, &Agraduation_projectCharacter::UseBlaster);
 	PlayerInputComponent->BindAction("useShotGun", IE_Pressed, this, &Agraduation_projectCharacter::UseShotGun);
@@ -364,6 +364,8 @@ void Agraduation_projectCharacter::ChangeWepon(ABaseWepon* nextWepon)
 	//weponName = weponName.Left(1);
 
 	if (weponName == FString("ShotgunBP_1_C_0")) weponNumber = 1;
+	else if (weponName == FString("ShotgunAndBombgunBP_1_C_0")) weponNumber = 1;
+	else if (weponName == FString("RfShotgunBP_1_C_0")) weponNumber = 1;
 	else weponNumber = 0;
 
 	//weponNumber = FCString::Atoi(*weponName);
@@ -490,7 +492,15 @@ void Agraduation_projectCharacter::WeponPuzzle()
 		UGameInstance* instance = GetWorld()->GetGameInstance();
 		weaponMediator = instance->GetSubsystem<UWeaponPuzzleMediator>();
 		{
-			weaponMediator->GetWeaponType();
+			ABaseWepon* tmp = useWepon;
+			tmp->mesh->SetVisibility(false);
+			if (weaponMediator->GetWeaponType() < 9)
+			{
+				useWepon = weaponArray[weaponMediator->GetWeaponType()];
+			}
+			useWepon->mesh->SetVisibility(true);
+			ChangeWepon(useWepon);
+			isPressFire = false;
 		}
 	}
 	Pause();
@@ -534,6 +544,12 @@ FRotator Agraduation_projectCharacter::GetWeaponePuzzuleRotation()
 	return FRotator(0.0f);
 }
 
+void Agraduation_projectCharacter::OnGimmick()
+{
+	GimmickPuzzle();
+	Gacha();
+}
+
 void Agraduation_projectCharacter::GimmickPuzzle()
 {
 	if (!gimmickPuzzle) return;
@@ -550,6 +566,27 @@ void Agraduation_projectCharacter::GimmickPuzzle()
 	{
 		gimmickPuzzle->EndPuzzle();
 		onGimmickPuzzle = false;
+		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
+	}
+	Pause();
+}
+
+void Agraduation_projectCharacter::Gacha()
+{
+	if (!gacha) return;
+	if (onWeponePuzzle) return;
+
+	if (!onGacha)
+	{
+		if (!useGacha) return;
+		gacha->BeginGacha();
+		onGacha = true;
+		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.1f);
+	}
+	else
+	{
+		gacha->EndGacha();
+		onGacha = false;
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
 	}
 	Pause();
@@ -573,6 +610,11 @@ void Agraduation_projectCharacter::BeginOverlap(
 			gimmickPuzzle = Cast<AGimmickPuzzle>(OtherActor);
 			useGimmickPuzzle = true;
 		}
+		if (OtherComp->ComponentTags[0] == "Gacha")
+		{
+			gacha = Cast<AGacha>(OtherActor);
+			useGacha= true;
+		}
 	}
 }
 
@@ -592,6 +634,11 @@ void Agraduation_projectCharacter::EndOverlap
 		{
 			gimmickPuzzle = Cast<AGimmickPuzzle>(OtherActor);
 			useGimmickPuzzle = false;
+		}
+		if (OtherComp->ComponentTags[0] == "Gacha")
+		{
+			gacha = Cast<AGacha>(OtherActor);
+			useGacha= false;
 		}
 	}
 }

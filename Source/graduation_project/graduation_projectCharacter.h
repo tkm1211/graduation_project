@@ -10,6 +10,7 @@ class ABaseWepon;
 class UAnimMontage;
 class AWeaponPuzzle;
 class AGimmickPuzzle;
+class AGacha;
 
 UCLASS(config = Game)
 class Agraduation_projectCharacter : public ACharacter
@@ -37,6 +38,10 @@ private:
 	AGimmickPuzzle* gimmickPuzzle;
 	bool onGimmickPuzzle;
 	bool useGimmickPuzzle;
+
+	AGacha* gacha;
+	bool onGacha;
+	bool useGacha;
 
 	class UWeaponPuzzleMediator* weaponMediator;
 
@@ -162,7 +167,10 @@ protected:
 	void CameraChange(float DeltaTime);
 
 	void WeponPuzzle();
+	void OnGimmick();
 	void GimmickPuzzle();
+
+	void Gacha();
 
 	void UseBlaster();
 	void UseShotGun();
