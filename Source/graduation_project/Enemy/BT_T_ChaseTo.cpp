@@ -9,17 +9,10 @@
 UBT_T_ChaseTo::UBT_T_ChaseTo(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	NodeName = "ChaseTo";
-	BlackboardKey.SelectedKeyName = "PlayerActor";
-	UBTTask_MoveTo* moveto = Cast<UBTTask_MoveTo>(this);
-	moveto->bObserveBlackboardValue = 1;
-	moveto->bReachTestIncludesAgentRadius = 0;
-	moveto->bReachTestIncludesGoalRadius = 0;
-	
 }
 
 EBTNodeResult::Type UBT_T_ChaseTo::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White, FString::Printf(TEXT("ChaseTo")), true, FVector2D(1.0f, 1.0f));
 
 	if (!enm)
 	{
@@ -31,19 +24,15 @@ EBTNodeResult::Type UBT_T_ChaseTo::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 
 			if (enm)
 			{
-				AcceptableRadius = enm->ATK_RANGE - 1.f;
+				AcceptableRadius = enm->ATK_RANGE;
 			}
 		}
 
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White, FString::Printf(TEXT("ChaseTo : enm true")), true, FVector2D(1.0f, 1.0f));
 
 	}
 	else
 	{
-		AcceptableRadius = enm->ATK_RANGE - 1.f;
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White, FString::Printf(TEXT("ChaseTo : enm false")), true, FVector2D(1.0f, 1.0f));
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White, FString::SanitizeFloat(AcceptableRadius), true, FVector2D(1.0f, 1.0f));
-
+		AcceptableRadius = enm->ATK_RANGE;
 	}
 
 	return Super::ExecuteTask(OwnerComp, NodeMemory);

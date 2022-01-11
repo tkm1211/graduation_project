@@ -34,19 +34,19 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "STATUS")
 		float IDLE_MOVE_SPEED = 100.f;
 
-	UPROPERTY(EditAnywhere, Category = "STATUS")
+	UPROPERTY(EditDefaultsOnly, Category = "STATUS")
 		float COMBAT_MOVE_SPEED = 200.f;
 
-	UPROPERTY(EditAnywhere, Category = "STATUS")
+	UPROPERTY(EditDefaultsOnly, Category = "STATUS")
 		float FindRange = 1000.f;
 
-	UPROPERTY(EditAnywhere, Category = "STATUS")
+	UPROPERTY(EditDefaultsOnly, Category = "STATUS")
 		float LostRange = 1400.f;
 
-	UPROPERTY(EditAnywhere, Category = "STATUS")
+	UPROPERTY(EditDefaultsOnly, Category = "STATUS")
 		float ATKRange = 250.f;
 
-	UPROPERTY(EditAnywhere, Category = "STATUS")
+	UPROPERTY(EditDefaultsOnly, Category = "STATUS")
 		float ATKPower = 10.f;
 
 

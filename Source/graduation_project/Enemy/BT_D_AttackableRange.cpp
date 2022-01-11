@@ -10,9 +10,9 @@ void UBT_D_AttackableRange::InitializeFromAsset(UBehaviorTree& Asset)
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White, FString::Printf(TEXT("InitializeFromAsset")), true, FVector2D(1.0f, 1.0f));
 
+	FlowAbortMode = EBTFlowAbortMode::Self;
 	NodeName = "AttackableRange";
 	BlackboardKey.SelectedKeyName = "DistanceToPlayer";
-	FlowAbortMode = EBTFlowAbortMode::Self;
 
 }
 
