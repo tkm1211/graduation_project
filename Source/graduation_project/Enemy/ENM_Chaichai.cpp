@@ -59,6 +59,8 @@ AENM_Chaichai::AENM_Chaichai()
 	FBireballClass = FireballAsset.Class;
 
 	bFire.Emplace(false);
+
+	
 }
 
 
@@ -121,6 +123,7 @@ void AENM_Chaichai::Tick(float DeltaTime)
 			if (pl)
 			{
 				rot = UKismetMathLibrary::FindLookAtRotation(pos, pl->GetActorLocation());
+
 			}
 			GetWorld()->SpawnActor<AENM_ChaFireball>(FBireballClass, pos, rot);
 
