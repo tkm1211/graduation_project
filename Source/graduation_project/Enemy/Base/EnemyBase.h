@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "../../Puzzle/PieceBlockDropper.h"
 #include "../DoOnce.h"
 #include "EnemyBase.generated.h"
 
@@ -58,6 +59,14 @@ public:
 	virtual bool Death(float DeltaTime);
 	virtual void Damage(float giveDamage);
 
+	UPROPERTY(VisibleAnywhere)
+		FDoOnce PieceDropOnce;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "DropPiece", meta = (AllowPrivateAccess = "true"))
+		FDropPieceData DropPieceData;
+
+private:
+	class UPieceBlockDropper* pieceBlockDropper;
 
 protected:
 	// Called when the game starts or when spawned

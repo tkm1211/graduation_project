@@ -67,7 +67,6 @@ void AE_MinimonController::SearchPlayerActor(const TArray<AActor*>& actors)
 
 			BlackboardComp->SetValueAsObject(PlayerActorKeyName, PlayerPawn);
 
-			BlackboardComp->SetValueAsBool("FirstContact", true);
 
 
 			break;
@@ -83,7 +82,12 @@ void AE_MinimonController::LostPlayerActor(const FActorPerceptionUpdateInfo& inf
 	if (!info.Stimulus.WasSuccessfullySensed())
 	{
 
-		BlackboardComp->SetValueAsObject(PlayerActorKeyName, nullptr);
+		float dist = BlackboardComp->GetValueAsFloat("DistanceToPlayer");
+		if (dist >= LoseRange)
+		{
+			BlackboardComp->SetValueAsObject(PlayerActorKeyName, nullptr);
+
+		}
 	}
 
 }

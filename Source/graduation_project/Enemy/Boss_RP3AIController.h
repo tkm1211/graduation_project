@@ -38,14 +38,15 @@ public:
 
     class Agraduation_projectCharacter* GetPlayerActorKey();
 
+    FORCEINLINE UBehaviorTreeComponent* GetBehaviorComp() const { return BehaviorComp; }
+
+    FORCEINLINE UBlackboardComponent* GetBlackboardComp() const { return BlackboardComp; }
+
 protected:
     virtual void BeginPlay() override;
 
     UPROPERTY(EditDefaultsOnly, Category = AI)
         class UBehaviorTree* BehaviorTree;
 
-    FORCEINLINE UBehaviorTreeComponent* GetBehaviorComp() const { return BehaviorComp; }
-
-    FORCEINLINE UBlackboardComponent* GetBlackboardComp() const { return BlackboardComp; }
 
 };
