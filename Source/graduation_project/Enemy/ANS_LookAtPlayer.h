@@ -15,7 +15,7 @@ class GRADUATION_PROJECT_API UANS_LookAtPlayer : public UAnimNotifyState
 {
 	GENERATED_BODY()
 
-		class ABoss_RobotParts3* boss;
+		class AEnemyBase* enm;
 
 	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration);
 	virtual void NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime);

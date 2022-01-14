@@ -11,6 +11,8 @@ EBTNodeResult::Type UBT_T_ReachToPatPoint::ExecuteTask(UBehaviorTreeComponent& O
 
 	AAIController* controller = OwnerComp.GetAIOwner();
 
+	OwnerComp.GetBlackboardComponent()->SetValueAsBool("FirstContact", true);
+
 	if (controller)
 	{
 		AEnemyBase* enm = Cast<AEnemyBase>(controller->GetCharacter());

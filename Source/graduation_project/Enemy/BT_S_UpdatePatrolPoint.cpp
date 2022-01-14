@@ -12,6 +12,8 @@ void UBT_S_UpdatePatrolPoint::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 
 	AAIController* controller = OwnerComp.GetAIOwner();
 
+	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White, FString::Printf(TEXT("TickNode")), true, FVector2D(1.0f, 1.0f));
+
 	if (controller)
 	{
 		AEnemyBase* enm = Cast<AEnemyBase>(controller->GetCharacter());

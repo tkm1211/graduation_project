@@ -2,14 +2,14 @@
 
 
 #include "ANS_LookAtPlayer.h"
-#include "Boss_RobotParts3.h"
+#include "Base\EnemyBase.h"
 #include "Engine.h"
 
 void UANS_LookAtPlayer::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)
 {
 	if (MeshComp->GetOwner())
 	{
-		boss = Cast<ABoss_RobotParts3>(MeshComp->GetOwner());
+		enm = Cast<AEnemyBase>(MeshComp->GetOwner());
 	}
 
 	//if (!MeshComp->GetOwner()->GetWorld())
@@ -24,11 +24,11 @@ void UANS_LookAtPlayer::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSeque
 
 void UANS_LookAtPlayer::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime)
 {
-	if (!boss)
+	if (!enm)
 	{
 		return;
 	}
-	boss->LookAtPlayer();
+	enm->LookAtPlayer();
 
 }
 

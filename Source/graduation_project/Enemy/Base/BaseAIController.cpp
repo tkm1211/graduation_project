@@ -85,7 +85,11 @@ void ABaseAIController::Tick(float Deltatime)
 	{
 		if (self)
 		{
-			float dist = FVector::Dist(pl->GetActorLocation(), self->GetCharacter()->GetActorLocation());
+			FVector pleye, enmeye;
+			FRotator rot;
+			pl->GetController()->GetActorEyesViewPoint(pleye, rot);
+			self->GetActorEyesViewPoint(enmeye, rot);
+			float dist = FVector::Dist(pleye, enmeye);
 
 			BlackboardComp->SetValueAsFloat("DistanceToPlayer", dist);
 		}
