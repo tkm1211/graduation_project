@@ -109,6 +109,8 @@ void ABombgun::SpawnShot()
 	else  _newRotator = _playerCharacter->GetActorRotation();
 	FVector _fireLoc = firePoint->GetComponentLocation();
 
+	if (!ammoClass) return;
+
 	//　スポーンさせる
 	ABaseAmmo* _tempAmmoBase = GetWorld()->SpawnActor<ABaseAmmo>(ammoClass, _fireLoc, _newRotator);
 	if (!_tempAmmoBase) return;

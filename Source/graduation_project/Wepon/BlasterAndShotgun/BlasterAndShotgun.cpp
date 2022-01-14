@@ -119,11 +119,12 @@ void ABlasterAndShotgun::SpawnShot()
 	_fireLoc[1] = firePoint->GetComponentLocation() + -firePoint->GetForwardVector() * spawnAmmoSpace;
 	_fireLoc[2] = firePoint->GetComponentLocation() + firePoint->GetUpVector() * spawnAmmoSpace;
 
-
+	if (!ammoClass) return;
 	//　スポーンさせる
 	for (int i = 0; i < 3; i++)
 	{
 		ABaseAmmo* _tempAmmoBase = GetWorld()->SpawnActor<ABaseAmmo>(ammoClass, _fireLoc[i], _newRotator);
+		if (!_tempAmmoBase) return;
 		_tempAmmoBase->SetOwner(this);
 		_tempAmmoBase->SetParameter(damage, effectiveRange, rangeMag, lifeTime);
 	}

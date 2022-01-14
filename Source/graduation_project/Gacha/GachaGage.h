@@ -14,13 +14,8 @@ class GRADUATION_PROJECT_API UGachaGage : public UUserWidget
 {
 	GENERATED_BODY()
 
-private:
-	class UMaterialInstanceDynamic* dynmatGage;
-	float val;
 public:
-	virtual void NativeConstruct() override;
-	virtual void NativeTick(const FGeometry&, float) override;
-	
+
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 		class UImage* back = nullptr;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
@@ -33,4 +28,20 @@ public:
 		class UImage* rainbow_light = nullptr;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 		class UImage* frame = nullptr;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+		class UTextBlock* Sample_Text = nullptr;
+private:
+	class UMaterialInstanceDynamic* dynmatGage;
+
+	class AGacha* nowGacha;
+	float gageValue;
+	float roundDownValue;
+	bool changePlayMode;
+public:
+	virtual void NativeConstruct() override;
+	virtual void NativeTick(const FGeometry&, float) override;
+
+	void Reset();
+private:
+	void SearchGacha();
 };

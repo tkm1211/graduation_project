@@ -175,7 +175,10 @@ void ARfShotgun::SpawnShot()
 
 		_newRotator = UKismetMathLibrary::FindLookAtRotation(_rayStart, _rayEnd);
 
+		if (!ammoClass) return;
+
 		ABaseAmmo* _tempAmmoBase = GetWorld()->SpawnActor<ABaseAmmo>(ammoClass, _fireLoc, _newRotator);
+		if (!_tempAmmoBase) return;
 		_tempAmmoBase->SetOwner(this);
 		_tempAmmoBase->SetParameter(damage, effectiveRange, rangeMag, lifeTime);
 	}

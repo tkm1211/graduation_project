@@ -151,6 +151,8 @@ void AShotgun::SpawnShot()
 
 		_newRotator = UKismetMathLibrary::FindLookAtRotation(_rayStart, _rayEnd);
 
+		if (!ammoClass) return;
+
 		ABaseAmmo* _tempAmmoBase = GetWorld()->SpawnActor<ABaseAmmo>(ammoClass, _fireLoc, _newRotator);
 		if (!_tempAmmoBase) continue;
 		_tempAmmoBase->SetOwner(this);
