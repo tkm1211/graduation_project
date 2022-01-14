@@ -58,18 +58,11 @@ void AENM_PatrolPoint::BeginPlay()
 		transform.SetLocation(cube->GetRelativeLocation());
 
 		//enm = GetWorld()->SpawnActor<AEnemyBase>(EnemySpawnClass, GetActorLocation(), GetActorRotation());
-		enm = GetWorld()->SpawnActor<AEnemyBase>(EnemySpawnClass);
 
-		if (enm)
-		{
-			Spawn();
-		}
-		else
-		{
-			cube->SetHiddenInGame(false);
-		}
+		Spawn();
 	}
-	else
+	
+	if(!enm)
 	{
 		cube->SetHiddenInGame(false);
 	}
@@ -106,24 +99,31 @@ void AENM_PatrolPoint::Spawn()
 {
 	if (IsArrive)return;
 
-	enm->SetActorTransform(GetActorTransform());
+	enm = GetWorld()->SpawnActor<AEnemyBase>(EnemySpawnClass);
 
-	enm->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, false));
-	enm->SpawnDefaultController();
-	enm->lookat_patpt = spline->GetLocationAtSplinePoint(enm->current_patpt, ESplineCoordinateSpace::World);
-
-	enm->IDLE_WALK_SPEED = IDLE_MOVE_SPEED;
-	enm->COMBAT_WALK_SPEED = COMBAT_MOVE_SPEED;
-	/*enm->GetController()->*/
-	enm->ATK_RANGE = ATKRange;
-	enm->ATK_POWER = ATKPower;
-
-	ABaseAIController* controller = Cast<ABaseAIController>(enm->GetController());
-	if (controller)
+	if (enm)
 	{
-		controller->FindRange = FindRange;
-		controller->LoseRange = LostRange;
-		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, "Call : SpawnEnemyToController");
+
+		enm->SetActorTransform(GetActorTransform());
+
+		enm->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, false));
+		enm->SpawnDefaultController();
+		enm->lookat_patpt = spline->GetLocationAtSplinePoint(enm->current_patpt, ESplineCoordinateSpace::World);
+
+		enm->IDLE_WALK_SPEED = IDLE_MOVE_SPEED;
+		enm->COMBAT_WALK_SPEED = COMBAT_MOVE_SPEED;
+		/*enm->GetController()->*/
+		enm->ATK_RANGE = ATKRange;
+		enm->ATK_POWER = ATKPower;
+
+		ABaseAIController* controller = Cast<ABaseAIController>(enm->GetController());
+		if (controller)
+		{
+			controller->FindRange = FindRange;
+			controller->LoseRange = LostRange;
+			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, "Call : SpawnEnemyToController");
+
+		}
 
 	}
 

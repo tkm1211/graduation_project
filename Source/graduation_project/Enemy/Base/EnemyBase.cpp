@@ -130,8 +130,7 @@ bool AEnemyBase::Death(float DeltaTime)
 	
 	if (LIFETIMER <= deadtimer)
 	{
-		AActor* act = GetParentActor();
-		Cast<AENM_PatrolPoint>(GetParentActor())->IsArrive = false;
+		Cast<AENM_PatrolPoint>(GetAttachParentActor())->IsArrive = false;
 		Destroy();
 
 		return false;
