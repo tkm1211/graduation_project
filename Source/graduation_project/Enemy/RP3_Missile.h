@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "../Puzzle/PieceBlockDropper.h"
 #include "RP3_Missile.generated.h"
 
 UCLASS()
@@ -44,4 +45,11 @@ public:
 	// Projectile movement component.
 	UPROPERTY(VisibleAnywhere, Category = Movement)
 		class UProjectileMovementComponent* ProjectileMovementComponent;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "DropPiece", meta = (AllowPrivateAccess = "true"))
+		FDropPieceData DropPieceData;
+private:
+	class UPieceBlockDropper* pieceBlockDropper;
+
 };

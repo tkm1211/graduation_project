@@ -7,6 +7,8 @@
 #include "Components/ArrowComponent.h"
 #include "Components/SplineComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "../graduation_projectCharacter.h"
+#include "Kismet/GameplayStatics.h"
 #include "Perception/AISenseConfig_Sight.h"
 
 // Sets default values
@@ -38,12 +40,16 @@ AENM_PatrolPoint::AENM_PatrolPoint()
 	spline->SetRelativeLocation(FVector(0.f, 0.f, 0.f));
 
 	spline->SetupAttachment(RootComponent);
+
+	IsArrive = false;
 }
 
 // Called when the game starts or when spawned
 void AENM_PatrolPoint::BeginPlay()
 {
 	Super::BeginPlay();
+
+	pl = Cast<Agraduation_projectCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
 	if (EnemySpawnClass)
 	{
@@ -56,26 +62,7 @@ void AENM_PatrolPoint::BeginPlay()
 
 		if (enm)
 		{
-			enm->SetActorTransform(GetActorTransform());
-
-			enm->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, false));
-			enm->SpawnDefaultController();
-			enm->lookat_patpt = spline->GetLocationAtSplinePoint(enm->current_patpt, ESplineCoordinateSpace::World);
-
-			enm->IDLE_WALK_SPEED = IDLE_MOVE_SPEED;
-			enm->COMBAT_WALK_SPEED = COMBAT_MOVE_SPEED;
-			/*enm->GetController()->*/
-			enm->ATK_RANGE = ATKRange;
-			enm->ATK_POWER = ATKPower;
-			
-			ABaseAIController* controller = Cast<ABaseAIController>(enm->GetController());
-			if (controller)
-			{
-				controller->FindRange = FindRange;
-				controller->LoseRange = LostRange;
-				//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, "Call : SpawnEnemyToController");
-
-			}
+			Spawn();
 		}
 		else
 		{
@@ -94,7 +81,10 @@ void AENM_PatrolPoint::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	
+	float dist = FVector::Dist(pl->GetActorLocation(), GetActorLocation());
+
+	if (dist > RespawnRange)Spawn();
+
 	if (enm)
 	{
 		if (enm->reachto_patpt)
@@ -111,3 +101,31 @@ void AENM_PatrolPoint::Tick(float DeltaTime)
 	}
 }
 
+
+void AENM_PatrolPoint::Spawn()
+{
+	if (IsArrive)return;
+
+	enm->SetActorTransform(GetActorTransform());
+
+	enm->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, false));
+	enm->SpawnDefaultController();
+	enm->lookat_patpt = spline->GetLocationAtSplinePoint(enm->current_patpt, ESplineCoordinateSpace::World);
+
+	enm->IDLE_WALK_SPEED = IDLE_MOVE_SPEED;
+	enm->COMBAT_WALK_SPEED = COMBAT_MOVE_SPEED;
+	/*enm->GetController()->*/
+	enm->ATK_RANGE = ATKRange;
+	enm->ATK_POWER = ATKPower;
+
+	ABaseAIController* controller = Cast<ABaseAIController>(enm->GetController());
+	if (controller)
+	{
+		controller->FindRange = FindRange;
+		controller->LoseRange = LostRange;
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, "Call : SpawnEnemyToController");
+
+	}
+
+	IsArrive = true;
+}

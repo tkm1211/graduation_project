@@ -49,11 +49,16 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "STATUS")
 		float ATKPower = 10.f;
 
+	UPROPERTY(EditDefaultsOnly, Category = "STATUS")
+		float RespawnRange = 4000.f;
 
+	class Agraduation_projectCharacter* pl;
+	bool IsArrive;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	void Spawn();
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

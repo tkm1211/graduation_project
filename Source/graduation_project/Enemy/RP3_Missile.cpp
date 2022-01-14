@@ -97,7 +97,8 @@ void ARP3_Missile::BeginPlay()
 
 	player = Cast<Agraduation_projectCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
-
+	UGameInstance* instance = GetWorld()->GetGameInstance();
+	pieceBlockDropper = instance->GetSubsystem<UPieceBlockDropper>();
 
 	currentTime = 0.f;
 	StartHoming_Time = 1.5f;
@@ -160,6 +161,8 @@ void ARP3_Missile::OnHit(class UPrimitiveComponent* HitComp, class AActor* Other
 	{
 		pl->Damage(25.f, SweepResult.Location);
 	}
+
+	pieceBlockDropper->SpawnDropPieces(DropPieceData, GetTransform());
 
 	marker->SetDestroy();
 	Destroy();

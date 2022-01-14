@@ -8,6 +8,7 @@
 #include "../../graduation_projectCharacter.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "../ENM_PatrolPoint.h"
 #include "Materials/MaterialInstance.h"
 
 // Sets default values
@@ -129,7 +130,10 @@ bool AEnemyBase::Death(float DeltaTime)
 	
 	if (LIFETIMER <= deadtimer)
 	{
+		AActor* act = GetParentActor();
+		Cast<AENM_PatrolPoint>(GetParentActor())->IsArrive = false;
 		Destroy();
+
 		return false;
 	}
 
