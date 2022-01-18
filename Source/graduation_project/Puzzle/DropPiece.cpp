@@ -79,7 +79,7 @@ void ADropPiece::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UP
 		AddPiece();
 		Destroy();
 
-		UE_LOG(LogTemp, Warning, TEXT("Destroy"));
+		//UE_LOG(LogTemp, Warning, TEXT("Destroy"));
 	}
 }
 
@@ -126,7 +126,7 @@ void ADropPiece::AddPiece()
 	// Žæ“¾‚µ‚½ƒs[ƒX‚Ìî•ñ‚ð“n‚·
 	pieceResourceManger->AddPiece(Shape, Type);
 
-	UE_LOG(LogTemp, Warning, TEXT("AddPiece"));
+	//UE_LOG(LogTemp, Warning, TEXT("AddPiece"));
 }
 
 void ADropPiece::SetFlyDirection(FVector direction)

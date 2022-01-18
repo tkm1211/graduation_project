@@ -16,7 +16,7 @@ struct FPieceResourceData
 	// 表示
 	//bool isVisible = false;
 
-	// 配置
+	// 配置/使用
 	bool isPlacement = false;
 
 	// 形
@@ -50,6 +50,9 @@ public:
 
 	// ピースを配置した時
 	void PlacementPiece(int index, bool isPlacement);
+
+	// ピースを配置しているか？
+	bool IsPlacement(int index);
 
 public:
 	// 現在、保持しているピースをすべて取得

@@ -54,6 +54,12 @@ void UPieceResourceManager::PlacementPiece(int index, bool isPlacement)
 	pieceDatas[index].isPlacement = isPlacement;
 }
 
+// ピースを配置しているか？
+bool UPieceResourceManager::IsPlacement(int index)
+{
+	return pieceDatas[index].isPlacement;
+}
+
 bool UPieceResourceManager::CanGetPieceResourceData(int index)
 {
 	return index < pieceDatas.Num();

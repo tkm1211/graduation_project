@@ -14,6 +14,7 @@ class APieceO;
 class APieceL;
 class APieceI;
 class APieceT;
+class ANumbersOrigin;
 
 
 // 形
@@ -30,10 +31,10 @@ struct FPieceData
 	GENERATED_USTRUCT_BODY();
 
 	// 表示
-	bool isVisible = false;
+	//bool isVisible = false;
 
 	// 配置
-	bool isPlacement = false;
+	//bool isPlacement = false;
 
 	// 形
 	PieceShape shape = PieceShape::T;
@@ -52,6 +53,42 @@ struct FDecisionPiece
 
 	// パネル番号
 	int panelNum = 0;
+
+	// スロットピース番号
+	int slotPieceNum = 0;
+};
+
+USTRUCT(BlueprintType)
+struct FSlotPieceData
+{
+	GENERATED_USTRUCT_BODY();
+
+	// 使用できるピース数
+	//int visibilitySlotPieceNum = 0;
+
+	// 形
+	PieceShape shape = PieceShape::T;
+
+	// 種類
+	PieceType type = PieceType::TypeBlaster;
+
+	// スロットピース
+	APieceOrigin* slotPiece = nullptr;
+
+	// スロットピース番号
+	TArray<int> slotPieceNums;
+};
+
+USTRUCT(BlueprintType)
+struct FSlotNumbersData
+{
+	GENERATED_USTRUCT_BODY();
+
+	// 1桁目
+	TArray<ANumbersOrigin*> firstDigit;
+
+	// 2桁目
+	TArray<ANumbersOrigin*> secondDigit;
 };
 
 UCLASS()
@@ -132,6 +169,65 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<APiecePanel> PiecePanel; // ピースのパネル（エディタで設定）
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Slot", meta = (AllowPrivateAccess = "true"))
+	TArray<TSubclassOf<ANumbersOrigin>> NumbersOrigin; // スロットピースの数（エディタで設定）
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Slot | Parameter", meta = (AllowPrivateAccess = "true"))
+	FVector SlotNumberScale;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Slot | Parameter", meta = (AllowPrivateAccess = "true"))
+	float SlotNumberSideWidht = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Slot | Parameter", meta = (AllowPrivateAccess = "true"))
+	float SlotNumberHeight = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Slot | Parameter", meta = (AllowPrivateAccess = "true"))
+	float SlotSmallNumberRightWidht = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Slot | Parameter", meta = (AllowPrivateAccess = "true"))
+	float SlotSmallNumberLeftWidht = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Slot | Parameter", meta = (AllowPrivateAccess = "true"))
+	float SlotSmallNumberMostRightWidht = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Slot | Parameter", meta = (AllowPrivateAccess = "true"))
+	float SlotSmallNumberMostLeftWidht = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Slot | Parameter", meta = (AllowPrivateAccess = "true"))
+	float SlotSmallNumberHeight = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Slot | Parameter", meta = (AllowPrivateAccess = "true"))
+	float SlotNumberSecondSideWidht = 0.0f;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Weapon | Slot | Parameter", meta = (AllowPrivateAccess = "true"))
+	FVector WeaponSlotNumberScale;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Weapon | Slot | Parameter", meta = (AllowPrivateAccess = "true"))
+	float WeaponSlotNumberSideWidht = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Weapon | Slot | Parameter", meta = (AllowPrivateAccess = "true"))
+	float WeaponSlotNumberHeight = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Weapon | Slot | Parameter", meta = (AllowPrivateAccess = "true"))
+	float WeaponSlotSmallNumberRightWidht = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Weapon | Slot | Parameter", meta = (AllowPrivateAccess = "true"))
+	float WeaponSlotSmallNumberLeftWidht = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Weapon | Slot | Parameter", meta = (AllowPrivateAccess = "true"))
+	float WeaponSlotSmallNumberMostRightWidht = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Weapon | Slot | Parameter", meta = (AllowPrivateAccess = "true"))
+	float WeaponSlotSmallNumberMostLeftWidht = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Weapon | Slot | Parameter", meta = (AllowPrivateAccess = "true"))
+	float WeaponSlotSmallNumberHeight = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Weapon | Slot | Parameter", meta = (AllowPrivateAccess = "true"))
+	float WeaponSlotNumberSecondSideWidht = 0.0f;
+
+
 	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
 	FVector panelMinXPos;
 
@@ -150,15 +246,15 @@ private:
 	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
 	bool onPieceOrigin = false;
 
-public:
-	static TArray<bool> onDecisionPieces;
-
 private:
 	TArray<APieceOrigin*> pieces;
-	TArray<APieceOrigin*> slotPieces;
+	//TArray<APieceOrigin*> slotPieces;
+	TArray<FSlotPieceData> slotPieceDatas;
 	TArray<FPieceData> pieceDatas;
 	TArray<bool> visibilityPiece;
 	TArray<bool> visibilitySlotPiece;
+	TArray<bool> onDecisionPieces;
+	TArray<FSlotNumbersData> slotNumbers;
 
 	// 次にピースを取得するときにpieceDatasの開始番号
 	int currentResourceIndex;
@@ -194,6 +290,7 @@ private:
 	int inputXAxisTimer = 0;
 	
 	int selectPieceNum = 0;
+	int selectSlotPieceNum = 0;
 	int panelNumAtOriginPiece = 0;
 	int panelNumAtBackUp = 0;
 	int slotLeftNum = 0;
@@ -284,11 +381,13 @@ private:
 	void CreatePanels(FVector SpawnLocation);
 	void CreatePiece(FPieceResourceData pieceData, FVector SpawnLocation);
 	void CreatePieceOrigin(FVector SpawnLocation);
-	bool CreatePieceO(PieceType type, FVector SpawnLocation);
-	bool CreatePieceL(PieceType type, FVector SpawnLocation);
-	bool CreatePieceI(PieceType type, FVector SpawnLocation);
-	bool CreatePieceT(PieceType type, FVector SpawnLocation);
+	APieceOrigin* CreatePieceO(PieceType type, FVector SpawnLocation);
+	APieceOrigin* CreatePieceL(PieceType type, FVector SpawnLocation);
+	APieceOrigin* CreatePieceI(PieceType type, FVector SpawnLocation);
+	APieceOrigin* CreatePieceT(PieceType type, FVector SpawnLocation);
 	void CreatePiecePanel(FVector SpawnLocation);
+	void CreateSlotPieceDatas();
+	void CreateSlotNumbers();
 
 	bool LoadJson(const FString& Path);
 	void LoadPieces();
@@ -319,6 +418,10 @@ private:
 	void ResetFlags();
 
 	void UpdatePieceLocation();
+	bool UpdateSelectPieceNum(int& pieceNum, bool updateSelectPieceNum = true);
+
+	void IncrementSelectSlotPiece(int& pieceNum, bool updateSelectPieceNum = true);
+	void DecrementSelectSlotPiece(int& pieceNum, bool updateSelectPieceNum = true);
 
 	int JudgePieceInPanel(APieceOrigin* piece);
 

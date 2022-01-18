@@ -8,14 +8,12 @@
 #include "PieceI.h"
 #include "PieceT.h"
 #include "PiecePanel.h"
+#include "NumbersOrigin.h"
 #include "PaperSpriteComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "../FileStream/JsonFunctionLibrary.h"
 #include <ThirdParty/Vivox/vivox-sdk/Include/Vxc.h>
-
-
-TArray<bool> AGrid::onDecisionPieces;
 
 
 // Sets default values
@@ -39,7 +37,8 @@ void AGrid::Initialize()
 {
 	// 変数初期化
 	{
-		selectPieceNum = 0;
+		selectPieceNum = -1;
+		selectSlotPieceNum = -1;
 		panelNumAtOriginPiece = 0;
 		panelNumAtBackUp = 0;
 		slotLeftNum = 0;
@@ -119,6 +118,11 @@ void AGrid::Initialize()
 		}
 	}
 
+	// スロットピース生成
+	{
+		CreateSlotPieceDatas();
+	}
+
 	// 入力バインド
 	{
 		APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
@@ -163,10 +167,25 @@ void AGrid::Tick(float DeltaTime)
 	// ピースがなければ、早期リターン
 	if (pieces.Num() == 0) return;
 
-	for (int i = 0; i < pieces.Num(); ++i)
+	// Resourceデータからピースが配置されているかを取得
+	for (int i = 0; i < onDecisionPieces.Num(); ++i)
+	{
+		bool isPlacement = resourceManager->IsPlacement(i);
+		if (!onDecisionPieces[i] && isPlacement)
+		{
+			visibilityPiece[i] = false;
+			pieces[i]->GetRenderComponent()->SetVisibility(false);
+			onDecisionPieces[i] = isPlacement;
+			PieceDecision(i);
+		}
+		onDecisionPieces[i] = isPlacement;
+	}
+
+	// 前フレームでの配置されてたピースをグリッドでも更新
+	/*for (int i = 0; i < pieces.Num(); ++i)
 	{
 		PieceDecision(i);
-	}
+	}*/
 
 #if 1
 	// ピース移動
@@ -178,6 +197,34 @@ void AGrid::Tick(float DeltaTime)
 
 	// パズルシーン以外、早期リターン
 	if (!onPuzzle) return;
+
+	// 選択中の番号を取得
+	if (selectSlotPieceNum == -1)
+	{
+		bool hit = false;
+		for (int i = 0; i < slotPieceDatas.Num(); ++i)
+		{
+			for (auto slotPieceNum : slotPieceDatas[i].slotPieceNums)
+			{
+				if (onDecisionPieces[slotPieceNum]) continue;
+
+				selectPieceNum = slotPieceNum;
+				selectSlotPieceNum = i;
+
+				visibilityPiece[selectPieceNum] = true;
+				visibilitySlotPiece[selectSlotPieceNum] = true;
+
+				pieces[selectPieceNum]->GetRenderComponent()->SetVisibility(true);
+				slotPieceDatas[selectSlotPieceNum].slotPiece->GetRenderComponent()->SetVisibility(true);
+
+				hit = true;
+
+				break;
+			}
+
+			if (hit) break;
+		}
+	}
 
 	// パズル更新
 	UpdatePuzzle(DeltaTime);
@@ -247,27 +294,34 @@ void AGrid::UpdatePuzzle(float DeltaTime)
 
 void AGrid::UpdateSlot(float DeltaTime)
 {
-	if (selectPieceNum == -1 || pieces.Num() < selectPieceNum) return;
+	for (auto& data : slotNumbers)
+	{
+		for (int i = 0; i < NumbersOrigin.Num(); ++i)
+		{
+			data.firstDigit[i]->GetRenderComponent()->SetVisibility(false);
+			data.secondDigit[i]->GetRenderComponent()->SetVisibility(false);
+		}
+	}
+
+	if (selectPieceNum == -1 || pieces.Num() < selectPieceNum)
+	{
+		for (int i = 0; i < slotPieceDatas.Num(); ++i)
+		{
+			slotPieceDatas[i].slotPiece->GetRenderComponent()->SetVisibility(false);
+		}
+		return;
+	}
+	if (selectSlotPieceNum == -1 || slotPieceDatas.Num() < selectSlotPieceNum) return;
 
 	int pastSelectPieceNum = selectPieceNum;
 
 	if (onPieceSlotLeft)
 	{
-		for (int i = 0; i < slotPieces.Num(); ++i)
-		{
-			--selectPieceNum;
-			if (selectPieceNum < 0) selectPieceNum = pieces.Num() - 1;
-			if (!pieceDatas[selectPieceNum].isPlacement) break;
-		}
+		DecrementSelectSlotPiece(selectSlotPieceNum);
 	}
 	if (onPieceSlotRight)
 	{
-		for (int i = 0; i < slotPieces.Num(); ++i)
-		{
-			++selectPieceNum;
-			if (pieces.Num() - 1 < selectPieceNum) selectPieceNum = 0;
-			if (!pieceDatas[selectPieceNum].isPlacement) break;
-		}
+		IncrementSelectSlotPiece(selectSlotPieceNum);
 	}
 
 	if (pastSelectPieceNum != selectPieceNum)
@@ -277,6 +331,181 @@ void AGrid::UpdateSlot(float DeltaTime)
 
 		// 回転固定
 		PieceTurnLock(pieces[selectPieceNum], pieceDatas[selectPieceNum].shape);
+	}
+
+	/*if (!onVisible && puzzleType == PuzzleType::TypeWeaponPuzzle)
+	{
+
+	}*/
+
+	for (int i = 0; i < slotPieceDatas.Num(); ++i)
+	{
+		if (!visibilitySlotPiece[i]) continue;
+
+		int cnt = 0;
+		for (auto slotPieceNum : slotPieceDatas[i].slotPieceNums)
+		{
+			if (onDecisionPieces[slotPieceNum]) continue;
+			++cnt;
+		}
+
+		if (cnt <= 0) continue;
+
+		int num = 0;
+		float slotHeight = 0.0f;
+		float slotWidth = 0.0f;
+		float slotNumberSecondSideWidht = SlotNumberSecondSideWidht;
+		FVector slotNumberScale = SlotNumberScale;
+
+		slotHeight = AdjustSlotHeightOfLocation;
+
+		if (puzzleType == PuzzleType::TypeWeaponPuzzle)
+		{
+			slotNumberScale = WeaponSlotNumberScale;
+			slotNumberSecondSideWidht = WeaponSlotNumberSecondSideWidht;
+
+			if (i == selectSlotPieceNum)
+			{
+				slotWidth = WeaponSlotNumberSideWidht;
+				slotHeight += WeaponSlotNumberHeight;
+			}
+			else
+			{
+				slotHeight += AdjustSideSlotPieceHeight + WeaponSlotSmallNumberHeight;
+
+				if (i == slotLeftNum)
+				{
+					slotWidth = (AdjustSlotWidhtOfLocation * -1.0f) + WeaponSlotSmallNumberLeftWidht;
+				}
+				else if (i == slotRightNum)
+				{
+					slotWidth = AdjustSlotWidhtOfLocation + WeaponSlotSmallNumberRightWidht;
+				}
+				else if (i == slotMostLeftNum)
+				{
+					slotWidth = (AdjustMostSlotWidhtOfLocation * -1.0f) + WeaponSlotSmallNumberMostLeftWidht;
+				}
+				else if (i == slotMostRightNum)
+				{
+					slotWidth = AdjustMostSlotWidhtOfLocation + WeaponSlotSmallNumberMostRightWidht;
+				}
+			}
+		}
+		else if (puzzleType == PuzzleType::TypeGimmickPuzzle)
+		{
+			slotNumberScale = SlotNumberScale;
+			slotNumberSecondSideWidht = SlotNumberSecondSideWidht;
+
+			if (i == selectSlotPieceNum)
+			{
+				slotWidth = SlotNumberSideWidht;
+				slotHeight += SlotNumberHeight;
+			}
+			else
+			{
+				slotHeight += AdjustSideSlotPieceHeight + SlotSmallNumberHeight;
+
+				if (i == slotLeftNum)
+				{
+					slotWidth = (AdjustSlotWidhtOfLocation * -1.0f) + SlotSmallNumberLeftWidht;
+				}
+				else if (i == slotRightNum)
+				{
+					slotWidth = AdjustSlotWidhtOfLocation + SlotSmallNumberRightWidht;
+				}
+				else if (i == slotMostLeftNum)
+				{
+					slotWidth = (AdjustMostSlotWidhtOfLocation * -1.0f) + SlotSmallNumberMostLeftWidht;
+				}
+				else if (i == slotMostRightNum)
+				{
+					slotWidth = AdjustMostSlotWidhtOfLocation + SlotSmallNumberMostRightWidht;
+				}
+			}
+		}
+
+		auto numPos = GetLocation() - upVec * slotHeight;
+		numPos += rightVec * slotWidth;
+		numPos += forwardVec * 1.5f;
+
+		if (cnt < 10)
+		{
+			num = cnt % 10;
+			auto firstNum = slotNumbers[i].firstDigit[num];
+			{
+				firstNum->SetActorLocation(numPos);
+				firstNum->SetActorRotation(GetActorRotation());
+				firstNum->SetActorScale3D(slotNumberScale);
+				firstNum->GetRenderComponent()->SetVisibility(true);
+			}
+		}
+		else if (cnt < 100)
+		{
+			num = cnt % 10;
+			auto firstNum = slotNumbers[i].firstDigit[num];
+			{
+				firstNum->SetActorLocation(numPos + rightVec * slotNumberSecondSideWidht);
+				firstNum->SetActorRotation(GetActorRotation());
+				firstNum->SetActorScale3D(slotNumberScale * 0.775f);
+				firstNum->GetRenderComponent()->SetVisibility(true);
+			}
+
+			num = (cnt / 10) % 10;
+			auto secondNum = slotNumbers[i].secondDigit[num];
+			{
+				secondNum->SetActorLocation(numPos - rightVec * slotNumberSecondSideWidht);
+				secondNum->SetActorRotation(GetActorRotation());
+				secondNum->SetActorScale3D(slotNumberScale * 0.775f);
+				secondNum->GetRenderComponent()->SetVisibility(true);
+			}
+		}
+	}
+}
+
+bool AGrid::UpdateSelectPieceNum(int& pieceNum, bool updateSelectPieceNum)
+{
+	bool hit = false;
+	auto slotPieceNums = slotPieceDatas[pieceNum].slotPieceNums;
+
+	int tempSelectPieceNum = 0;
+	for (int i = 0; i < slotPieceNums.Num(); ++i)
+	{
+		if (updateSelectPieceNum)
+		{
+			selectPieceNum = slotPieceNums[i];
+			hit = onDecisionPieces[selectPieceNum];
+		}
+		else
+		{
+			tempSelectPieceNum = slotPieceNums[i];
+			hit = onDecisionPieces[tempSelectPieceNum];
+		}
+
+		if (!hit) break;
+	}
+
+	return hit;
+}
+
+void AGrid::IncrementSelectSlotPiece(int& pieceNum, bool updateSelectPieceNum)
+{
+	for (int i = 0; i < slotPieceDatas.Num(); ++i)
+	{
+		++pieceNum;
+		if (slotPieceDatas.Num() - 1 < pieceNum) pieceNum = 0;
+		if (slotPieceDatas[pieceNum].slotPieceNums.Num() <= 0) continue;
+		if (!UpdateSelectPieceNum(pieceNum, updateSelectPieceNum)) break;
+	}
+}
+
+void AGrid::DecrementSelectSlotPiece(int& pieceNum, bool updateSelectPieceNum)
+{
+	for (int i = 0; i < slotPieceDatas.Num(); ++i)
+	{
+		--pieceNum;
+		if (pieceNum < 0) pieceNum = slotPieceDatas.Num() - 1;
+		if (slotPieceDatas[pieceNum].slotPieceNums.Num() <= 0) continue;
+		if (!UpdateSelectPieceNum(pieceNum, updateSelectPieceNum)) break;
 	}
 }
 
@@ -372,29 +601,30 @@ void AGrid::MovePiece(float DeltaTime)
 void AGrid::MoveSlot(float DeltaTime)
 {
 	if (selectPieceNum == -1 || pieces.Num() < selectPieceNum) return;
+	if (selectSlotPieceNum == -1 || slotPieceDatas.Num() < selectSlotPieceNum) return;
 
 	float adjust = AdjustSlotHeightOfLocation;
 	auto piecePos = GetLocation() - upVec * adjust;
 	auto pieceLocation = piecePos;
 	//auto pieceScale = gridScale;
 
-	auto slotPiece = slotPieces[selectPieceNum];
+	auto slotPiece = slotPieceDatas[selectSlotPieceNum].slotPiece;
 	{
-		AdjustSlotPiecePosFromOrigin(piecePos, AdjustSlotPieceSize, pieceDatas[selectPieceNum].shape, 0);
+		AdjustSlotPiecePosFromOrigin(piecePos, AdjustSlotPieceSize, slotPieceDatas[selectSlotPieceNum].shape, 0);
 		slotPiece->SetActorLocation(piecePos);
 		slotPiece->SetActorRotation(GetActorRotation());
 		//slotPiece->SetActorScale3D(pieceScale * 0.75f);
 	}
 
-	if (selectPieceNum != slotLeftNum)
+	if (selectSlotPieceNum != slotLeftNum)
 	{
-		auto slotLeftPiece = slotPieces[slotLeftNum];
+		auto slotLeftPiece = slotPieceDatas[slotLeftNum].slotPiece;
 		auto location = pieceLocation;
 		{
 			location -= rightVec * AdjustSlotWidhtOfLocation;
 			location -= upVec * AdjustSideSlotPieceHeight;
 
-			AdjustSlotPiecePosFromOrigin(location, AdjustSlotPieceSize * 0.35f, pieceDatas[slotLeftNum].shape, 0);
+			AdjustSlotPiecePosFromOrigin(location, AdjustSlotPieceSize * 0.35f, slotPieceDatas[slotLeftNum].shape, 0);
 
 			slotLeftPiece->SetActorLocation(location);
 			slotLeftPiece->SetActorRotation(GetActorRotation());
@@ -402,15 +632,15 @@ void AGrid::MoveSlot(float DeltaTime)
 		}
 	}
 
-	if (selectPieceNum != slotRightNum)
+	if (selectSlotPieceNum != slotRightNum)
 	{
-		auto slotRightPiece = slotPieces[slotRightNum];
+		auto slotRightPiece = slotPieceDatas[slotRightNum].slotPiece;
 		auto location = pieceLocation;
 		{
 			location += rightVec * AdjustSlotWidhtOfLocation;
 			location -= upVec * AdjustSideSlotPieceHeight;
 
-			AdjustSlotPiecePosFromOrigin(location, AdjustSlotPieceSize * 0.35f, pieceDatas[slotRightNum].shape, 0);
+			AdjustSlotPiecePosFromOrigin(location, AdjustSlotPieceSize * 0.35f, slotPieceDatas[slotRightNum].shape, 0);
 
 			slotRightPiece->SetActorLocation(location);
 			slotRightPiece->SetActorRotation(GetActorRotation());
@@ -418,30 +648,30 @@ void AGrid::MoveSlot(float DeltaTime)
 		}
 	}
 
-	if (selectPieceNum != slotMostLeftNum && slotLeftNum != slotMostLeftNum && slotRightNum != slotMostLeftNum)
+	if (selectSlotPieceNum != slotMostLeftNum && slotLeftNum != slotMostLeftNum && slotRightNum != slotMostLeftNum)
 	{
-		auto slotLeftPiece = slotPieces[slotMostLeftNum];
+		auto slotLeftPiece = slotPieceDatas[slotMostLeftNum].slotPiece;
 		auto location = pieceLocation;
 		{
 			location -= rightVec * AdjustMostSlotWidhtOfLocation;
 			location -= upVec * AdjustSideSlotPieceHeight;
 
-			AdjustSlotPiecePosFromOrigin(location, AdjustSlotPieceSize * 0.35f, pieceDatas[slotMostLeftNum].shape, 0);
+			AdjustSlotPiecePosFromOrigin(location, AdjustSlotPieceSize * 0.35f, slotPieceDatas[slotMostLeftNum].shape, 0);
 
 			slotLeftPiece->SetActorLocation(location);
 			slotLeftPiece->SetActorRotation(GetActorRotation());
 		}
 	}
 
-	if (selectPieceNum != slotMostRightNum && slotRightNum != slotMostRightNum && slotLeftNum != slotMostRightNum)
+	if (selectSlotPieceNum != slotMostRightNum && slotRightNum != slotMostRightNum && slotLeftNum != slotMostRightNum)
 	{
-		auto slotRightPiece = slotPieces[slotMostRightNum];
+		auto slotRightPiece = slotPieceDatas[slotMostRightNum].slotPiece;
 		auto location = pieceLocation;
 		{
 			location += rightVec * AdjustMostSlotWidhtOfLocation;
 			location -= upVec * AdjustSideSlotPieceHeight;
 
-			AdjustSlotPiecePosFromOrigin(location, AdjustSlotPieceSize * 0.35f, pieceDatas[slotMostRightNum].shape, 0);
+			AdjustSlotPiecePosFromOrigin(location, AdjustSlotPieceSize * 0.35f, slotPieceDatas[slotMostRightNum].shape, 0);
 
 			slotRightPiece->SetActorLocation(location);
 			slotRightPiece->SetActorRotation(GetActorRotation());
@@ -681,21 +911,25 @@ void AGrid::PieceMove(APieceOrigin* piece)
 	{
 		// originPiecePos += upVec * panelSize;
 		AddPanelNumAtOriginPiece(-widthNum);
+		onPieceUp = false;
 	}
 	if (onPieceDown && JudgeMoveDown())
 	{
 		// originPiecePos -= upVec * panelSize;
 		AddPanelNumAtOriginPiece(widthNum);
+		onPieceDown = false;
 	}
 	if (onPieceLeft && JudgeMoveLeft())
 	{
 		// originPiecePos -= rightVec * panelSize;
 		AddPanelNumAtOriginPiece(-1);
+		onPieceLeft = false;
 	}
 	if (onPieceRight && JudgeMoveRight())
 	{
 		// originPiecePos += rightVec * panelSize;
 		AddPanelNumAtOriginPiece(1);
+		onPieceRight = false;
 	}
 
 	auto piecePos = originPiecePos;
@@ -746,24 +980,19 @@ void AGrid::PieceDecision(APieceOrigin* piece)
 		{
 			tempDecisionPiece.pieceNum = pastSelectPieceNum;
 			tempDecisionPiece.panelNum = panelNumAtOriginPiece;
+			tempDecisionPiece.slotPieceNum = selectSlotPieceNum;
 		}
 		decisionPieces.Add(tempDecisionPiece);
-
-		onDecisionPieces[pastSelectPieceNum] = true;
 
 		++backUpNum;
 
 		piece->PieceDecision();
-		pieceDatas[selectPieceNum].isPlacement = true;
+		onDecisionPieces[selectPieceNum] = true;
 
-		for (int i = 0; i < slotPieces.Num(); ++i)
+		// スロット更新
+		if (UpdateSelectPieceNum(selectSlotPieceNum))
 		{
-			++selectPieceNum;
-			if (pieces.Num() - 1 < selectPieceNum) selectPieceNum = 0;
-			if (!pieceDatas[selectPieceNum].isPlacement)
-			{
-				break;
-			}
+			IncrementSelectSlotPiece(selectSlotPieceNum);
 		}
 
 		// ピース セットアップ
@@ -788,6 +1017,7 @@ void AGrid::PieceDecision(APieceOrigin* piece)
 		else
 		{
 			selectPieceNum = -1;
+			selectSlotPieceNum = -1;
 			SelectSlotPiece(selectPieceNum);
 		}
 	}
@@ -796,25 +1026,19 @@ void AGrid::PieceDecision(APieceOrigin* piece)
 void AGrid::PieceDecision(int pieceNum)
 {
 	if (!onDecisionPieces[pieceNum]) return;
-	if (pieceDatas[pieceNum].isPlacement) return;
+	if (selectPieceNum == -1 || pieces.Num() < selectPieceNum) return;
+	if (selectSlotPieceNum == -1 || slotPieceDatas.Num() < selectSlotPieceNum) return;
 
 	int pastSelectPieceNum = pieceNum;
 
 	pieces[pieceNum]->PieceDecision();
-	pieces[pieceNum]->GetRenderComponent()->SetVisibility(false);
-	pieceDatas[pieceNum].isPlacement = true;
-	visibilityPiece[pieceNum] = false;
 
 	if (pieceNum == selectPieceNum)
 	{
-		for (int i = 0; i < slotPieces.Num(); ++i)
+		// スロット更新
+		if (UpdateSelectPieceNum(selectSlotPieceNum))
 		{
-			++selectPieceNum;
-			if (pieces.Num() - 1 < selectPieceNum) selectPieceNum = 0;
-			if (!pieceDatas[selectPieceNum].isPlacement)
-			{
-				break;
-			}
+			IncrementSelectSlotPiece(selectSlotPieceNum);
 		}
 	}
 
@@ -825,19 +1049,20 @@ void AGrid::PieceDecision(int pieceNum)
 		if (!onVisible && puzzleType == PuzzleType::TypeWeaponPuzzle) // ギミックパズルが終了後に武器パズルのピースを非表示にするため。
 		{
 			pieces[selectPieceNum]->GetRenderComponent()->SetVisibility(false);
-			for (int i = 0; i < slotPieces.Num(); ++i)
+			for (int i = 0; i < slotPieceDatas.Num(); ++i)
 			{
-				slotPieces[i]->GetRenderComponent()->SetVisibility(false);
+				slotPieceDatas[i].slotPiece->GetRenderComponent()->SetVisibility(false);
 			}
 		}
 		SetUpPiece(pieces[selectPieceNum], pieceDatas[selectPieceNum].shape);
 	}
 	else
 	{
-		slotPieces[selectPieceNum]->GetRenderComponent()->SetVisibility(false);
-		visibilitySlotPiece[selectPieceNum] = false;
+		//slotPieceDatas[selectSlotPieceNum].slotPiece->GetRenderComponent()->SetVisibility(false);
+		visibilitySlotPiece[selectSlotPieceNum] = false;
 
 		selectPieceNum = -1;
+		selectSlotPieceNum = -1;
 	}
 }
 
@@ -857,8 +1082,10 @@ void AGrid::PieceCancel(APieceOrigin* piece)
 	// 一個前のピースの情報に現状を戻す
 	selectPieceNum = decisionPieces[backUpNum].pieceNum;
 	panelNumAtOriginPiece = decisionPieces[backUpNum].panelNum;
+	selectSlotPieceNum = decisionPieces[backUpNum].slotPieceNum;
 	onDecisionPieces[selectPieceNum] = false;
 
+	// ピース情報の配置をしてないに変更
 	resourceManager->PlacementPiece(selectPieceNum, false);
 
 	didRemovePiece = true;
@@ -889,9 +1116,6 @@ void AGrid::PieceCancel(APieceOrigin* piece)
 		onPiece[pieceNum] = false;
 	}
 
-	// ピース情報の配置をしてないに変更
-	pieceDatas[selectPieceNum].isPlacement = false; // 次のスロットの並べなおしで参照するのでここで変更
-
 	// スロットの並べなおし
 	SelectSlotPiece(selectPieceNum);
 
@@ -918,7 +1142,7 @@ void AGrid::MoveCantBeDecision(APieceOrigin* piece, bool atInitialize)
 			{
 				if (!onPanel[pieceNum]) return false;
 			}
-	
+
 			return true;
 		};
 
@@ -975,9 +1199,6 @@ void AGrid::SetVisiblePiece(int currentPieceNum, bool isVisible, FVector currntP
 	}
 
 	auto data = pieceDatas[currentPieceNum];
-	{
-		data.isVisible = isVisible;
-	}
 
 	if (isVisible)
 	{
@@ -1033,65 +1254,45 @@ void AGrid::AddPanelNumAtOriginPiece(int addPanelNum)
 
 void AGrid::SelectSlotPiece(int currentPieceNum)
 {
-	for (int i = 0; i < slotPieces.Num(); ++i)
+	for (int i = 0; i < slotPieceDatas.Num(); ++i)
 	{
-		slotPieces[i]->GetRenderComponent()->SetVisibility(false);
+		slotPieceDatas[i].slotPiece->GetRenderComponent()->SetVisibility(false);
 		visibilitySlotPiece[i] = false;
 	}
 
-	if (currentPieceNum == -1) return;
+	if (selectSlotPieceNum == -1) return;
 
 	float adjust = AdjustSlotHeightOfLocation;
 	auto piecePos = GetLocation() - upVec * adjust;
 	auto pieceLocation = piecePos;
 	auto pieceScale = SlotPieceSize;
 
-	slotLeftNum = currentPieceNum;
-	for (int i = 0; i < slotPieces.Num(); ++i)
-	{
-		--slotLeftNum;
-		if (slotLeftNum < 0) slotLeftNum = slotPieces.Num() - 1;
-		if (!pieceDatas[slotLeftNum].isPlacement) break;
-	}
+	slotLeftNum = selectSlotPieceNum;
+	DecrementSelectSlotPiece(slotLeftNum, false);
 
-	slotRightNum = currentPieceNum;
-	for (int i = 0; i < slotPieces.Num(); ++i)
-	{
-		++slotRightNum;
-		if (slotPieces.Num() - 1 < slotRightNum) slotRightNum = 0;
-		if (!pieceDatas[slotRightNum].isPlacement) break;
-	}
+	slotRightNum = selectSlotPieceNum;
+	IncrementSelectSlotPiece(slotRightNum, false);
 
 	slotMostLeftNum = slotLeftNum;
-	for (int i = 0; i < slotPieces.Num(); ++i)
-	{
-		--slotMostLeftNum;
-		if (slotMostLeftNum < 0) slotMostLeftNum = slotPieces.Num() - 1;
-		if (!pieceDatas[slotMostLeftNum].isPlacement) break;
-	}
+	DecrementSelectSlotPiece(slotMostLeftNum, false);
 
 	slotMostRightNum = slotRightNum;
-	for (int i = 0; i < slotPieces.Num(); ++i)
-	{
-		++slotMostRightNum;
-		if (slotPieces.Num() - 1 < slotMostRightNum) slotMostRightNum = 0;
-		if (!pieceDatas[slotMostRightNum].isPlacement) break;
-	}
+	IncrementSelectSlotPiece(slotMostRightNum, false);
 
-	auto slotPiece = slotPieces[currentPieceNum];
+	auto slotPiece = slotPieceDatas[selectSlotPieceNum].slotPiece;
 	{
-		visibilitySlotPiece[currentPieceNum] = true;
+		visibilitySlotPiece[selectSlotPieceNum] = true;
 
-		AdjustSlotPiecePosFromOrigin(piecePos, AdjustSlotPieceSize, pieceDatas[currentPieceNum].shape, 0);
+		AdjustSlotPiecePosFromOrigin(piecePos, AdjustSlotPieceSize, slotPieceDatas[selectSlotPieceNum].shape, 0);
 
 		slotPiece->GetRenderComponent()->SetVisibility(true);
 		slotPiece->SetActorLocation(piecePos);
 		slotPiece->SetActorScale3D(pieceScale * 0.75f);
 	}
 
-	if (currentPieceNum != slotLeftNum)
+	if (selectSlotPieceNum != slotLeftNum)
 	{
-		auto slotLeftPiece = slotPieces[slotLeftNum];
+		auto slotLeftPiece = slotPieceDatas[slotLeftNum].slotPiece;
 		auto location = pieceLocation;
 		{
 			location -= rightVec * AdjustSlotWidhtOfLocation;
@@ -1099,7 +1300,7 @@ void AGrid::SelectSlotPiece(int currentPieceNum)
 
 			visibilitySlotPiece[slotLeftNum] = true;
 
-			AdjustSlotPiecePosFromOrigin(location, AdjustSlotPieceSize * 0.35f, pieceDatas[slotLeftNum].shape, 0);
+			AdjustSlotPiecePosFromOrigin(location, AdjustSlotPieceSize * 0.35f, slotPieceDatas[slotLeftNum].shape, 0);
 
 			slotLeftPiece->GetRenderComponent()->SetVisibility(true);
 			slotLeftPiece->SetActorLocation(location);
@@ -1107,9 +1308,9 @@ void AGrid::SelectSlotPiece(int currentPieceNum)
 		}
 	}
 
-	if (currentPieceNum != slotRightNum)
+	if (selectSlotPieceNum != slotRightNum)
 	{
-		auto slotRightPiece = slotPieces[slotRightNum];
+		auto slotRightPiece = slotPieceDatas[slotRightNum].slotPiece;
 		auto location = pieceLocation;
 		{
 			location += rightVec * AdjustSlotWidhtOfLocation;
@@ -1117,7 +1318,7 @@ void AGrid::SelectSlotPiece(int currentPieceNum)
 
 			visibilitySlotPiece[slotRightNum] = true;
 
-			AdjustSlotPiecePosFromOrigin(location, AdjustSlotPieceSize * 0.35f, pieceDatas[slotRightNum].shape, 0);
+			AdjustSlotPiecePosFromOrigin(location, AdjustSlotPieceSize * 0.35f, slotPieceDatas[slotRightNum].shape, 0);
 
 			slotRightPiece->GetRenderComponent()->SetVisibility(true);
 			slotRightPiece->SetActorLocation(location);
@@ -1125,9 +1326,9 @@ void AGrid::SelectSlotPiece(int currentPieceNum)
 		}
 	}
 
-	if (currentPieceNum != slotMostLeftNum && slotLeftNum != slotMostLeftNum && slotRightNum != slotMostLeftNum)
+	if (selectSlotPieceNum != slotMostLeftNum && slotLeftNum != slotMostLeftNum && slotRightNum != slotMostLeftNum)
 	{
-		auto slotLeftPiece = slotPieces[slotMostLeftNum];
+		auto slotLeftPiece = slotPieceDatas[slotMostLeftNum].slotPiece;
 		auto location = pieceLocation;
 		{
 			location -= rightVec * AdjustMostSlotWidhtOfLocation;
@@ -1135,7 +1336,7 @@ void AGrid::SelectSlotPiece(int currentPieceNum)
 
 			visibilitySlotPiece[slotMostLeftNum] = true;
 
-			AdjustSlotPiecePosFromOrigin(location, AdjustSlotPieceSize * 0.35f, pieceDatas[slotMostLeftNum].shape, 0);
+			AdjustSlotPiecePosFromOrigin(location, AdjustSlotPieceSize * 0.35f, slotPieceDatas[slotMostLeftNum].shape, 0);
 
 			slotLeftPiece->GetRenderComponent()->SetVisibility(true);
 			slotLeftPiece->SetActorLocation(location);
@@ -1143,9 +1344,9 @@ void AGrid::SelectSlotPiece(int currentPieceNum)
 		}
 	}
 
-	if (currentPieceNum != slotMostRightNum && slotRightNum != slotMostRightNum && slotLeftNum != slotMostRightNum)
+	if (selectSlotPieceNum != slotMostRightNum && slotRightNum != slotMostRightNum && slotLeftNum != slotMostRightNum)
 	{
-		auto slotRightPiece = slotPieces[slotMostRightNum];
+		auto slotRightPiece = slotPieceDatas[slotMostRightNum].slotPiece;
 		auto location = pieceLocation;
 		{
 			location += rightVec * AdjustMostSlotWidhtOfLocation;
@@ -1153,7 +1354,7 @@ void AGrid::SelectSlotPiece(int currentPieceNum)
 
 			visibilitySlotPiece[slotMostRightNum] = true;
 
-			AdjustSlotPiecePosFromOrigin(location, AdjustSlotPieceSize * 0.35f, pieceDatas[slotMostRightNum].shape, 0);
+			AdjustSlotPiecePosFromOrigin(location, AdjustSlotPieceSize * 0.35f, slotPieceDatas[slotMostRightNum].shape, 0);
 
 			slotRightPiece->GetRenderComponent()->SetVisibility(true);
 			slotRightPiece->SetActorLocation(location);
@@ -1190,7 +1391,7 @@ int AGrid::JudgePieceInPanel(APieceOrigin* piece)
 {
 	auto piecePos = piece->GetActorLocation();
 	auto data = pieceDatas[selectPieceNum];
-	
+
 	AdjustPiecePos(piecePos, data.shape, piece->GetTurnCnt());
 
 	for (int i = 0; i < widthNum * heightNum; ++i)
@@ -1600,41 +1801,40 @@ void AGrid::CreatePiece(FPieceResourceData pieceData, FVector SpawnLocation)
 {
 	FVector Location = SpawnLocation;
 
-	bool alive = false;
+	APieceOrigin* piece = nullptr;
 	switch (pieceData.shape)
 	{
 	case O:
-		alive = CreatePieceO(pieceData.type, Location);
+		piece = CreatePieceO(pieceData.type, Location);
 		break;
 
 	case L:
-		alive = CreatePieceL(pieceData.type, Location);
+		piece = CreatePieceL(pieceData.type, Location);
 		break;
 
 	case I:
-		alive = CreatePieceI(pieceData.type, Location);
+		piece = CreatePieceI(pieceData.type, Location);
 		break;
 
 	case T:
-		alive = CreatePieceT(pieceData.type, Location);
+		piece = CreatePieceT(pieceData.type, Location);
 		break;
 
 	default: break;
 	}
 
-	if (alive)
+	if (piece)
 	{
 		FPieceData data;
 		{
-			data.isVisible = false;
-			data.isPlacement = false;
 			data.shape = pieceData.shape;
 			data.type = pieceData.type;
 		}
 
+		pieces.Add(piece);
 		pieceDatas.Add(data);
 		visibilityPiece.Add(false);
-		visibilitySlotPiece.Add(false);
+		//visibilitySlotPiece.Add(false);
 	}
 }
 
@@ -1665,7 +1865,7 @@ void AGrid::CreatePieceOrigin(FVector SpawnLocation)
 	}
 }
 
-bool AGrid::CreatePieceO(PieceType type, FVector SpawnLocation)
+APieceOrigin* AGrid::CreatePieceO(PieceType type, FVector SpawnLocation)
 {
 	auto CreateO = [&](TSubclassOf<APieceO> pieceO)
 	{
@@ -1684,39 +1884,27 @@ bool AGrid::CreatePieceO(PieceType type, FVector SpawnLocation)
 			}
 		}
 
-		auto TempASlotPieceO = GetWorld()->SpawnActor<APieceO>(pieceO, Location, Rotation);
-		{
-			TempASlotPieceO->Initialize(1, widthNum, heightNum, panelSize);
-			TempASlotPieceO->SetActorScale3D(Scale);
-
-			auto render = TempASlotPieceO->GetRenderComponent();
-			{
-				render->SetVisibility(false);
-			}
-		}
-
-		pieces.Add(TempAPieceO);
-		slotPieces.Add(TempASlotPieceO);
+		return TempAPieceO;
 	};
 
 	switch (type)
 	{
 	case TypeBlaster:
-		CreateO(PieceOBlue);
-		return true;
+		return CreateO(PieceOBlue);
+
 	case TypeShotGun:
-		CreateO(PieceOYellow);
-		return true;
+		return CreateO(PieceOYellow);
+
 	case TypeBombGun:
-		CreateO(PieceOPurple);
-		return true;
+		return CreateO(PieceOPurple);
+
 	default: break;
 	}
 
-	return false;
+	return nullptr;
 }
 
-bool AGrid::CreatePieceL(PieceType type, FVector SpawnLocation)
+APieceOrigin* AGrid::CreatePieceL(PieceType type, FVector SpawnLocation)
 {
 	auto CreateL = [&](TSubclassOf<APieceL> pieceL)
 	{
@@ -1735,39 +1923,27 @@ bool AGrid::CreatePieceL(PieceType type, FVector SpawnLocation)
 			}
 		}
 
-		auto TempASlotPieceL = GetWorld()->SpawnActor<APieceL>(pieceL, Location, Rotation);
-		{
-			TempASlotPieceL->Initialize(1, widthNum, heightNum, panelSize);
-			TempASlotPieceL->SetActorScale3D(Scale);
-
-			auto render = TempASlotPieceL->GetRenderComponent();
-			{
-				render->SetVisibility(false);
-			}
-		}
-
-		pieces.Add(TempAPieceL);
-		slotPieces.Add(TempASlotPieceL);
+		return TempAPieceL;
 	};
 
 	switch (type)
 	{
 	case TypeBlaster:
-		CreateL(PieceLBlue);
-		return true;
+		return CreateL(PieceLBlue);
+
 	case TypeShotGun:
-		CreateL(PieceLYellow);
-		return true;
+		return CreateL(PieceLYellow);
+
 	case TypeBombGun:
-		CreateL(PieceLPurple);
-		return true;
+		return CreateL(PieceLPurple);
+
 	default: break;
 	}
 
-	return false;
+	return nullptr;
 }
 
-bool AGrid::CreatePieceI(PieceType type, FVector SpawnLocation)
+APieceOrigin* AGrid::CreatePieceI(PieceType type, FVector SpawnLocation)
 {
 	auto CreateI = [&](TSubclassOf<APieceI> pieceI)
 	{
@@ -1786,39 +1962,27 @@ bool AGrid::CreatePieceI(PieceType type, FVector SpawnLocation)
 			}
 		}
 
-		auto TempASlotPieceI = GetWorld()->SpawnActor<APieceI>(pieceI, Location, Rotation);
-		{
-			TempASlotPieceI->Initialize(1, widthNum, heightNum, panelSize);
-			TempASlotPieceI->SetActorScale3D(Scale);
-
-			auto render = TempASlotPieceI->GetRenderComponent();
-			{
-				render->SetVisibility(false);
-			}
-		}
-
-		pieces.Add(TempAPieceI);
-		slotPieces.Add(TempASlotPieceI);
+		return TempAPieceI;
 	};
 
 	switch (type)
 	{
 	case TypeBlaster:
-		CreateI(PieceIBlue);
-		return true;
+		return CreateI(PieceIBlue);
+
 	case TypeShotGun:
-		CreateI(PieceIYellow);
-		return true;
+		return CreateI(PieceIYellow);
+
 	case TypeBombGun:
-		CreateI(PieceIPurple);
-		return true;
+		return CreateI(PieceIPurple);
+
 	default: break;
 	}
 
 	return false;
 }
 
-bool AGrid::CreatePieceT(PieceType type, FVector SpawnLocation)
+APieceOrigin* AGrid::CreatePieceT(PieceType type, FVector SpawnLocation)
 {
 	auto CreateT = [&](TSubclassOf<APieceT> pieceT)
 	{
@@ -1837,32 +2001,20 @@ bool AGrid::CreatePieceT(PieceType type, FVector SpawnLocation)
 			}
 		}
 
-		auto TempASlotPieceT = GetWorld()->SpawnActor<APieceT>(pieceT, Location, Rotation);
-		{
-			TempASlotPieceT->Initialize(1, widthNum, heightNum, panelSize);
-			TempASlotPieceT->SetActorScale3D(Scale);
-
-			auto render = TempASlotPieceT->GetRenderComponent();
-			{
-				render->SetVisibility(false);
-			}
-		}
-
-		pieces.Add(TempAPieceT);
-		slotPieces.Add(TempASlotPieceT);
+		return TempAPieceT;
 	};
 
 	switch (type)
 	{
 	case TypeBlaster:
-		CreateT(PieceTBlue);
-		return true;
+		return CreateT(PieceTBlue);
+
 	case TypeShotGun:
-		CreateT(PieceTYellow);
-		return true;
+		return CreateT(PieceTYellow);
+
 	case TypeBombGun:
-		CreateT(PieceTPurple);
-		return true;
+		return CreateT(PieceTPurple);
+
 	default: break;
 	}
 
@@ -1881,6 +2033,83 @@ void AGrid::CreatePiecePanel(FVector SpawnLocation)
 		TempPiecePanel->SetActorScale3D(Scale);
 		panels.Add(TempPiecePanel);
 	}
+}
+
+void AGrid::CreateSlotPieceDatas()
+{
+	FSlotPieceData data;
+	FVector spawnLocation = GetLocation();
+	APieceOrigin* piece = nullptr;
+
+	auto CreateSlotPieceData = [&](PieceShape shape, PieceType type)
+	{
+		switch (shape)
+		{
+		case O:
+			piece = CreatePieceO(type, spawnLocation);
+			break;
+
+		case L:
+			piece = CreatePieceL(type, spawnLocation);
+			break;
+
+		case I:
+			piece = CreatePieceI(type, spawnLocation);
+			break;
+
+		case T:
+			piece = CreatePieceT(type, spawnLocation);
+			break;
+
+		default: break;
+		}
+
+		if (piece)
+		{
+			data.shape = shape;
+			data.type = type;
+			data.slotPiece = piece;
+		}
+
+		visibilitySlotPiece.Add(false);
+
+		CreateSlotNumbers();
+
+		return data;
+	};
+
+	slotPieceDatas.Add(CreateSlotPieceData(PieceShape::O, PieceType::TypeBlaster));
+	slotPieceDatas.Add(CreateSlotPieceData(PieceShape::O, PieceType::TypeShotGun));
+	slotPieceDatas.Add(CreateSlotPieceData(PieceShape::O, PieceType::TypeBombGun));
+
+	slotPieceDatas.Add(CreateSlotPieceData(PieceShape::L, PieceType::TypeBlaster));
+	slotPieceDatas.Add(CreateSlotPieceData(PieceShape::L, PieceType::TypeShotGun));
+	slotPieceDatas.Add(CreateSlotPieceData(PieceShape::L, PieceType::TypeBombGun));
+
+	slotPieceDatas.Add(CreateSlotPieceData(PieceShape::I, PieceType::TypeBlaster));
+	slotPieceDatas.Add(CreateSlotPieceData(PieceShape::I, PieceType::TypeShotGun));
+	slotPieceDatas.Add(CreateSlotPieceData(PieceShape::I, PieceType::TypeBombGun));
+
+	slotPieceDatas.Add(CreateSlotPieceData(PieceShape::T, PieceType::TypeBlaster));
+	slotPieceDatas.Add(CreateSlotPieceData(PieceShape::T, PieceType::TypeShotGun));
+	slotPieceDatas.Add(CreateSlotPieceData(PieceShape::T, PieceType::TypeBombGun));
+}
+
+void AGrid::CreateSlotNumbers()
+{
+	FSlotNumbersData data;
+	{
+		for (int i = 0; i < NumbersOrigin.Num(); ++i)
+		{
+			data.firstDigit.Add(GetWorld()->SpawnActor<ANumbersOrigin>(NumbersOrigin[i]));
+			data.secondDigit.Add(GetWorld()->SpawnActor<ANumbersOrigin>(NumbersOrigin[i]));
+
+			data.firstDigit[i]->GetRenderComponent()->SetVisibility(false);
+			data.secondDigit[i]->GetRenderComponent()->SetVisibility(false);
+		}
+	}
+
+	slotNumbers.Add(data);
 }
 
 bool AGrid::LoadJson(const FString& Path)
@@ -1930,20 +2159,41 @@ void AGrid::LoadPieces()
 	bool addPiece = false;
 	{
 		FVector SpawnLocation = GetLocation();
+		int slotPieceNum = -1;
 
 		while (resourceManager->CanGetPieceResourceData(currentResourceIndex))
 		{
 			if (onDecisionPieces.Num() == pieces.Num()) onDecisionPieces.Add(false);
 
-			CreatePiece(resourceManager->GetPieceResourceData(currentResourceIndex), SpawnLocation);
+			auto resoureData = resourceManager->GetPieceResourceData(currentResourceIndex);
+			CreatePiece(resoureData, SpawnLocation);
+
+			int cnt = 0;
+			for (auto& slotPieceData : slotPieceDatas)
+			{
+				if (slotPieceData.shape == resoureData.shape && slotPieceData.type == resoureData.type)
+				{
+					slotPieceData.slotPieceNums.Add(pieces.Num() - 1);
+					slotPieceNum = cnt;
+					break;
+				}
+
+				++cnt;
+			}
+
 			++currentResourceIndex;
 			addPiece = true;
 		}
 
 		int nextPieceNum = pieces.Num() - 1;
-		if (selectPieceNum == -1 && !pieceDatas[nextPieceNum].isPlacement)
+		if (selectPieceNum == -1 && 0 < pieceDatas.Num() && !onDecisionPieces[nextPieceNum])
 		{
 			selectPieceNum = nextPieceNum;
+		}
+
+		if (selectSlotPieceNum == -1)
+		{
+			selectSlotPieceNum = slotPieceNum;
 		}
 
 		if (0 < pieces.Num() && addPiece)
@@ -1953,9 +2203,9 @@ void AGrid::LoadPieces()
 			if (!onVisible && puzzleType == PuzzleType::TypeWeaponPuzzle)
 			{
 				pieces[selectPieceNum]->GetRenderComponent()->SetVisibility(false);
-				for (int i = 0; i < slotPieces.Num(); ++i)
+				for (int i = 0; i < slotPieceDatas.Num(); ++i)
 				{
-					slotPieces[i]->GetRenderComponent()->SetVisibility(false);
+					slotPieceDatas[i].slotPiece->GetRenderComponent()->SetVisibility(false);
 				}
 			}
 		}
@@ -2152,9 +2402,9 @@ void AGrid::VisibleGrid(bool visible)
 			pieces[i]->GetRenderComponent()->SetVisibility(visibilityPiece[i]);
 		}
 
-		for (int i = 0; i < slotPieces.Num(); ++i)
+		for (int i = 0; i < slotPieceDatas.Num(); ++i)
 		{
-			slotPieces[i]->GetRenderComponent()->SetVisibility(visibilitySlotPiece[i]);
+			slotPieceDatas[i].slotPiece->GetRenderComponent()->SetVisibility(visibilitySlotPiece[i]);
 		}
 	}
 	else
@@ -2169,9 +2419,17 @@ void AGrid::VisibleGrid(bool visible)
 			piece->GetRenderComponent()->SetVisibility(false);
 		}
 
-		for (auto slotPiece : slotPieces)
+		for (auto slotPieceData : slotPieceDatas)
 		{
-			slotPiece->GetRenderComponent()->SetVisibility(false);
+			slotPieceData.slotPiece->GetRenderComponent()->SetVisibility(false);
+		}
+		for (auto& slotNumber : slotNumbers)
+		{
+			for (int i = 0; i < NumbersOrigin.Num(); ++i)
+			{
+				slotNumber.firstDigit[i]->GetRenderComponent()->SetVisibility(false);
+				slotNumber.secondDigit[i]->GetRenderComponent()->SetVisibility(false);
+			}
 		}
 	}
 }
