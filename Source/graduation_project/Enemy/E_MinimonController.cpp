@@ -9,7 +9,6 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
-#include "Base\BaseAIController.h"
 #include "../graduation_projectCharacter.h"
 
 AE_MinimonController::AE_MinimonController()
