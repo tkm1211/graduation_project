@@ -54,6 +54,12 @@ void UPieceResourceManager::PlacementPiece(int index, bool isPlacement)
 	pieceDatas[index].isPlacement = isPlacement;
 }
 
+// ピースを使用した時
+void UPieceResourceManager::UsedPiece(int index)
+{
+	PlacementPiece(index, true);
+}
+
 // ピースを配置しているか？
 bool UPieceResourceManager::IsPlacement(int index)
 {

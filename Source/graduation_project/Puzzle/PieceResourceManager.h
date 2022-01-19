@@ -51,6 +51,9 @@ public:
 	// ピースを配置した時
 	void PlacementPiece(int index, bool isPlacement);
 
+	// ピースを使用した時（ガチャ専用）
+	void UsedPiece(int index);
+
 	// ピースを配置しているか？
 	bool IsPlacement(int index);
 
@@ -60,6 +63,9 @@ public:
 
 	// 現在、保持しているピースを取得
 	FPieceResourceData GetPieceResourceData(int index) { return pieceDatas[index]; }
+
+	// 現在、保持しているピースの数を取得（ガチャ専用）
+	int GetPieceResourceDataCnt() { return pieceDatas.Num(); }
 
 	// ピースを取得できるか？
 	bool CanGetPieceResourceData(int index);
