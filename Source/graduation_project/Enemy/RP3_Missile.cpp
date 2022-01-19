@@ -10,6 +10,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
+
 //#include "NiagaraComponent.h"
 //#include "NiagaraSystem.h"
 
@@ -85,6 +86,7 @@ ARP3_Missile::ARP3_Missile()
 	//target = CreateDefaultSubobject<AMissileTarget>(TEXT("TargetMark"));
 
 	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ARP3_Missile::OnHit);
+
 
 }
 
@@ -164,6 +166,10 @@ void ARP3_Missile::OnHit(class UPrimitiveComponent* HitComp, class AActor* Other
 
 	pieceBlockDropper->SpawnDropPieces(DropPieceData, GetTransform());
 
+	if (FX_MissileHitClass)
+	{
+		GetWorld()->SpawnActor<AActor>(FX_MissileHitClass, GetActorTransform());
+	}
 	marker->SetDestroy();
 	Destroy();
 

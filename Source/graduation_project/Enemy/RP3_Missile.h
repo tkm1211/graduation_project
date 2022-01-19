@@ -24,6 +24,9 @@ protected:
 	float non_homing_time;
 	class Agraduation_projectCharacter* player;
 	class ARP3_MissileTarget* marker;
+	
+	UPROPERTY(EditAnywhere, Category = Projectile)
+		TSubclassOf<class AActor> FX_MissileHitClass;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
 		int missile_number;

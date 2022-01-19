@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Base/BossBase.h"
 #include "Components/CapsuleComponent.h"
-#include "PrototypeMissile.h"
 #include "Boss_RobotParts3.generated.h"
 
 /**
