@@ -42,9 +42,11 @@ AENM_Chaichai::AENM_Chaichai()
 	underspace->SetCapsuleHalfHeight(70.f);
 	underspace->SetCollisionProfileName("Custom...");
 	underspace->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	underspace->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+	underspace->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 	underspace->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	underspace->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
+	underspace->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Ignore);
+	underspace->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 	underspace->SetGenerateOverlapEvents(true);
 
 
@@ -88,6 +90,9 @@ void AENM_Chaichai::BeginPlay()
 		underspace->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 		underspace->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 		underspace->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
+		underspace->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Ignore);
+		underspace->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+		underspace->SetGenerateOverlapEvents(true);
 	}
 
 	UCharacterMovementComponent* move = GetCharacterMovement();

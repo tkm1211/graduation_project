@@ -33,7 +33,7 @@ AENM_ChaFireball::AENM_ChaFireball()
 		// Use this component to drive this projectile's movement.
 		ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
 		ProjectileMovementComponent->SetUpdatedComponent(CollisionComponent);
-		ProjectileMovementComponent->InitialSpeed = 300.0f;
+		ProjectileMovementComponent->InitialSpeed = 600.0f;
 		//ProjectileMovementComponent->MaxSpeed = 3000.0f;
 		//ProjectileMovementComponent->bRotationFollowsVelocity = true;
 		//ProjectileMovementComponent->bShouldBounce = false;

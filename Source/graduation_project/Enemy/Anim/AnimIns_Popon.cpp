@@ -11,7 +11,7 @@ void UAnimIns_Popon::NativeUpdateAnimation(float DeltaTime)
     {
         if (IsWander)
         {
-            WanderRate += 4*DeltaTime;
+            WanderRate += 400 * DeltaTime;
 
             if (WanderRate >= 100.f)
             {
@@ -21,12 +21,12 @@ void UAnimIns_Popon::NativeUpdateAnimation(float DeltaTime)
         }
         else
         {
-            WanderRate -= 4 * DeltaTime;
+            WanderRate -= 400 * DeltaTime;
 
             if (WanderRate <= 0.f)
             {
                 WanderRate = 0.f;
-                if (FMath::RandRange(0, 99) == 31)
+                if (Speed >= 100.f && FMath::RandRange(0, 99) == 31)
                 {
                     IsWander = true;
                 }
@@ -44,7 +44,7 @@ void UAnimIns_Popon::NativePostEvaluateAnimation()
         float DeltaTime = GetWorld()->GetDeltaSeconds();
         if (IsWander)
         {
-            WanderRate += 4 * DeltaTime;
+            WanderRate += 400 * DeltaTime;
 
             if (WanderRate >= 100.f)
             {
@@ -54,12 +54,12 @@ void UAnimIns_Popon::NativePostEvaluateAnimation()
         }
         else
         {
-            WanderRate -= 4 * DeltaTime;
+            WanderRate -= 400 * DeltaTime;
 
             if (WanderRate <= 0.f)
             {
                 WanderRate = 0.f;
-                if (FMath::RandRange(0, 99) == 31)
+                if (Speed >= 100.f && FMath::RandRange(0, 99) == 31)
                 {
                     IsWander = true;
                 }

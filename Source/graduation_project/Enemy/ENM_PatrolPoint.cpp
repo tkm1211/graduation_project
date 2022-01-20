@@ -21,7 +21,7 @@ AENM_PatrolPoint::AENM_PatrolPoint()
 
 	cube = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
 
-	FVector location =FVector(0.f, 0.f, 25.f);
+	FVector location = FVector(0.f, 0.f, 25.f);
 
 	cube->SetWorldLocation(location);
 	cube->SetWorldScale3D(FVector(0.5f));
@@ -34,7 +34,7 @@ AENM_PatrolPoint::AENM_PatrolPoint()
 	arrow->SetRelativeLocation(location);
 	arrow->SetArrowColor(FLinearColor(1.f, 0.4f, 0.f, 1.f));
 	arrow->SetupAttachment(RootComponent);
-	
+
 	spline = CreateDefaultSubobject<USplineComponent>("Spline");
 
 	spline->SetRelativeLocation(FVector(0.f, 0.f, 0.f));
@@ -61,8 +61,8 @@ void AENM_PatrolPoint::BeginPlay()
 
 		Spawn();
 	}
-	
-	if(!enm)
+
+	if (!enm)
 	{
 		cube->SetHiddenInGame(false);
 	}
@@ -74,7 +74,13 @@ void AENM_PatrolPoint::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	float dist = FVector::Dist(pl->GetActorLocation(), GetActorLocation());
+	float dist = 100000.f;
+
+	if (pl)
+	{
+		dist = FVector::Dist(pl->GetActorLocation(), GetActorLocation());
+
+	}
 
 	if (dist > RespawnRange)Spawn();
 
