@@ -15,6 +15,7 @@ class APieceL;
 class APieceI;
 class APieceT;
 class ANumbersOrigin;
+class APieceCntPanel;
 
 
 // 形
@@ -172,6 +173,17 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Slot", meta = (AllowPrivateAccess = "true"))
 	TArray<TSubclassOf<ANumbersOrigin>> NumbersOrigin; // スロットピースの数（エディタで設定）
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Piece Cnt Panel", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APieceCntPanel> PieceCntPanelBlue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Piece Cnt Panel", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APieceCntPanel> PieceCntPanelYellow;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Piece Cnt Panel", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APieceCntPanel> PieceCntPanelPurple;
+
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Slot | Parameter", meta = (AllowPrivateAccess = "true"))
 	FVector SlotNumberScale;
 
@@ -228,6 +240,31 @@ private:
 	float WeaponSlotNumberSecondSideWidht = 0.0f;
 
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Piece Cnt Panel | Parameter", meta = (AllowPrivateAccess = "true"))
+	float pieceCntPanelBlueWidth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Piece Cnt Panel | Parameter", meta = (AllowPrivateAccess = "true"))
+	float pieceCntPanelBlueHeight;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Piece Cnt Panel | Parameter", meta = (AllowPrivateAccess = "true"))
+	float pieceCntPanelYellowWidth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Piece Cnt Panel | Parameter", meta = (AllowPrivateAccess = "true"))
+	float pieceCntPanelYellowHeight;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Piece Cnt Panel | Parameter", meta = (AllowPrivateAccess = "true"))
+	float pieceCntPanelPurpleWidth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Piece Cnt Panel | Parameter", meta = (AllowPrivateAccess = "true"))
+	float pieceCntPanelPurpleHeight;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Piece Cnt Panel | Parameter", meta = (AllowPrivateAccess = "true"))
+	float pieceCntPanelWidthScale;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Piece Cnt Panel | Parameter", meta = (AllowPrivateAccess = "true"))
+	float pieceCntPanelHeightScale;
+
+
 	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
 	FVector panelMinXPos;
 
@@ -255,6 +292,10 @@ private:
 	TArray<bool> visibilitySlotPiece;
 	TArray<bool> onDecisionPieces;
 	TArray<FSlotNumbersData> slotNumbers;
+
+	TArray<APieceCntPanel*> pieceCntPanelBlue;
+	TArray<APieceCntPanel*> pieceCntPanelYellow;
+	TArray<APieceCntPanel*> pieceCntPanelPurple;
 
 	// 次にピースを取得するときにpieceDatasの開始番号
 	int currentResourceIndex;
@@ -388,6 +429,9 @@ private:
 	void CreatePiecePanel(FVector SpawnLocation);
 	void CreateSlotPieceDatas();
 	void CreateSlotNumbers();
+	void CreatePieceCntPanels();
+
+	void UpdatePieceCntPanals();
 
 	bool LoadJson(const FString& Path);
 	void LoadPieces();

@@ -9,6 +9,7 @@
 #include "PieceT.h"
 #include "PiecePanel.h"
 #include "NumbersOrigin.h"
+#include "PieceCntPanel.h"
 #include "PaperSpriteComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -83,8 +84,6 @@ void AGrid::Initialize()
 		didPlacePiece = false;
 		didRemovePiece = false;
 
-		puzzleType = PuzzleType::TypeGimmickPuzzle;
-
 		panelSize = OriginPanelSize * gridScale.X;
 		originPiecePos = FVector(0.0f, 0.0f, 0.0f);
 		forwardVec = GetActorRightVector();
@@ -121,6 +120,12 @@ void AGrid::Initialize()
 	// スロットピース生成
 	{
 		CreateSlotPieceDatas();
+	}
+
+	// ピースカウントパネル生成
+	{
+		CreatePieceCntPanels();
+		UpdatePieceCntPanals();
 	}
 
 	// 入力バインド
@@ -231,6 +236,9 @@ void AGrid::Tick(float DeltaTime)
 
 	// ピーススロット更新
 	UpdateSlot(DeltaTime);
+
+	// ピースカウントパネル生成
+	UpdatePieceCntPanals();
 
 	// フラグのリセット
 	ResetFlags();
@@ -377,15 +385,15 @@ void AGrid::UpdateSlot(float DeltaTime)
 				{
 					slotWidth = (AdjustSlotWidhtOfLocation * -1.0f) + WeaponSlotSmallNumberLeftWidht;
 				}
-				else if (i == slotRightNum)
+				if (i == slotRightNum)
 				{
 					slotWidth = AdjustSlotWidhtOfLocation + WeaponSlotSmallNumberRightWidht;
 				}
-				else if (i == slotMostLeftNum)
+				if (i == slotMostLeftNum && slotLeftNum != slotMostLeftNum && slotRightNum != slotMostLeftNum)
 				{
 					slotWidth = (AdjustMostSlotWidhtOfLocation * -1.0f) + WeaponSlotSmallNumberMostLeftWidht;
 				}
-				else if (i == slotMostRightNum)
+				if (i == slotMostRightNum && slotLeftNum != slotMostRightNum && slotRightNum != slotMostRightNum)
 				{
 					slotWidth = AdjustMostSlotWidhtOfLocation + WeaponSlotSmallNumberMostRightWidht;
 				}
@@ -409,15 +417,15 @@ void AGrid::UpdateSlot(float DeltaTime)
 				{
 					slotWidth = (AdjustSlotWidhtOfLocation * -1.0f) + SlotSmallNumberLeftWidht;
 				}
-				else if (i == slotRightNum)
+				if (i == slotRightNum)
 				{
 					slotWidth = AdjustSlotWidhtOfLocation + SlotSmallNumberRightWidht;
 				}
-				else if (i == slotMostLeftNum)
+				if (i == slotMostLeftNum)
 				{
 					slotWidth = (AdjustMostSlotWidhtOfLocation * -1.0f) + SlotSmallNumberMostLeftWidht;
 				}
-				else if (i == slotMostRightNum)
+				if (i == slotMostRightNum)
 				{
 					slotWidth = AdjustMostSlotWidhtOfLocation + SlotSmallNumberMostRightWidht;
 				}
@@ -1091,19 +1099,22 @@ void AGrid::PieceCancel(APieceOrigin* piece)
 	didRemovePiece = true;
 	removePieceData.placedPanelNum = panelNumAtOriginPiece;
 
+	auto currntPiece = pieces[selectPieceNum];
+	auto pieceData = pieceDatas[selectPieceNum];
+
 	// 武器パズルの情報も戻す
-	switch (placedPieceData.type)
+	switch (pieceData.type)
 	{
 	case TypeBlaster:
-		blasterPieceNum -= placedPieceData.placedPiecePanelNum;
+		blasterPieceNum -= currntPiece->GetPieceNums().Num();
 		break;
 
 	case TypeShotGun:
-		shotGunPieceNum -= placedPieceData.placedPiecePanelNum;
+		shotGunPieceNum -= currntPiece->GetPieceNums().Num();
 		break;
 
 	case TypeBombGun:
-		bombGunPieceNum -= placedPieceData.placedPiecePanelNum;
+		bombGunPieceNum -= currntPiece->GetPieceNums().Num();
 		break;
 
 	default: break;
@@ -2112,6 +2123,104 @@ void AGrid::CreateSlotNumbers()
 	slotNumbers.Add(data);
 }
 
+void AGrid::CreatePieceCntPanels()
+{
+	if (puzzleType != PuzzleType::TypeWeaponPuzzle) return;
+
+	for (int i = 0; i < 20; ++i)
+	{
+		auto panelBlue = GetWorld()->SpawnActor<APieceCntPanel>(PieceCntPanelBlue);
+		auto panelYellow = GetWorld()->SpawnActor<APieceCntPanel>(PieceCntPanelYellow);
+		auto panelPurple = GetWorld()->SpawnActor<APieceCntPanel>(PieceCntPanelPurple);
+
+		panelBlue->GetRenderComponent()->SetVisibility(false);
+		panelYellow->GetRenderComponent()->SetVisibility(false);
+		panelPurple->GetRenderComponent()->SetVisibility(false);
+
+		pieceCntPanelBlue.Add(panelBlue);
+		pieceCntPanelYellow.Add(panelYellow);
+		pieceCntPanelPurple.Add(panelPurple);
+	}
+}
+
+void AGrid::UpdatePieceCntPanals()
+{
+	if (!onPuzzle) return;
+	if (puzzleType != PuzzleType::TypeWeaponPuzzle) return;
+
+	FVector blueLocation = GetActorLocation();
+	FVector yellowLocation = GetActorLocation();
+	FVector purpleLocation = GetActorLocation();
+
+	FRotator rotate = GetActorRotation();
+	FVector scale = GetActorScale3D();
+
+	blueLocation += rightVec * pieceCntPanelBlueWidth;
+	blueLocation += upVec * pieceCntPanelBlueHeight;
+
+	yellowLocation += rightVec * pieceCntPanelYellowWidth;
+	yellowLocation += upVec * pieceCntPanelYellowHeight;
+
+	purpleLocation += rightVec * pieceCntPanelPurpleWidth;
+	purpleLocation += upVec * pieceCntPanelPurpleHeight;
+
+	for (int i = 0; i < 20; ++i)
+	{
+		auto panelBlue = pieceCntPanelBlue[i];
+		auto panelYellow = pieceCntPanelYellow[i];
+		auto panelPurple = pieceCntPanelPurple[i];
+
+		if (i == 10)
+		{
+			blueLocation = GetActorLocation();
+			yellowLocation = GetActorLocation();
+			purpleLocation = GetActorLocation();
+
+			blueLocation += rightVec * pieceCntPanelBlueWidth;
+			blueLocation += upVec * pieceCntPanelBlueHeight;
+
+			yellowLocation += rightVec * pieceCntPanelYellowWidth;
+			yellowLocation += upVec * pieceCntPanelYellowHeight;
+
+			purpleLocation += rightVec * pieceCntPanelPurpleWidth;
+			purpleLocation += upVec * pieceCntPanelPurpleHeight;
+
+			blueLocation += upVec * pieceCntPanelHeightScale;
+			yellowLocation += upVec * pieceCntPanelHeightScale;
+			purpleLocation += upVec * pieceCntPanelHeightScale;
+		}
+
+		if (i < 10)
+		{
+			blueLocation += rightVec * pieceCntPanelWidthScale;
+			yellowLocation += rightVec * pieceCntPanelWidthScale;
+			purpleLocation += rightVec * pieceCntPanelWidthScale;
+		}
+		else
+		{
+			blueLocation += rightVec * pieceCntPanelWidthScale;
+			yellowLocation += rightVec * pieceCntPanelWidthScale;
+			purpleLocation += rightVec * pieceCntPanelWidthScale;
+		}
+
+		panelBlue->SetActorLocation(blueLocation);
+		panelYellow->SetActorLocation(yellowLocation);
+		panelPurple->SetActorLocation(purpleLocation);
+
+		panelBlue->SetActorRotation(rotate);
+		panelYellow->SetActorRotation(rotate);
+		panelPurple->SetActorRotation(rotate);
+
+		bool visibleBlue = (onPuzzle && i < blasterPieceNum) ? true : false;
+		bool visibleYellow = (onPuzzle && i < shotGunPieceNum) ? true : false;
+		bool visiblePurple = (onPuzzle && i < bombGunPieceNum) ? true : false;
+
+		panelBlue->GetRenderComponent()->SetVisibility(visibleBlue);
+		panelYellow->GetRenderComponent()->SetVisibility(visibleYellow);
+		panelPurple->GetRenderComponent()->SetVisibility(visiblePurple);
+	}
+}
+
 bool AGrid::LoadJson(const FString& Path)
 {
 	auto jsonFilePath = FilePath + Path;
@@ -2430,6 +2539,16 @@ void AGrid::VisibleGrid(bool visible)
 				slotNumber.firstDigit[i]->GetRenderComponent()->SetVisibility(false);
 				slotNumber.secondDigit[i]->GetRenderComponent()->SetVisibility(false);
 			}
+		}
+		for (int i = 0; i < 20; ++i)
+		{
+			auto panelBlue = pieceCntPanelBlue[i];
+			auto panelYellow = pieceCntPanelYellow[i];
+			auto panelPurple = pieceCntPanelPurple[i];
+
+			panelBlue->GetRenderComponent()->SetVisibility(false);
+			panelYellow->GetRenderComponent()->SetVisibility(false);
+			panelPurple->GetRenderComponent()->SetVisibility(false);
 		}
 	}
 }

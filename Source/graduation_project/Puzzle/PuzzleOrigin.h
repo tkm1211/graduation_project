@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Grid.h"
 #include "PuzzleOrigin.generated.h"
 
 
-class AGrid;
 class APuzzleCamera;
 
 UCLASS()
@@ -49,6 +49,8 @@ protected:
 	// パズル撮影用カメラ
 	APuzzleCamera* puzzleCamera;
 	
+	PuzzleType puzzleType = PuzzleType::TypeWeaponPuzzle;
+
 private:
 	bool onPuzzle = false;
 

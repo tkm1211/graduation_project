@@ -24,7 +24,7 @@ AStageGimmick::AStageGimmick()
 	Capture = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("Capture"));
 	Capture->SetupAttachment(RootComponent);
 
-	Capture->SetRelativeLocation(FVector(-1.148438f, 633.789124f, 0.0f));
+	Capture->SetRelativeLocation(FVector(-1.148438f, LenToCamera, 0.0f));
 	Capture->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
 	Capture->bCaptureEveryFrame = false;
 }
@@ -34,7 +34,7 @@ void AStageGimmick::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Capture->SetRelativeLocation(FVector(-1.148438f, 633.789124f, 0.0f));
+	Capture->SetRelativeLocation(FVector(-1.148438f, LenToCamera, 0.0f));
 	Capture->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
 	Capture->bCaptureEveryFrame = false;
 

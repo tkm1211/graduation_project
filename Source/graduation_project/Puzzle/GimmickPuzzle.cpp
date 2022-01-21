@@ -23,11 +23,12 @@ AGimmickPuzzle::AGimmickPuzzle()
 // Called when the game starts or when spawned
 void AGimmickPuzzle::BeginPlay()
 {
+	puzzleType = TypeGimmickPuzzle;
+
 	Super::BeginPlay();
 
 	onGimmickPuzzle = false;
 	grid->VisibleGridMesh(true);
-	grid->SetPuzzleType(PuzzleType::TypeGimmickPuzzle);
 
 	// ゲームインスタンスからギミック用のMediator（仲介役）を取得
 	UGameInstance* instance = GetWorld()->GetGameInstance();

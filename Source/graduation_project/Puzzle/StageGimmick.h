@@ -87,6 +87,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Gimmick", meta = (AllowPrivateAccess = "true"))
 	int GroupID = -1; // GimmickPuzzleと紐づけるための番号（エディタで設定）
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Gimmick", meta = (AllowPrivateAccess = "true"))
+	float LenToCamera = 633.789124f; // グリッドとカメラの距離（エディタで設定）
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Gimmick|Debug", meta = (AllowPrivateAccess = "true"))
 	float BlockSize = 0.0f; // 1ブロックの大きさ（エディタで設定）
 	

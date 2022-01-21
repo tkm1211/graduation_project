@@ -84,6 +84,7 @@ void APuzzleOrigin::CreateGrid()
 		grid->SetAdjustHeight(GridLenZ);
 		grid->SetAdjustLen(GridLen);
 		grid->SetGridFlieName(GridFileName);
+		grid->SetPuzzleType(puzzleType);
 		grid->Initialize();
 	}
 }

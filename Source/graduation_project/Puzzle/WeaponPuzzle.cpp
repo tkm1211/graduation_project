@@ -20,6 +20,8 @@ AWeaponPuzzle::AWeaponPuzzle()
 // Called when the game starts or when spawned
 void AWeaponPuzzle::BeginPlay()
 {
+	puzzleType = TypeWeaponPuzzle;
+
 	Super::BeginPlay();
 
 	// ゲームインスタンスから武器用のMediator（仲介役）を取得
@@ -36,7 +38,6 @@ void AWeaponPuzzle::BeginPlay()
 	}
 
 	grid->VisibleGridMesh(false);
-	grid->SetPuzzleType(PuzzleType::TypeWeaponPuzzle);
 
 	if (onPuzzle)
 	{
@@ -81,7 +82,7 @@ void AWeaponPuzzle::MoveGrid()
 
 void AWeaponPuzzle::NotifyMediatorOfPlacedPieces()
 {
-	if (!grid->DidPlacePiece()) return;
+	if (!grid->DidPlacePiece() && !grid->DidRemovePiece()) return;
 
 	// パズル画面で配置されたピースの情報を渡す
 	auto placedPieceData = grid->GetPlacedPieceData();

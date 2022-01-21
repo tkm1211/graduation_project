@@ -8,10 +8,9 @@
 
 
 // 武器の種類
-UENUM()
+UENUM(BlueprintType)
 enum WeaponType
 {
-
 	Blaster,
 	ShotGun,
 	BombGun,
@@ -57,5 +56,6 @@ public: // パズル呼び出し用
 	void SetRfBombGunBorderNum(int borderNum);
 
 public: // プレイヤー呼び出し用
+	UFUNCTION(BlueprintCallable, Category = "Puzzle | Weapon")
 	WeaponType GetWeaponType();
 };
