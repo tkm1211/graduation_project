@@ -163,6 +163,7 @@ void AGimmickPuzzle::UpdateCamera()
 
 void AGimmickPuzzle::PlacePieceBlock()
 {
+	if (IsWeaponGimmick) return;
 	if (!onGimmickPuzzle) return;
 	if (!grid->DidPlacePiece()) return;
 
@@ -173,12 +174,30 @@ void AGimmickPuzzle::PlacePieceBlock()
 
 void AGimmickPuzzle::RemovePieceBlock()
 {
+	if (IsWeaponGimmick) return;
 	if (!onGimmickPuzzle) return;
 	if (!grid->DidRemovePiece()) return;
 
 	// パズル画面で取り除かれたピースの情報を渡す
 	auto removePieceData = grid->GetRemovePieceData();
 	gimmickMediator->SetRemovePiece(GroupID, removePieceData);
+}
+
+void AGimmickPuzzle::UpdateWeaponGimmickPuzzle()
+{
+	if (!IsWeaponGimmick) return;
+
+	bool hit = false;
+	auto onPieces = grid->GetOnPiece();
+	for (auto onPiece : onPieces)
+	{
+		if (!onPiece) hit = true;
+	}
+
+	if (!hit)
+	{
+		gimmickMediator->OnWeaponGimmck(GroupID);
+	}
 }
 
 void AGimmickPuzzle::UpdateFlag()

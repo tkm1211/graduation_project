@@ -412,6 +412,9 @@ public:
 	int GetShotGunPieceNum();
 	int GetBombGunPieceNum();
 
+	// 武器ギミックパズル用
+	TArray<bool> GetOnPiece() { return onPiece; }
+
 private:
 	void UpdatePuzzle(float DeltaTime);
 	void UpdateSlot(float DeltaTime);

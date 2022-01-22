@@ -9,6 +9,7 @@ void UGimmickMediator::AddGridData(int groupID, const FGridData& data)
 	currentGroupID = groupID;
 
 	onGimmickPuzzles.Add(groupID, false);
+	onWeaponGimmicks.Add(groupID, false);
 	didCreateGridDatas.Add(groupID, true);
 	gridDatas.Add(groupID, data);
 }
@@ -36,6 +37,15 @@ void UGimmickMediator::SetOnGimmickPuzzle(int groupID, bool onPuzzle)
 		return;
 	}
 	onGimmickPuzzles[groupID] = onPuzzle;
+}
+
+void UGimmickMediator::OnWeaponGimmck(int groupID)
+{
+	if (onWeaponGimmicks.Find(groupID) == nullptr)
+	{
+		return;
+	}
+	onWeaponGimmicks[groupID] = true;
 }
 
 bool UGimmickMediator::DidCreateGrid(int groupID)
@@ -91,11 +101,20 @@ FRemovePieceData UGimmickMediator::GetRemovePieceData()
 	return removePieceData;
 }
 
-bool UGimmickMediator::OnGimmickPuzzle(int groupID)
+bool UGimmickMediator::GetOnGimmickPuzzle(int groupID)
 {
 	if (onGimmickPuzzles.Find(groupID) == nullptr)
 	{
 		return false;
 	}
 	return onGimmickPuzzles[groupID];
+}
+
+bool UGimmickMediator::GetOnWeaponGimmick(int groupID)
+{
+	if (onWeaponGimmicks.Find(groupID) == nullptr)
+	{
+		return false;
+	}
+	return onWeaponGimmicks[groupID];
 }

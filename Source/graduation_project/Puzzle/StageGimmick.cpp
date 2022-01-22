@@ -107,7 +107,7 @@ void AStageGimmick::UpdateCapture()
 	if (GroupID == -1) return;
 
 	// プレイヤーがギミックパズルを起動しているか？
-	if (!gimmickMediator->OnGimmickPuzzle(GroupID)) return;
+	if (!gimmickMediator->GetOnGimmickPuzzle(GroupID)) return;
 
 	// 現在のシーンをキャプチャする
 	Capture->CaptureScene();

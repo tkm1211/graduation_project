@@ -23,6 +23,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Gimmick", meta = (AllowPrivateAccess = "true"))
 	int GroupID = -1; // StageGimmickと紐づけるための番号（エディタで設定）
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Gimmick", meta = (AllowPrivateAccess = "true"))
+	bool IsWeaponGimmick = false; // 武器ギミックパズルか？（エディタで設定）
+
 private:
 	UGimmickMediator* gimmickMediator;
 
@@ -51,6 +54,7 @@ private:
 
 	void PlacePieceBlock();
 	void RemovePieceBlock();
+	void UpdateWeaponGimmickPuzzle();
 
 	void UpdateFlag();
 
