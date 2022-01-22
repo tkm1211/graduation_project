@@ -9,6 +9,7 @@ void UGimmickMediator::AddGridData(int groupID, const FGridData& data)
 	currentGroupID = groupID;
 
 	onGimmickPuzzles.Add(groupID, false);
+	onGimmick.Add(groupID, false);
 	onWeaponGimmicks.Add(groupID, false);
 	didCreateGridDatas.Add(groupID, true);
 	gridDatas.Add(groupID, data);
@@ -20,6 +21,7 @@ void UGimmickMediator::AddPlacePiece(int groupID, const FPlacedPieceData& data)
 	currentGroupID = groupID;
 
 	placedPieceDatas.Add(groupID, data);
+	onGimmick[groupID] = true;
 }
 
 void UGimmickMediator::SetRemovePiece(int groupID, const FRemovePieceData& data)

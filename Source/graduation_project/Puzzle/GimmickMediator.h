@@ -23,6 +23,7 @@ private:
 
 	TMap<int, bool> onGimmickPuzzles;
 	TMap<int, bool> onWeaponGimmicks;
+	TMap<int, bool> onGimmick; // ギミックが作られたとき
 	TMap<int, bool> didCreateGridDatas;
 	TMap<int, FGridData> gridDatas;
 	TMap<int, FPlacedPieceData> placedPieceDatas;
@@ -51,4 +52,7 @@ public:
 public:
 	// バリスタとかのパズルが完成したか？（バリスタ専用）
 	bool GetOnWeaponGimmick(int groupID);
+
+	// ギミックが作られたか？（ボス専用）
+	const TMap<int, bool>& GetOnGimmick() { return onGimmick; }
 };
