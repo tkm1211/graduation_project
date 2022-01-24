@@ -68,5 +68,6 @@ public:
 	int GetPieceResourceDataCnt() { return pieceDatas.Num(); }
 
 	// ピースを取得できるか？
+	UFUNCTION(BlueprintCallable, Category = "Puzzle | Resource")
 	bool CanGetPieceResourceData(int index);
 };
