@@ -11,6 +11,7 @@ class UAnimMontage;
 class AWeaponPuzzle;
 class AGimmickPuzzle;
 class AGacha;
+class ABallistaOrigin;
 
 UCLASS(config = Game)
 class Agraduation_projectCharacter : public ACharacter
@@ -40,12 +41,16 @@ private:
 	bool useGimmickPuzzle;
 
 	AGacha* gacha;
-	bool onGacha;
 	bool useGacha;
+
+	ABallistaOrigin* ballista;
+	bool useBallista;
 
 	class UWeaponPuzzleMediator* weaponMediator;
 
 public:
+	bool onGacha;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 		class UCameraComponent* camera;
 
@@ -63,6 +68,11 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Flag")
 		bool isAim;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ballista")
+		bool onBallista;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ballista")
+		float ballistaPitch;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Flag")
 		bool isFire;
@@ -108,6 +118,8 @@ public:
 		TArray<UAnimMontage*> recoilMontages;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AnimMontage")
 		TArray<UAnimMontage*> aimMontages;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AnimMontage")
+		TArray<UAnimMontage*> ballistaMotion;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wepon")
 		TArray<ABaseWepon*> weaponArray;
@@ -158,7 +170,6 @@ protected:
 	void StopFireWepon();
 	void StopAimWepon();
 
-	void Pause();
 	void ReleasePause();
 
 protected:
@@ -170,11 +181,9 @@ protected:
 	void OnGimmick();
 	void GimmickPuzzle();
 
-	void Gacha();
+	void OnGacha();
+	void OnBallista();
 
-	void UseBlaster();
-	void UseShotGun();
-	void UseBombGun();
 	void CreateWeapone();
 public:
 	virtual void Tick(float DeltaTime) override;
@@ -189,6 +198,8 @@ public:
 
 	ABaseWepon* GetUseWepone() { return useWepon; }
 	class UCameraComponent* GetFollowCamera() { return camera; }
+
+	void Pause();
 
 	UFUNCTION()
 		void BeginOverlap(

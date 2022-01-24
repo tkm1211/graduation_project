@@ -150,6 +150,7 @@ void ABaseAmmo::AmmoDestroy()
 		else if (ammoName == FString("RfBlaster")) _es->SpawnEffect(EffectType::RfBlasterAmmoExplosion, GetActorLocation());
 		else if (ammoName == FString("RfBombGun")) _es->SpawnEffect(EffectType::RfBombGunAmmoExplosion, GetActorLocation());
 		else if (ammoName == FString("RfShotGun")) _es->SpawnEffect(EffectType::RfShotGunAmmoExplosion, GetActorLocation());
+		else if (ammoName == FString("Ballista")) _es->SpawnEffect(EffectType::BallistaAmmoExplosion, GetActorLocation());
 	}
 
 	ammoExplosion.Broadcast();

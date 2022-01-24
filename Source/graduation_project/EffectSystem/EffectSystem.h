@@ -35,7 +35,10 @@ enum EffectType
 	RfBombGunMuzzuleFlash UMETA(DisplayName = "RfBombGunMuzzuleFlash"),
 
 	RfShotGunAmmoExplosion UMETA(DisplayName = "RfShotGunAmmoExplosion"),
-	RfShotGunMuzzuleFlash UMETA(DisplayName = "RfShotGunMuzzuleFlash")
+	RfShotGunMuzzuleFlash UMETA(DisplayName = "RfShotGunMuzzuleFlash"),
+
+	BallistaAmmoExplosion UMETA(DisplayName = "BallistaAmmoExplosion"),
+	BallistaMuzzuleFlash UMETA(DisplayName = "BallistaMuzzuleFlash")
 };
 
 class UNiagaraSystem;
@@ -92,6 +95,11 @@ private:
 		UNiagaraSystem* rfShotGunAmmoExplosion;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "RfShotGunMuzzuleFlash", meta = (AllowPrivateAccess = "true"))
 		UNiagaraSystem* rfShotGunMuzzuleFlash;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "BallistaExplosion", meta = (AllowPrivateAccess = "true"))
+		UNiagaraSystem* ballistaAmmoExplosion;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "BallistaMuzzuleFlash", meta = (AllowPrivateAccess = "true"))
+		UNiagaraSystem* ballistaMuzzuleFlash;
 
 
 public:	

@@ -16,6 +16,7 @@
 #include "Puzzle/GimmickPuzzle.h"
 #include "Puzzle/WeaponPuzzleMediator.h"
 #include "Gacha/Gacha.h"
+#include "Ballista/BallistaOrigin.h"
 
 //////////////////////////////////////////////////////////////////////////
 // Agraduation_projectCharacter
@@ -111,17 +112,14 @@ void Agraduation_projectCharacter::SetupPlayerInputComponent(class UInputCompone
 	PlayerInputComponent->BindAction("WeponPuzzle", IE_Pressed, this, &Agraduation_projectCharacter::WeponPuzzle);
 	PlayerInputComponent->BindAction("GimmickPuzzle", IE_Pressed, this, &Agraduation_projectCharacter::OnGimmick);
 
-	PlayerInputComponent->BindAction("useBlaster", IE_Pressed, this, &Agraduation_projectCharacter::UseBlaster);
-	PlayerInputComponent->BindAction("useShotGun", IE_Pressed, this, &Agraduation_projectCharacter::UseShotGun);
-	PlayerInputComponent->BindAction("useBombGun", IE_Pressed, this, &Agraduation_projectCharacter::UseBombGun);
-
-	PlayerInputComponent->BindAxis("MoveForward", this, &Agraduation_projectCharacter::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &Agraduation_projectCharacter::MoveRight);
+	PlayerInputComponent->BindAxis("MoveForward", this, &Agraduation_projectCharacter::MoveForward).bConsumeInput = false;
+	PlayerInputComponent->BindAxis("MoveRight", this, &Agraduation_projectCharacter::MoveRight).bConsumeInput = false;
 
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("TurnRate", this, &Agraduation_projectCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &Agraduation_projectCharacter::LookUpAtRate);
+	
 
 }
 
@@ -219,6 +217,16 @@ void Agraduation_projectCharacter::Tick(float DeltaTime)
 		CameraChange(DeltaTime);
 	}
 
+	if (onBallista)
+	{
+		SetActorLocation(ballista->ballistaMesh->GetSocketLocation(FName("PlayerPos")));
+		FRotator _newRotation(ballista->GetActorRotation());
+		_newRotation.Yaw += 90.0f;
+		SetActorRotation(_newRotation);
+
+		ballistaPitch = ballista->ballistaPitch;
+	}
+
 	if (onWeponePuzzle)
 	{
 		postEffectSaturateValue -= 10 * DeltaTime;
@@ -229,6 +237,8 @@ void Agraduation_projectCharacter::Tick(float DeltaTime)
 		postEffectSaturateValue += 10 * DeltaTime;
 		if (postEffectSaturateValue >= 1.0f) postEffectSaturateValue = 1.0f;
 	}
+
+	Pause();
 }
 
 // ジャンプ処理
@@ -330,7 +340,7 @@ void Agraduation_projectCharacter::FireWepon()
 // エイム開始
 void Agraduation_projectCharacter::AimWepon()
 {
-	if (isDead) return;
+	if (isDead || onBallista) return;
 
 	isAim = true;
 }
@@ -375,11 +385,14 @@ void Agraduation_projectCharacter::ChangeWepon(ABaseWepon* nextWepon)
 // ポーズ処理
 void Agraduation_projectCharacter::Pause()
 {
-	if (pauseTrg) return;
-
-	if (changePlayerInput) changePlayerInput = false;
-	else changePlayerInput = true;
-
+	if (onBallista || onGacha || onGimmickPuzzle || onWeponePuzzle)
+	{
+		changePlayerInput = true;
+	}
+	else
+	{
+		changePlayerInput = false;
+	}
 }
 
 // ポーズのトリガー処理
@@ -442,7 +455,7 @@ void Agraduation_projectCharacter::CameraChange(float DeltaTime)
 		lagSpeed = UKismetMathLibrary::Ease(5.0f, 1000.0f, cameraChangeTimer, EEasingFunc::EaseIn);
 		lagDistance = UKismetMathLibrary::Ease(120.0f, 0.0f, cameraChangeTimer, EEasingFunc::EaseIn);
 		
-		cameraChangeTimer += 2.0f * DeltaTime;
+		cameraChangeTimer += 3.0f * DeltaTime;
 		if (cameraChangeTimer >= 1.0f) cameraChangeTimer = 1.0f;
 
 		CameraBoom->bEnableCameraLag = false;
@@ -547,7 +560,8 @@ FRotator Agraduation_projectCharacter::GetWeaponePuzzuleRotation()
 void Agraduation_projectCharacter::OnGimmick()
 {
 	GimmickPuzzle();
-	Gacha();
+	OnGacha();
+	OnBallista();
 }
 
 void Agraduation_projectCharacter::GimmickPuzzle()
@@ -571,7 +585,7 @@ void Agraduation_projectCharacter::GimmickPuzzle()
 	Pause();
 }
 
-void Agraduation_projectCharacter::Gacha()
+void Agraduation_projectCharacter::OnGacha()
 {
 	if (!gacha) return;
 	if (onWeponePuzzle) return;
@@ -581,15 +595,49 @@ void Agraduation_projectCharacter::Gacha()
 		if (!useGacha) return;
 		gacha->BeginGacha();
 		onGacha = true;
-		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.1f);
 	}
 	else
 	{
-		gacha->EndGacha();
-		onGacha = false;
-		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
+		//gacha->EndGacha();
+		//onGacha = false;
 	}
 	Pause();
+}
+
+void Agraduation_projectCharacter::OnBallista()
+{
+	if (!ballista) return;
+	if (onWeponePuzzle) return;
+
+	if (!onBallista)
+	{
+		if (!useBallista) return;
+		auto animInstance = GetMesh()->GetAnimInstance();
+		if (!animInstance->Montage_IsPlaying(ballistaMotion[0]))
+		{
+			animInstance->Montage_Play(ballistaMotion[0], 1.0f);
+
+		ballista->BeginBallista();
+		onBallista = true;
+		SetActorLocation(ballista->ballistaMesh->GetSocketLocation(FName("PlayerPos")));
+		FRotator _newRotation(ballista->GetActorRotation());
+		_newRotation.Yaw += 90.0f;
+		SetActorRotation(_newRotation);
+		}
+	}
+	else
+	{
+		auto animInstance = GetMesh()->GetAnimInstance();
+		if (!animInstance->Montage_IsPlaying(ballistaMotion[1]))
+		{
+			animInstance->Montage_Play(ballistaMotion[1], 1.0f);
+			ballista->EndBallista();
+			onBallista = false;
+		}
+	}
+
+	Pause();
+
 }
 
 void Agraduation_projectCharacter::BeginOverlap(
@@ -614,6 +662,12 @@ void Agraduation_projectCharacter::BeginOverlap(
 		{
 			gacha = Cast<AGacha>(OtherActor);
 			useGacha= true;
+		}
+		if (OtherComp->ComponentTags[0] == "Ballista")
+		{
+			ballista = Cast<ABallistaOrigin>(OtherActor);
+			useBallista= true;
+			ballista->useBaliista = true;
 		}
 	}
 }
@@ -640,35 +694,13 @@ void Agraduation_projectCharacter::EndOverlap
 			gacha = Cast<AGacha>(OtherActor);
 			useGacha= false;
 		}
+		if (OtherComp->ComponentTags[0] == "Ballista")
+		{
+			ballista = Cast<ABallistaOrigin>(OtherActor);
+			useBallista = false;
+			ballista->useBaliista = false;
+		}
 	}
-}
-
-void Agraduation_projectCharacter::UseBlaster()
-{
-	ABaseWepon* tmp = useWepon;
-	tmp->mesh->SetVisibility(false);
-	useWepon = weaponArray[0];
-	useWepon->mesh->SetVisibility(true);
-
-	ChangeWepon(useWepon);
-}
-
-void Agraduation_projectCharacter::UseShotGun()
-{
-	ABaseWepon* tmp = useWepon;
-	tmp->mesh->SetVisibility(false);
-	useWepon = weaponArray[1];
-	useWepon->mesh->SetVisibility(true);
-	ChangeWepon(useWepon);
-}
-
-void Agraduation_projectCharacter::UseBombGun()
-{
-	ABaseWepon* tmp = useWepon;
-	tmp->mesh->SetVisibility(false);
-	useWepon = weaponArray[2];
-	useWepon->mesh->SetVisibility(true);
-	ChangeWepon(useWepon);
 }
 
 void Agraduation_projectCharacter::CreateWeapone()
