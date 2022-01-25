@@ -19,8 +19,7 @@ UBT_T_ChaseTo::UBT_T_ChaseTo(const FObjectInitializer& ObjectInitializer) : Supe
 
 EBTNodeResult::Type UBT_T_ChaseTo::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-
-	if (!enm)
+	//if(!enm)
 	{
 		AAIController* controller = OwnerComp.GetAIOwner();
 
@@ -36,12 +35,12 @@ EBTNodeResult::Type UBT_T_ChaseTo::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 		}
 
 	}
-	else
-	{
-		AcceptableRadius = enm->ATK_RANGE - 10.f;
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White, FString::SanitizeFloat(AcceptableRadius), true, FVector2D(1.0f, 1.0f));
+	//else
+	//{
+	//	AcceptableRadius = enm->ATK_RANGE - 10.f;
+	//	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White, FString::SanitizeFloat(AcceptableRadius), true, FVector2D(1.0f, 1.0f));
 
-	}
+	//}
 
 	return Super::ExecuteTask(OwnerComp, NodeMemory);
 
