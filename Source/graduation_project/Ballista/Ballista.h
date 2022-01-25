@@ -56,6 +56,8 @@ public:
 		TSubclassOf<ABaseAmmo> ammoClass;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ballista")
 		bool useBaliista;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GroupID")
+		int groupID;
 private:
 	bool onBaliista;
 	bool onShot;

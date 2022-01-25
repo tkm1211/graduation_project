@@ -15,6 +15,7 @@
 #include "Puzzle/WeaponPuzzle.h"
 #include "Puzzle/GimmickPuzzle.h"
 #include "Puzzle/WeaponPuzzleMediator.h"
+#include "Puzzle/GimmickMediator.h"
 #include "Gacha/Gacha.h"
 #include "Ballista/BallistaOrigin.h"
 
@@ -237,6 +238,8 @@ void Agraduation_projectCharacter::Tick(float DeltaTime)
 		postEffectSaturateValue += 10 * DeltaTime;
 		if (postEffectSaturateValue >= 1.0f) postEffectSaturateValue = 1.0f;
 	}
+
+	if (RespawnJudge(GetActorLocation())) Respawn();
 
 	Pause();
 }
@@ -609,6 +612,15 @@ void Agraduation_projectCharacter::OnBallista()
 	if (!ballista) return;
 	if (onWeponePuzzle) return;
 
+	UGameInstance* instance = GetWorld()->GetGameInstance();
+	UGimmickMediator* _resource = instance->GetSubsystem<UGimmickMediator>();
+	{
+		if (_resource->GetOnWeaponGimmick(ballista->groupID))
+		{
+			return;
+		}
+	}
+
 	if (!onBallista)
 	{
 		if (!useBallista) return;
@@ -705,4 +717,40 @@ void Agraduation_projectCharacter::EndOverlap
 
 void Agraduation_projectCharacter::CreateWeapone()
 {
+}
+
+bool Agraduation_projectCharacter::RespawnJudge(FVector _location)
+{
+	if (_location.Z <= respawnJudgeLocZ)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+void Agraduation_projectCharacter::Respawn()
+{
+	TArray<AActor*> _actors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), respawnActor, _actors);
+		
+	float _length = 1000;
+	int _index = 0;
+
+	for (int i = 0; i < _actors.Num(); i++)
+	{
+		FVector _vector = GetActorLocation() - _actors[i]->GetActorLocation();
+
+		float _tmpLength = _vector.Size();
+
+		if (_length > _tmpLength)
+		{
+			_length = _tmpLength;
+			_index = i;
+		}
+
+	}
+
+	SetActorLocation(_actors[_index]->GetActorLocation());
+
 }

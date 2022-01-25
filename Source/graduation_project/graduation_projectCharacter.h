@@ -48,6 +48,7 @@ private:
 
 	class UWeaponPuzzleMediator* weaponMediator;
 
+
 public:
 	bool onGacha;
 
@@ -134,6 +135,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "CameraLocation")
 		FVector AimCameraLocation;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Respawn")
+		TSubclassOf<AActor> respawnActor;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Respawn")
+		float respawnJudgeLocZ;
+
 
 public:
 	Agraduation_projectCharacter();
@@ -148,6 +154,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Horming)
 		bool hotmingTargetRockOn = false;
+
 
 
 protected:
@@ -172,6 +179,7 @@ protected:
 
 	void ReleasePause();
 
+	void Respawn();
 protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
@@ -200,6 +208,8 @@ public:
 	class UCameraComponent* GetFollowCamera() { return camera; }
 
 	void Pause();
+
+	bool RespawnJudge(FVector _location);
 
 	UFUNCTION()
 		void BeginOverlap(
