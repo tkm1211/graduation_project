@@ -139,18 +139,6 @@ bool AENM_Minimon::Death(float DeltaTime)
     return true;
 }
 
-void AENM_Minimon::CombatON()
-{
-    is_combat = true;
-    GetCharacterMovement()->MaxWalkSpeed = COMBAT_WALK_SPEED;
-}
-
-
-void AENM_Minimon::CombatOFF()
-{
-    is_combat = false;
-    GetCharacterMovement()->MaxWalkSpeed = IDLE_WALK_SPEED;
-}
 
 void AENM_Minimon::OnHit(class UPrimitiveComponent* HitComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {

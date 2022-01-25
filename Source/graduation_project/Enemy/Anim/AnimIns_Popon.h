@@ -20,7 +20,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
 		bool IsWander = false;
-
+	float wandertime = 0.f;
+		
 	// アニメーションの更新時
 	virtual void NativeUpdateAnimation(float DeltaTime) override;
 	// アニメーション評価後

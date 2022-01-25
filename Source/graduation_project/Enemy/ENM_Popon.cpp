@@ -4,6 +4,8 @@
 #include "ENM_Popon.h"
 #include "E_PoponAIController.h"
 
+#include "ENM_ChaFireball.h"
+
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "../graduation_projectCharacter.h"
@@ -46,10 +48,12 @@ AENM_Popon::AENM_Popon()
 
 	GetCharacterMovement()->DefaultLandMovementMode = EMovementMode::MOVE_Walking;
 
-	//static ConstructorHelpers::FClassFinder<AActor> SpitAsset(TEXT("/Game/Enemy/ChaiChai/Blueprints/BP_FX_Spit"));
-	//FX_SpitClass = SpitAsset.Class;
+	static ConstructorHelpers::FClassFinder<AENM_ChaFireball> FireballAsset(TEXT("/Game/Enemy/ChaiChai/Blueprints/BP_ChaiFireball"));
+	FireballClass = FireballAsset.Class;
 
+	bFire.Emplace(false);
 
+	GetMesh()->ComponentTags.Add("Enemy");
 }
 
 void AENM_Popon::BeginPlay()
@@ -80,13 +84,27 @@ void AENM_Popon::Tick(float DeltaTime)
 
 	FHitResult hit;
 	UKismetSystemLibrary::LineTraceSingle(GetWorld(), start, end, ETraceTypeQuery::TraceTypeQuery1, false, TArray<AActor*>(),
-		EDrawDebugTrace::ForDuration, hit, false);
+		EDrawDebugTrace::None, hit, false);
 
 	if (hit.bBlockingHit)
 	{
 		FRotator rot = UKismetMathLibrary::MakeRotFromZX(hit.ImpactNormal, GetActorForwardVector());
 		SetActorRotation(rot);
 	}
+
+	if (bFire[FIREBALL])
+	{
+		FVector pos = GetMesh()->GetSocketLocation("SpitSocket");
+		FRotator rot = GetMesh()->GetSocketRotation("SpitSocket");
+		if (pl)
+		{
+			rot = UKismetMathLibrary::FindLookAtRotation(pos, pl->GetActorLocation());
+		}
+		GetWorld()->SpawnActor<AENM_ChaFireball>(FireballClass, pos, rot);
+
+		bFire[FIREBALL] = false;
+	}
+
 
 	Death(DeltaTime);
 }

@@ -16,6 +16,14 @@ class GRADUATION_PROJECT_API AENM_Popon : public AEnemyBase
 
 	AENM_Popon();
 
+public:
+	UPROPERTY(EditAnywhere, Category = Projectile)
+		TSubclassOf<class AENM_ChaFireball> FireballClass;
+
+	enum PROJECTILE
+	{
+		FIREBALL,
+	};
 
 protected:
 	// Called when the game starts or when spawned

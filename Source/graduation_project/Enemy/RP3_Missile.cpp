@@ -125,7 +125,7 @@ void ARP3_Missile::Tick(float DeltaTime)
 
 	if (!marker)
 	{
-		if (StartHoming_Time < currentTime)
+		if (StartHoming_Time < currentTime && player)
 		{
 			FActorSpawnParameters SpawnParams;
 			SpawnParams.Owner = this;

@@ -48,6 +48,12 @@ void AEnemyBase::BeginPlay()
 	UGameInstance* instance = GetWorld()->GetGameInstance();
 	pieceBlockDropper = instance->GetSubsystem<UPieceBlockDropper>();
 
+
+	if (GetWorld())
+	{
+		pl = Cast<Agraduation_projectCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	}
+
 }
 
 // Called every frame
@@ -160,4 +166,17 @@ void AEnemyBase::Damage(float _indamage)
 
 	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White, FString::Printf(TEXT("Damage")), true, FVector2D(1.0f, 1.0f));
 
+}
+
+void AEnemyBase::CombatON()
+{
+	is_combat = true;
+	GetCharacterMovement()->MaxWalkSpeed = COMBAT_WALK_SPEED;
+}
+
+
+void AEnemyBase::CombatOFF()
+{
+	is_combat = false;
+	GetCharacterMovement()->MaxWalkSpeed = IDLE_WALK_SPEED;
 }

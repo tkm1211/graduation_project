@@ -16,7 +16,12 @@ void UAnimIns_Popon::NativeUpdateAnimation(float DeltaTime)
             if (WanderRate >= 100.f)
             {
                 WanderRate = 100.f;
-                IsWander = false;
+                wandertime += DeltaTime;
+                if (wandertime >= 10.f)
+                {
+                    IsWander = false;
+                    wandertime = 0.f;
+                }
             }
         }
         else
@@ -49,7 +54,12 @@ void UAnimIns_Popon::NativePostEvaluateAnimation()
             if (WanderRate >= 100.f)
             {
                 WanderRate = 100.f;
-                IsWander = false;
+                wandertime += DeltaTime;
+                if (wandertime >= 10.f)
+                {
+                    IsWander = false;
+                    wandertime = 0.f;
+                }
             }
         }
         else

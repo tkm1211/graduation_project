@@ -53,8 +53,8 @@ public:
 	bool is_combat = false;
 	bool atk_collision_on = false;
 
-	virtual void CombatON(){}
-	virtual void CombatOFF(){}
+	virtual void CombatON();
+	virtual void CombatOFF();
 
 	virtual bool Death(float DeltaTime);
 	virtual void Damage(float giveDamage);
@@ -82,6 +82,8 @@ public:
 	float TimeToTurn;
 	FRotator PrevRotation;
 	void TurnToPlayer();
+
+	class Agraduation_projectCharacter* pl;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

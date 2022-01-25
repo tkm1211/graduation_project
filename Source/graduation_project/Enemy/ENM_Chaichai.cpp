@@ -105,10 +105,6 @@ void AENM_Chaichai::BeginPlay()
 
 	//FX_SpitActor->SetActorRelativeLocation(GetMesh()->GetSocketLocation("SpitSocket"));
 
-	if (GetWorld())
-	{
-		pl = Cast<Agraduation_projectCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	}
 
 }
 

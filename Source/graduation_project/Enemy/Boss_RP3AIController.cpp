@@ -28,6 +28,9 @@ ABoss_RP3AIController::ABoss_RP3AIController() : Super()
 	BehaviorTree = BTFinder.Object;
 
 	PlayerActorKeyName = "PlayerActor";
+
+	bAttachToPawn = true;
+
 }
 
 void ABoss_RP3AIController::BeginPlay()

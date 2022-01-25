@@ -49,8 +49,10 @@ void UAnimIns_EnemyBase::NativeUpdateAnimation(float DeltaTime)
 		HP = enm->healthpoint;
 		IsCombat = enm->is_combat;
 
+		FVector velocity = enm->GetCharacterMovement()->Velocity;
+		float speed = velocity.Size();
 		float MaxSpeed = enm->GetCharacterMovement()->MaxWalkSpeed;
-		if(MaxSpeed != 0.f)Speed = enm->GetCharacterMovement()->Velocity.Size() / MaxSpeed;
+		if(MaxSpeed != 0.f)Speed = speed;
 
 	}
 }
@@ -64,8 +66,10 @@ void UAnimIns_EnemyBase::NativePostEvaluateAnimation()
 		HP = enm->healthpoint;
 		IsCombat = enm->is_combat;
 
+		FVector velocity = enm->GetCharacterMovement()->Velocity;
+		float speed = velocity.Size();
 		float MaxSpeed = enm->GetCharacterMovement()->MaxWalkSpeed;
-		if (MaxSpeed != 0.f)Speed = enm->GetCharacterMovement()->Velocity.Size() / MaxSpeed;
+		if (MaxSpeed != 0.f)Speed = speed;
 
 	}
 

@@ -100,9 +100,9 @@ void ABoss_RobotParts3::OnSeePlayer()
 
 void ABoss_RobotParts3::OnHit(class UPrimitiveComponent* HitComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	Agraduation_projectCharacter* pl = Cast<Agraduation_projectCharacter>(OtherActor);
+	Agraduation_projectCharacter* player = Cast<Agraduation_projectCharacter>(OtherActor);
 
-	if (pl == nullptr)
+	if (player == nullptr)
 	{
 
 
@@ -286,7 +286,11 @@ void ABoss_RobotParts3::BeginPlay()
 	GetMesh()->SetCollisionResponseToChannels(col_response);
 	//GetMesh()->UpdateCollisionProfile();
 
+	FindIgnoreActor = AActor::StaticClass();
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), FindIgnoreActor, IgnoreActors);
+	//static ConstructorHelpers::FClassFinder<UClass> Floor01Asset(TEXT("/Game/AssetAtsuki/BossStage/Floor01/BP_BossFloorA.uasset"));
+	//static ConstructorHelpers::FClassFinder<UClass> Floor02Asset(TEXT("/Game/AssetAtsuki/BossStage/Floor02/BP_BossFloorB.uasset"));
+
 
 }
 
@@ -403,7 +407,7 @@ void ABoss_RobotParts3::ModifyCollision()
 		RFireCapsuleComp->SetWorldRotation(CapRotator);
 		break;
 	case FLAME_FIRE:
-		NS_COL_BeemBlock(LFireCapsuleComp, nullptr, LEFT_HAND, 250.f);
+		NS_COL_BeemBlock(LFireCapsuleComp, nullptr, LEFT_HAND, 150.f);
 		break;
 	case MISSILE_FIRE:
 		break;

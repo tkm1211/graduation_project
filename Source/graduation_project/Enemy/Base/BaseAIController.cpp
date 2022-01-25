@@ -58,6 +58,7 @@ void ABaseAIController::OnPossess(class APawn* InPawn)
 
 	BlackboardComp->SetValueAsObject("SelfActor", this);
 	BlackboardComp->SetValueAsFloat("DistanceToPlayer", 100000.f);
+	BlackboardComp->SetValueAsBool("FirstContact", true);
 
 	BehaviorComp->StartTree(*BehaviorTree);
 
