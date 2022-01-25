@@ -50,13 +50,13 @@ void AE_PoponAIController::SearchPlayerActor(const TArray<AActor*>& actors)
 		AISensorComp->GetActorsPerception(actors[i], info);
 		if (info.LastSensedStimuli[0].WasSuccessfullySensed())
 		{
-			APawn* PlayerPawn = Cast<Agraduation_projectCharacter>(actors[i]);
+			Agraduation_projectCharacter* PlayerPawn = Cast<Agraduation_projectCharacter>(actors[i]);
 
-			BlackboardComp->SetValueAsObject(PlayerActorKeyName, PlayerPawn);
-
-
-
-			break;
+			if (PlayerPawn)
+			{
+				BlackboardComp->SetValueAsObject(PlayerActorKeyName, enm->pl);
+				break;
+			}
 		}
 
 	}
@@ -66,14 +66,17 @@ void AE_PoponAIController::SearchPlayerActor(const TArray<AActor*>& actors)
 void AE_PoponAIController::LostPlayerActor(const FActorPerceptionUpdateInfo& info)
 {
 
-	if (!info.Stimulus.WasSuccessfullySensed())
+	if (enm->is_combat)
 	{
-
-		float dist = BlackboardComp->GetValueAsFloat("DistanceToPlayer");
-		if (dist >= LoseRange)
+		if (!info.Stimulus.WasSuccessfullySensed())
 		{
-			BlackboardComp->SetValueAsObject(PlayerActorKeyName, nullptr);
 
+			float dist = BlackboardComp->GetValueAsFloat("DistanceToPlayer");
+			if (dist >= LoseRange)
+			{
+				BlackboardComp->SetValueAsObject(PlayerActorKeyName, nullptr);
+
+			}
 		}
 	}
 

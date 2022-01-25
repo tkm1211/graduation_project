@@ -46,7 +46,7 @@ void ABaseAIController::LostPlayerActor(const FActorPerceptionUpdateInfo& info)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, "Lost!!!");
 
-		BlackboardComp->SetValueAsObject(PlayerActorKeyName, nullptr);
+		//BlackboardComp->SetValueAsObject(PlayerActorKeyName, nullptr);
 	}
 
 }
