@@ -8,6 +8,8 @@
 #include "PieceI.h"
 #include "PieceT.h"
 #include "PiecePanel.h"
+#include "PieceOutLine.h"
+#include "PieceDirection.h"
 #include "NumbersOrigin.h"
 #include "PieceCntPanel.h"
 #include "PaperSpriteComponent.h"
@@ -128,6 +130,34 @@ void AGrid::Initialize()
 		UpdatePieceCntPanals();
 	}
 
+	// ピースのアウトライン
+	{
+		pieceOutLines.Add(PieceShape::O, GetWorld()->SpawnActor<APieceOutLine>(PieceOutLineO));
+		pieceOutLines.Add(PieceShape::L, GetWorld()->SpawnActor<APieceOutLine>(PieceOutLineL));
+		pieceOutLines.Add(PieceShape::I, GetWorld()->SpawnActor<APieceOutLine>(PieceOutLineI));
+		pieceOutLines.Add(PieceShape::T, GetWorld()->SpawnActor<APieceOutLine>(PieceOutLineT));
+
+		for (auto& outLine : pieceOutLines)
+		{
+			outLine.Value->GetRenderComponent()->SetVisibility(false);
+			outLine.Value->SetActorScale3D(gridScale * 2.0f);
+		}
+	}
+
+	// ピースの矢印
+	{
+		pieceDirections.Add(GetWorld()->SpawnActor<APieceDirection>(PieceDirectionUp));
+		pieceDirections.Add(GetWorld()->SpawnActor<APieceDirection>(PieceDirectionDown));
+		pieceDirections.Add(GetWorld()->SpawnActor<APieceDirection>(PieceDirectionLeft));
+		pieceDirections.Add(GetWorld()->SpawnActor<APieceDirection>(PieceDirectionRight));
+
+		for (auto& direction : pieceDirections)
+		{
+			direction->GetRenderComponent()->SetVisibility(false);
+			direction->SetActorScale3D(gridScale * 2.0f);
+		}
+	}
+
 	// 入力バインド
 	{
 		APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
@@ -221,6 +251,7 @@ void AGrid::Tick(float DeltaTime)
 
 				pieces[selectPieceNum]->GetRenderComponent()->SetVisibility(true);
 				slotPieceDatas[selectSlotPieceNum].slotPiece->GetRenderComponent()->SetVisibility(true);
+				pieceOutLines[pieceDatas[selectPieceNum].shape]->GetRenderComponent()->SetVisibility(true);
 
 				hit = true;
 
@@ -566,10 +597,10 @@ void AGrid::MoveGrid(float DeltaTime)
 
 void AGrid::MovePiece(float DeltaTime)
 {
-	// OriginPieceからPanelNumを設定
-	//SetPanelNumToOriginPiece();
-
-	//originPiecePos = panelPositions[panelNumAtOriginPiece];
+	for (auto& outLine : pieceOutLines)
+	{
+		outLine.Value->GetRenderComponent()->SetVisibility(false);
+	}
 
 	auto MovePiece = [&](int pieceNum, int panelNum, bool onAdjust)
 	{
@@ -577,11 +608,12 @@ void AGrid::MovePiece(float DeltaTime)
 		if (panelNum == -1 || panelPositions.Num() <= panelNum) return;
 
 		auto piecePos = panelPositions[panelNum];
+		auto outLinePos = piecePos;
 		auto piece = pieces[pieceNum];
 
 		auto location = GetLocation();
 
-		piecePos += onAdjust ? (forwardVec * (AdjustPiece * 2.0f)) : (forwardVec * AdjustPiece);
+		piecePos += onAdjust ? (forwardVec * (AdjustPiece * 3.0f)) : (forwardVec * AdjustPiece);
 
 		AdjustPiecePosFromOrigin(piecePos, (panelSize * 0.5f), pieceDatas[pieceNum].shape, piece->GetTurnCnt());
 		piece->PieceMove(piecePos, location, rightVec, upVec);
@@ -593,6 +625,108 @@ void AGrid::MovePiece(float DeltaTime)
 		rotateX = 90.0f * piece->GetTurnCnt() * -1.0f;
 		rotate = FRotator(rotateX, 0.0f, 0.0f);
 		piece->AddActorLocalRotation(rotate, false, 0, ETeleportType::None);
+
+		if (onAdjust)
+		{
+			auto outLine = pieceOutLines[pieceDatas[pieceNum].shape];
+
+			outLinePos += forwardVec * (AdjustPiece * 2.0f);
+			AdjustPiecePosFromOrigin(outLinePos, (panelSize * 0.5f), pieceDatas[pieceNum].shape, piece->GetTurnCnt());
+
+			if (onPuzzle) outLine->GetRenderComponent()->SetVisibility(true);
+			outLine->SetActorLocation(outLinePos);
+			outLine->SetActorRotation(GetActorRotation());
+			outLine->AddActorLocalRotation(rotate, false, 0, ETeleportType::None);
+
+			const float AdjustPieceDirectionScale = 0.75f;
+
+			float pieceDirectionUpScale = 2.5f;
+			float pieceDirectionDownScale = 2.5f;
+			float pieceDirectionLeftScale = 2.5f;
+			float pieceDirectionRightScale = 2.5f;
+
+			int turnCnt = piece->GetTurnCnt();
+
+			switch (pieceDatas[pieceNum].shape)
+			{
+			case L:
+				if (turnCnt % 2 == 0)
+				{
+					pieceDirectionLeftScale += AdjustPieceDirectionScale;
+					pieceDirectionRightScale += AdjustPieceDirectionScale;
+				}
+				else
+				{
+					pieceDirectionUpScale += AdjustPieceDirectionScale;
+					pieceDirectionDownScale += AdjustPieceDirectionScale;
+				}
+
+				break;
+
+			case I:
+				if (turnCnt % 2 == 0)
+				{
+					pieceDirectionUpScale -= AdjustPieceDirectionScale * 0.75f;
+					pieceDirectionDownScale -= AdjustPieceDirectionScale * 0.75f;
+					pieceDirectionLeftScale += AdjustPieceDirectionScale * 2.0f;
+					pieceDirectionRightScale += AdjustPieceDirectionScale * 2.0f;
+				}
+				else
+				{
+					pieceDirectionUpScale += AdjustPieceDirectionScale * 2.0f;
+					pieceDirectionDownScale += AdjustPieceDirectionScale * 2.0f;
+					pieceDirectionLeftScale -= AdjustPieceDirectionScale * 0.75f;
+					pieceDirectionRightScale -= AdjustPieceDirectionScale * 0.75f;
+				}
+
+				break;
+
+			case T:
+				if (turnCnt == 0)
+				{
+					pieceDirectionUpScale -= AdjustPieceDirectionScale * 0.75f;
+					pieceDirectionDownScale += AdjustPieceDirectionScale;
+					pieceDirectionLeftScale += AdjustPieceDirectionScale;
+					pieceDirectionRightScale += AdjustPieceDirectionScale;
+				}
+				else if(turnCnt == 1)
+				{
+					pieceDirectionUpScale += AdjustPieceDirectionScale;
+					pieceDirectionDownScale += AdjustPieceDirectionScale;
+					pieceDirectionLeftScale += AdjustPieceDirectionScale;
+					pieceDirectionRightScale -= AdjustPieceDirectionScale * 0.75f;
+				}
+				else if (turnCnt == 2)
+				{
+					pieceDirectionUpScale += AdjustPieceDirectionScale;
+					pieceDirectionDownScale -= AdjustPieceDirectionScale * 0.75f;
+					pieceDirectionLeftScale += AdjustPieceDirectionScale;
+					pieceDirectionRightScale += AdjustPieceDirectionScale;
+				}
+				else if (turnCnt == 3)
+				{
+					pieceDirectionUpScale += AdjustPieceDirectionScale;
+					pieceDirectionDownScale += AdjustPieceDirectionScale;
+					pieceDirectionLeftScale -= AdjustPieceDirectionScale * 0.75f;
+					pieceDirectionRightScale += AdjustPieceDirectionScale;
+				}
+
+				break;
+
+			default: break;
+			}
+
+			pieceDirections[0]->SetActorLocation(outLinePos + upVec * pieceDirectionUpScale);
+			pieceDirections[1]->SetActorLocation(outLinePos - upVec * pieceDirectionDownScale);
+			pieceDirections[2]->SetActorLocation(outLinePos - rightVec * pieceDirectionLeftScale);
+			pieceDirections[3]->SetActorLocation(outLinePos + rightVec * pieceDirectionRightScale);
+
+			for (auto& direction : pieceDirections)
+			{
+				if (!onPuzzle) direction->GetRenderComponent()->SetVisibility(false);
+				direction->SetActorRotation(GetActorRotation());
+			}
+		}
 	};
 
 	SetPanelNumAtOriginPiece(panelNumAtOriginPiece);
@@ -940,6 +1074,11 @@ void AGrid::PieceMove(APieceOrigin* piece)
 		onPieceRight = false;
 	}
 
+	pieceDirections[0]->GetRenderComponent()->SetVisibility(JudgeMoveUp());
+	pieceDirections[1]->GetRenderComponent()->SetVisibility(JudgeMoveDown());
+	pieceDirections[2]->GetRenderComponent()->SetVisibility(JudgeMoveLeft());
+	pieceDirections[3]->GetRenderComponent()->SetVisibility(JudgeMoveRight());
+
 	auto piecePos = originPiecePos;
 	{
 		piecePos += forwardVec * (AdjustPiece * 2.0f);
@@ -1060,6 +1199,10 @@ void AGrid::PieceDecision(int pieceNum)
 			for (int i = 0; i < slotPieceDatas.Num(); ++i)
 			{
 				slotPieceDatas[i].slotPiece->GetRenderComponent()->SetVisibility(false);
+			}
+			for (auto& outLine : pieceOutLines)
+			{
+				outLine.Value->GetRenderComponent()->SetVisibility(false);
 			}
 		}
 		SetUpPiece(pieces[selectPieceNum], pieceDatas[selectPieceNum].shape);
@@ -2316,6 +2459,10 @@ void AGrid::LoadPieces()
 				{
 					slotPieceDatas[i].slotPiece->GetRenderComponent()->SetVisibility(false);
 				}
+				for (auto& outLine : pieceOutLines)
+				{
+					outLine.Value->GetRenderComponent()->SetVisibility(false);
+				}
 			}
 		}
 	}
@@ -2549,6 +2696,10 @@ void AGrid::VisibleGrid(bool visible)
 			panelBlue->GetRenderComponent()->SetVisibility(false);
 			panelYellow->GetRenderComponent()->SetVisibility(false);
 			panelPurple->GetRenderComponent()->SetVisibility(false);
+		}
+		for (auto& outLine : pieceOutLines)
+		{
+			outLine.Value->GetRenderComponent()->SetVisibility(false);
 		}
 	}
 }

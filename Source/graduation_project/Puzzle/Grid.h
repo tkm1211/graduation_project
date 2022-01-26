@@ -16,6 +16,8 @@ class APieceI;
 class APieceT;
 class ANumbersOrigin;
 class APieceCntPanel;
+class APieceOutLine;
+class APieceDirection;
 
 
 // 形
@@ -170,8 +172,35 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<APiecePanel> PiecePanel; // ピースのパネル（エディタで設定）
 
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Slot", meta = (AllowPrivateAccess = "true"))
 	TArray<TSubclassOf<ANumbersOrigin>> NumbersOrigin; // スロットピースの数（エディタで設定）
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APieceOutLine> PieceOutLineO; // ピースOのアウトライン（エディタで設定）
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APieceOutLine> PieceOutLineL; // ピースLのアウトライン（エディタで設定）
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APieceOutLine> PieceOutLineI; // ピースIのアウトライン（エディタで設定）
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APieceOutLine> PieceOutLineT; // ピースTのアウトライン（エディタで設定）
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APieceDirection> PieceDirectionUp; // ピースの↑（エディタで設定）
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APieceDirection> PieceDirectionDown; // ピースの↓（エディタで設定）
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APieceDirection> PieceDirectionLeft; // ピースの←（エディタで設定）
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<APieceDirection> PieceDirectionRight; // ピースの→（エディタで設定）
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Piece Cnt Panel", meta = (AllowPrivateAccess = "true"))
@@ -296,6 +325,9 @@ private:
 	TArray<APieceCntPanel*> pieceCntPanelBlue;
 	TArray<APieceCntPanel*> pieceCntPanelYellow;
 	TArray<APieceCntPanel*> pieceCntPanelPurple;
+
+	TMap<PieceShape, APieceOutLine*> pieceOutLines;
+	TArray<APieceDirection*> pieceDirections;
 
 	// 次にピースを取得するときにpieceDatasの開始番号
 	int currentResourceIndex;
