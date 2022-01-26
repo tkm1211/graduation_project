@@ -59,7 +59,7 @@ private:
 	float FlyDirectionRandMax = 1.0f;
 
 	float RotateYRandMin = 0.0f;
-	float RotateYRandMax = 180.0f;
+	float RotateYRandMax = 360.0f;
 	
 public:
 	// ピースをドロップ
