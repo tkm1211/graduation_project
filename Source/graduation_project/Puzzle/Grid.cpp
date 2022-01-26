@@ -835,6 +835,9 @@ void AGrid::SetUpPiece(APieceOrigin* piece, PieceShape shape)
 	// 番号振り分け
 	SelectPieceNum(piece);
 
+	// 移動
+	PieceMove(piece); // 番号振り分け後に移動する可能性があるため
+
 	// 配置可能判定
 	JudgePieceDecision(piece);
 
