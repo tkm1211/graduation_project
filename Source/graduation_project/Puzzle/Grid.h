@@ -92,6 +92,9 @@ struct FSlotNumbersData
 
 	// 2Œ…–Ú
 	TArray<ANumbersOrigin*> secondDigit;
+
+	// 3Œ…–Ú
+	TArray<ANumbersOrigin*> thirdDigit;
 };
 
 UCLASS()

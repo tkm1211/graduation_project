@@ -339,6 +339,7 @@ void AGrid::UpdateSlot(float DeltaTime)
 		{
 			data.firstDigit[i]->GetRenderComponent()->SetVisibility(false);
 			data.secondDigit[i]->GetRenderComponent()->SetVisibility(false);
+			data.thirdDigit[i]->GetRenderComponent()->SetVisibility(false);
 		}
 	}
 
@@ -496,6 +497,35 @@ void AGrid::UpdateSlot(float DeltaTime)
 				secondNum->SetActorRotation(GetActorRotation());
 				secondNum->SetActorScale3D(slotNumberScale * 0.775f);
 				secondNum->GetRenderComponent()->SetVisibility(true);
+			}
+		}
+		else if (cnt < 1000)
+		{
+			num = cnt % 10;
+			auto firstNum = slotNumbers[i].firstDigit[num];
+			{
+				firstNum->SetActorLocation(numPos + rightVec * slotNumberSecondSideWidht * 1.5f);
+				firstNum->SetActorRotation(GetActorRotation());
+				firstNum->SetActorScale3D(slotNumberScale * 0.75f);
+				firstNum->GetRenderComponent()->SetVisibility(true);
+			}
+
+			num = (cnt / 10) % 10;
+			auto secondNum = slotNumbers[i].secondDigit[num];
+			{
+				secondNum->SetActorLocation(numPos);
+				secondNum->SetActorRotation(GetActorRotation());
+				secondNum->SetActorScale3D(slotNumberScale * 0.75f);
+				secondNum->GetRenderComponent()->SetVisibility(true);
+			}
+
+			num = (cnt / 100) % 10;
+			auto thirdNum = slotNumbers[i].thirdDigit[num];
+			{
+				thirdNum->SetActorLocation(numPos - rightVec * slotNumberSecondSideWidht * 1.5f);
+				thirdNum->SetActorRotation(GetActorRotation());
+				thirdNum->SetActorScale3D(slotNumberScale * 0.75f);
+				thirdNum->GetRenderComponent()->SetVisibility(true);
 			}
 		}
 	}
@@ -2260,9 +2290,11 @@ void AGrid::CreateSlotNumbers()
 		{
 			data.firstDigit.Add(GetWorld()->SpawnActor<ANumbersOrigin>(NumbersOrigin[i]));
 			data.secondDigit.Add(GetWorld()->SpawnActor<ANumbersOrigin>(NumbersOrigin[i]));
+			data.thirdDigit.Add(GetWorld()->SpawnActor<ANumbersOrigin>(NumbersOrigin[i]));
 
 			data.firstDigit[i]->GetRenderComponent()->SetVisibility(false);
 			data.secondDigit[i]->GetRenderComponent()->SetVisibility(false);
+			data.thirdDigit[i]->GetRenderComponent()->SetVisibility(false);
 		}
 	}
 
@@ -2688,6 +2720,7 @@ void AGrid::VisibleGrid(bool visible)
 			{
 				slotNumber.firstDigit[i]->GetRenderComponent()->SetVisibility(false);
 				slotNumber.secondDigit[i]->GetRenderComponent()->SetVisibility(false);
+				slotNumber.thirdDigit[i]->GetRenderComponent()->SetVisibility(false);
 			}
 		}
 		for (int i = 0; i < 20; ++i)
