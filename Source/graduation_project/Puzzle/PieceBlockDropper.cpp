@@ -15,6 +15,10 @@ void UPieceBlockDropper::SpawnDropPieces(FDropPieceData dropPieceData, FTransfor
 			piece->SetActorLocation(transform.GetLocation());
 			piece->SetActorRotation(transform.GetRotation());
 
+			float rotateY = FMath::FRandRange(RotateYRandMin, RotateYRandMax);
+			auto rotate = FRotator(0.0f, rotateY, 0.0f);
+			piece->AddActorLocalRotation(rotate, false, 0, ETeleportType::None);
+
 			float randX = FMath::FRandRange(FlyDirectionRandMin, FlyDirectionRandMax);
 			float randY = FMath::FRandRange(FlyDirectionRandMin, FlyDirectionRandMax);
 

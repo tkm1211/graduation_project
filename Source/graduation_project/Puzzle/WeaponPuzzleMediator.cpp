@@ -29,6 +29,7 @@ void UWeaponPuzzleMediator::ChangeWeapon(int blasterPieceNum, int shotGunPieceNu
 	else if (clearBlaster)
 	{
 		currentWeaponType = clearShotGun ? WeaponType::BlasterAndShotGun : WeaponType::Blaster;
+		currentWeaponType = clearBombGun ? WeaponType::BombGunAndBlaster : currentWeaponType;
 	}
 	else if (clearShotGun)
 	{

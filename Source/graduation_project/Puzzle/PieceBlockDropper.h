@@ -57,6 +57,9 @@ class GRADUATION_PROJECT_API UPieceBlockDropper : public UGameInstanceSubsystem
 private:
 	float FlyDirectionRandMin = -1.0f;
 	float FlyDirectionRandMax = 1.0f;
+
+	float RotateYRandMin = 0.0f;
+	float RotateYRandMax = 180.0f;
 	
 public:
 	// ピースをドロップ
