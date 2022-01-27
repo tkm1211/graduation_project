@@ -15,9 +15,12 @@
 #include "Puzzle/WeaponPuzzle.h"
 #include "Puzzle/GimmickPuzzle.h"
 #include "Puzzle/WeaponPuzzleMediator.h"
+#include "Puzzle/PieceResourceManager.h"
 #include "Puzzle/GimmickMediator.h"
 #include "Gacha/Gacha.h"
 #include "Ballista/BallistaOrigin.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 
 //////////////////////////////////////////////////////////////////////////
 // Agraduation_projectCharacter
@@ -88,6 +91,7 @@ void Agraduation_projectCharacter::BeginPlay()
 	isInvincible = false;
 	isDead = false;
 	cameraChangeTimer = 0.0f;
+	haveTotalPiece = 0;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -116,10 +120,10 @@ void Agraduation_projectCharacter::SetupPlayerInputComponent(class UInputCompone
 	PlayerInputComponent->BindAxis("MoveForward", this, &Agraduation_projectCharacter::MoveForward).bConsumeInput = false;
 	PlayerInputComponent->BindAxis("MoveRight", this, &Agraduation_projectCharacter::MoveRight).bConsumeInput = false;
 
-	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("TurnRate", this, &Agraduation_projectCharacter::TurnAtRate);
-	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
-	PlayerInputComponent->BindAxis("LookUpRate", this, &Agraduation_projectCharacter::LookUpAtRate);
+	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput).bConsumeInput = false;
+	PlayerInputComponent->BindAxis("TurnRate", this, &Agraduation_projectCharacter::TurnAtRate).bConsumeInput = false;
+	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput).bConsumeInput = false;
+	PlayerInputComponent->BindAxis("LookUpRate", this, &Agraduation_projectCharacter::LookUpAtRate).bConsumeInput = false;
 	
 
 }
@@ -146,7 +150,7 @@ void Agraduation_projectCharacter::Tick(float DeltaTime)
 		CameraChange(DeltaTime);
 	}
 
-	if (!changePlayerInput || !isDead)
+	if (!changePlayerInput || !isDead || !stopPlayer)
 	{
 		// 無敵時間
 		static float _visibility = 0.8f;
@@ -228,6 +232,27 @@ void Agraduation_projectCharacter::Tick(float DeltaTime)
 		ballistaPitch = ballista->ballistaPitch;
 	}
 
+	UGameInstance* instance = GetWorld()->GetGameInstance();
+	UPieceResourceManager* _resource = instance->GetSubsystem<UPieceResourceManager>();
+	{
+		int _tmpPiecesNum = _resource->GetPieceResourceDataCnt();
+
+		if (haveTotalPiece != _tmpPiecesNum)
+		{
+			if (haveTotalPiece < _tmpPiecesNum)
+			{
+				// 回復
+				hp += healPoint;
+				if (defaultHp < hp) hp = defaultHp;
+				if (healEffect)
+				{
+					UNiagaraFunctionLibrary::SpawnSystemAttached(healEffect, RootComponent, FName("None"), GetActorLocation(), FRotator(0, 0, 0), EAttachLocation::Type::KeepWorldPosition, false);
+				}
+			}
+			haveTotalPiece = _tmpPiecesNum;
+		}
+	}
+
 	if (onWeponePuzzle)
 	{
 		postEffectSaturateValue -= 10 * DeltaTime;
@@ -267,23 +292,31 @@ void Agraduation_projectCharacter::Jump()
 
 void Agraduation_projectCharacter::TurnAtRate(float Rate)
 {
-	if (changePlayerInput || isDead) return;
+	if (changePlayerInput || isDead || stopPlayer) return;
 
 	// calculate delta for this frame from the rate information
 	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+
 }
 
 void Agraduation_projectCharacter::LookUpAtRate(float Rate)
 {
-	if (changePlayerInput || isDead) return;
+	if (changePlayerInput || isDead || stopPlayer) return;
 
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+
+	APlayerCameraManager* _playerCameraManager = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0);
+	if (_playerCameraManager)
+	{
+		_playerCameraManager->ViewPitchMin = -30.0f;
+		_playerCameraManager->ViewPitchMax = 30.0f;
+	}
 }
 
 void Agraduation_projectCharacter::MoveForward(float Value)
 {
-	if (changePlayerInput || isDead) return;
+	if (changePlayerInput || isDead || stopPlayer) return;
 
 	if ((Controller != nullptr) && (Value != 0.0f))
 	{
@@ -301,7 +334,7 @@ void Agraduation_projectCharacter::MoveForward(float Value)
 
 void Agraduation_projectCharacter::MoveRight(float Value)
 {
-	if (changePlayerInput || isDead) return;
+	if (changePlayerInput || isDead || stopPlayer) return;
 
 	if ((Controller != nullptr) && (Value != 0.0f))
 	{
@@ -320,7 +353,7 @@ void Agraduation_projectCharacter::MoveRight(float Value)
 // 射撃開始
 void Agraduation_projectCharacter::FireWepon()
 {
-	if (changePlayerInput || isDead) return;
+	if (changePlayerInput || isDead || stopPlayer) return;
 
 	if (!useWepon) return;
 	isPressFire = true;
@@ -343,7 +376,7 @@ void Agraduation_projectCharacter::FireWepon()
 // エイム開始
 void Agraduation_projectCharacter::AimWepon()
 {
-	if (isDead || onBallista) return;
+	if (changePlayerInput || isDead || onBallista || stopPlayer) return;
 
 	isAim = true;
 }
@@ -351,7 +384,7 @@ void Agraduation_projectCharacter::AimWepon()
 // 射撃終了
 void Agraduation_projectCharacter::StopFireWepon()
 {
-	if (changePlayerInput || isDead) return;
+	if (changePlayerInput || isDead|| stopPlayer) return;
 
 	if (!useWepon) return;
 
@@ -490,6 +523,8 @@ void Agraduation_projectCharacter::WeponPuzzle()
 {
 	if (!weaponPuzzle) return;
 	if (onGimmickPuzzle) return;
+	if (onBallista) return;
+	if (onGacha) return;
 
 	if (!onWeponePuzzle)
 	{
@@ -753,4 +788,12 @@ void Agraduation_projectCharacter::Respawn()
 
 	SetActorLocation(_actors[_index]->GetActorLocation());
 
+}
+
+
+void Agraduation_projectCharacter::StopPlayer()
+{
+
+	if (!stopPlayer) stopPlayer = true;
+	else stopPlayer = false;
 }

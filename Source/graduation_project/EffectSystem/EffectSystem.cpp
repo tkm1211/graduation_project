@@ -27,12 +27,6 @@ void AEffectSystem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	//Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
-
-	//UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), shotGunMuzzuleFlash, _playerCharacter->GetActorLocation(), FRotator(0.0f, a, 0), FVector(1, 1, 1));
-
-	//a++;
 }
 
 void AEffectSystem::SpawnEffect(EffectType type, FVector location)

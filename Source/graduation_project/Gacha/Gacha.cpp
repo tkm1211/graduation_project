@@ -421,6 +421,7 @@ void AGacha::CountPiece()
 					break;
 				case I:
 					yellowPiece.ICnt++;
+					yellowPiece.IIndex.Add(i);
 					break;
 				case T:
 					yellowPiece.TCnt++;
@@ -461,33 +462,105 @@ void AGacha::EmitPiecesParam(int _emitNum, int _typeNum)
 	switch (_typeNum)
 	{
 	case 0:
-		bluePieces[0].SpawnNum = _emitNum;
-		bluePieces[1].SpawnNum = _emitNum;
-		bluePieces[2].SpawnNum = _emitNum;
-		bluePieces[3].SpawnNum = _emitNum;
-
+		switch (acquisitionPieces)
+		{
+		case OnePiece:
+			bluePieces[0].SpawnNum = _emitNum;
+			bluePieces[1].SpawnNum = 0;
+			bluePieces[2].SpawnNum = 0;
+			bluePieces[3].SpawnNum = 0;
+			break;
+		case TwoPiece:
+			bluePieces[0].SpawnNum = _emitNum;
+			bluePieces[1].SpawnNum = _emitNum;
+			bluePieces[2].SpawnNum = 0;
+			bluePieces[3].SpawnNum = 0;
+			break;
+		case ThreePiece:
+			bluePieces[0].SpawnNum = _emitNum;
+			bluePieces[1].SpawnNum = _emitNum;
+			bluePieces[2].SpawnNum = _emitNum;
+			bluePieces[3].SpawnNum = 0;
+			break;
+		case FourPiece:
+			bluePieces[0].SpawnNum = _emitNum;
+			bluePieces[1].SpawnNum = _emitNum;
+			bluePieces[2].SpawnNum = _emitNum;
+			bluePieces[3].SpawnNum = _emitNum;
+			break;
+		default:
+			break;
+		}
 		DropPieceData.FixedDropPieceDatas.Add(bluePieces[0]);
 		DropPieceData.FixedDropPieceDatas.Add(bluePieces[1]);
 		DropPieceData.FixedDropPieceDatas.Add(bluePieces[2]);
 		DropPieceData.FixedDropPieceDatas.Add(bluePieces[3]);
 		break;
 	case 1:
-		pinkPieces[0].SpawnNum = _emitNum;
-		pinkPieces[1].SpawnNum = _emitNum;
-		pinkPieces[2].SpawnNum = _emitNum;
-		pinkPieces[3].SpawnNum = _emitNum;
-
+		switch (acquisitionPieces)
+		{
+		case OnePiece:
+			pinkPieces[0].SpawnNum = _emitNum;
+			pinkPieces[1].SpawnNum = 0;
+			pinkPieces[2].SpawnNum = 0;
+			pinkPieces[3].SpawnNum = 0;
+			break;
+		case TwoPiece:
+			pinkPieces[0].SpawnNum = _emitNum;
+			pinkPieces[1].SpawnNum = _emitNum;
+			pinkPieces[2].SpawnNum = 0;
+			pinkPieces[3].SpawnNum = 0;
+			break;
+		case ThreePiece:
+			pinkPieces[0].SpawnNum = _emitNum;
+			pinkPieces[1].SpawnNum = _emitNum;
+			pinkPieces[2].SpawnNum = _emitNum;
+			pinkPieces[3].SpawnNum = 0;
+			break;
+		case FourPiece:
+			pinkPieces[0].SpawnNum = _emitNum;
+			pinkPieces[1].SpawnNum = _emitNum;
+			pinkPieces[2].SpawnNum = _emitNum;
+			pinkPieces[3].SpawnNum = _emitNum;
+			break;
+		default:
+			break;
+		}
 		DropPieceData.FixedDropPieceDatas.Add(pinkPieces[0]);
 		DropPieceData.FixedDropPieceDatas.Add(pinkPieces[1]);
 		DropPieceData.FixedDropPieceDatas.Add(pinkPieces[2]);
 		DropPieceData.FixedDropPieceDatas.Add(pinkPieces[3]);
 		break;
 	case 2:
-		yellowPieces[0].SpawnNum = _emitNum;
-		yellowPieces[1].SpawnNum = _emitNum;
-		yellowPieces[2].SpawnNum = _emitNum;
-		yellowPieces[3].SpawnNum = _emitNum;
-
+		switch (acquisitionPieces)
+		{
+		case OnePiece:
+			yellowPieces[0].SpawnNum = _emitNum;
+			yellowPieces[1].SpawnNum = 0;
+			yellowPieces[2].SpawnNum = 0;
+			yellowPieces[3].SpawnNum = 0;
+			break;
+		case TwoPiece:
+			yellowPieces[0].SpawnNum = _emitNum;
+			yellowPieces[1].SpawnNum = _emitNum;
+			yellowPieces[2].SpawnNum = 0;
+			yellowPieces[3].SpawnNum = 0;
+			break;
+		case ThreePiece:
+			yellowPieces[0].SpawnNum = _emitNum;
+			yellowPieces[1].SpawnNum = _emitNum;
+			yellowPieces[2].SpawnNum = _emitNum;
+			yellowPieces[3].SpawnNum = 0;
+			break;
+		case FourPiece:
+			yellowPieces[0].SpawnNum = _emitNum;
+			yellowPieces[1].SpawnNum = _emitNum;
+			yellowPieces[2].SpawnNum = _emitNum;
+			yellowPieces[3].SpawnNum = _emitNum;
+			break;
+		default:
+			break;
+		}
 		DropPieceData.FixedDropPieceDatas.Add(yellowPieces[0]);
 		DropPieceData.FixedDropPieceDatas.Add(yellowPieces[1]);
 		DropPieceData.FixedDropPieceDatas.Add(yellowPieces[2]);
@@ -501,6 +574,7 @@ void AGacha::EmitPiecesParam(int _emitNum, int _typeNum)
 
 void AGacha::TakePiece(TArray<int> _index, int _num)
 {
+	if (_num == 0) return;
 	UGameInstance* instance = GetWorld()->GetGameInstance();
 	UPieceResourceManager* _pieceResource = instance->GetSubsystem<UPieceResourceManager>();
 	{
