@@ -453,11 +453,11 @@ void AGrid::UpdateSlot(float DeltaTime)
 				{
 					slotWidth = AdjustSlotWidhtOfLocation + SlotSmallNumberRightWidht;
 				}
-				if (i == slotMostLeftNum)
+				if (i == slotMostLeftNum && slotLeftNum != slotMostLeftNum && slotRightNum != slotMostLeftNum)
 				{
 					slotWidth = (AdjustMostSlotWidhtOfLocation * -1.0f) + SlotSmallNumberMostLeftWidht;
 				}
-				if (i == slotMostRightNum)
+				if (i == slotMostRightNum && slotLeftNum != slotMostRightNum && slotRightNum != slotMostRightNum)
 				{
 					slotWidth = AdjustMostSlotWidhtOfLocation + SlotSmallNumberMostRightWidht;
 				}
