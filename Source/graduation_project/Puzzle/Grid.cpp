@@ -632,6 +632,11 @@ void AGrid::MovePiece(float DeltaTime)
 		outLine.Value->GetRenderComponent()->SetVisibility(false);
 	}
 
+	for (auto& direction : pieceDirections)
+	{
+		if (!onPuzzle || selectPieceNum == -1) direction->GetRenderComponent()->SetVisibility(false);
+	}
+
 	auto MovePiece = [&](int pieceNum, int panelNum, bool onAdjust)
 	{
 		if (pieceNum == -1 || pieces.Num() <= pieceNum) return;
@@ -753,7 +758,6 @@ void AGrid::MovePiece(float DeltaTime)
 
 			for (auto& direction : pieceDirections)
 			{
-				if (!onPuzzle) direction->GetRenderComponent()->SetVisibility(false);
 				direction->SetActorRotation(GetActorRotation());
 			}
 		}
