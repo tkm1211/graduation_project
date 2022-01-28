@@ -111,8 +111,7 @@ void Agraduation_projectCharacter::SetupPlayerInputComponent(class UInputCompone
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &Agraduation_projectCharacter::FireWepon).bConsumeInput = false;
 	PlayerInputComponent->BindAction("Fire", IE_Released, this, &Agraduation_projectCharacter::StopFireWepon).bConsumeInput = false;
 
-	PlayerInputComponent->BindAction("Pause", IE_Pressed, this, &Agraduation_projectCharacter::Pause);
-	PlayerInputComponent->BindAction("Pause", IE_Released, this, &Agraduation_projectCharacter::ReleasePause);
+	PlayerInputComponent->BindAction("Pause", IE_Pressed, this, &Agraduation_projectCharacter::Option);
 
 	PlayerInputComponent->BindAction("WeponPuzzle", IE_Pressed, this, &Agraduation_projectCharacter::WeponPuzzle);
 	PlayerInputComponent->BindAction("GimmickPuzzle", IE_Pressed, this, &Agraduation_projectCharacter::OnGimmick);
@@ -126,6 +125,22 @@ void Agraduation_projectCharacter::SetupPlayerInputComponent(class UInputCompone
 	PlayerInputComponent->BindAxis("LookUpRate", this, &Agraduation_projectCharacter::LookUpAtRate).bConsumeInput = false;
 	
 
+}
+
+void Agraduation_projectCharacter::Option()
+{
+	if (changePlayerInput || isDead || stopPlayer) return;
+
+	FString path = "/Game/UI/Option/OptionBP.OptionBP_C"; // /Content 以下のパスが /Game 以下のパスに置き換わり、コンテントブラウザーで名前が test なら test.test_C を指定する。
+	TSubclassOf<class AActor> sc = TSoftClassPtr<AActor>(FSoftObjectPath(*path)).LoadSynchronous(); // 上記で設定したパスに該当するクラスを取得
+	if (sc != nullptr)
+	{
+		AActor* _actor = GetWorld()->SpawnActor<AActor>(sc); // スポーン処理
+	}
+
+	onOption = true;
+
+	Pause();
 }
 
 // 更新
@@ -264,7 +279,14 @@ void Agraduation_projectCharacter::Tick(float DeltaTime)
 		if (postEffectSaturateValue >= 1.0f) postEffectSaturateValue = 1.0f;
 	}
 
+	if (onGacha || onGimmickPuzzle || onWeponePuzzle || onOption)
+	{
+		notDisplayUI = true;
+	}
+	else notDisplayUI = false;
+
 	if (RespawnJudge(GetActorLocation())) Respawn();
+
 
 	Pause();
 }
@@ -421,7 +443,7 @@ void Agraduation_projectCharacter::ChangeWepon(ABaseWepon* nextWepon)
 // ポーズ処理
 void Agraduation_projectCharacter::Pause()
 {
-	if (onBallista || onGacha || onGimmickPuzzle || onWeponePuzzle)
+	if (onBallista || onGacha || onGimmickPuzzle || onWeponePuzzle || onOption)
 	{
 		changePlayerInput = true;
 	}
@@ -472,6 +494,13 @@ void Agraduation_projectCharacter::Damage(float giveDamage, FVector hitPosition)
 			animInstance->Montage_Play(deadMontages, 1.0f);
 
 			Super::Jump();
+
+			FString path = "/Game/UI/Continue/ContinueBP.ContinueBP_C"; // /Content 以下のパスが /Game 以下のパスに置き換わり、コンテントブラウザーで名前が test なら test.test_C を指定する。
+			TSubclassOf<class AActor> sc = TSoftClassPtr<AActor>(FSoftObjectPath(*path)).LoadSynchronous(); // 上記で設定したパスに該当するクラスを取得
+			if (sc != nullptr)
+			{
+				AActor* _actor = GetWorld()->SpawnActor<AActor>(sc); // スポーン処理
+			}
 		}
 		return;
 	}

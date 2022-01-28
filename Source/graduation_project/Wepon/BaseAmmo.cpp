@@ -82,6 +82,7 @@ void ABaseAmmo::BeginOverlap(
 	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
 
+
 	if (!OtherActor && OtherActor != this && OtherActor != GetOwner()) return;
 	float hitDamage;
 	if (effectiveRange > life)
@@ -96,20 +97,26 @@ void ABaseAmmo::BeginOverlap(
 		if (OtherComp->ComponentTags[0] == "Wepon") return;
 		if (OtherComp->ComponentTags[0] == "Enemy")
 		{
-			AEnemyBase* _enemy = Cast<AEnemyBase>(OtherActor);
-			_enemy->Damage(hitDamage);
-			hitdam = hitDamage;
-			if (hitdam > 0)
+			if (Tags.Num() != 0)
 			{
-				FString path = "/Game/UI/Damage/DamageActorBP.DamageActorBP_C"; // /Content 以下のパスが /Game 以下のパスに置き換わり、コンテントブラウザーで名前が test なら test.test_C を指定する。
-				TSubclassOf<class AActor> sc = TSoftClassPtr<AActor>(FSoftObjectPath(*path)).LoadSynchronous(); // 上記で設定したパスに該当するクラスを取得
-				if (sc != nullptr)
+				if (Tags[0] != "BlasterAndBombGun" || Tags[0] != "BombGun" || Tags[0] != "RfBombGun")
 				{
-					AActor* _actor = GetWorld()->SpawnActor<AActor>(sc); // スポーン処理
-					ADamageActor* _damageActor = Cast<ADamageActor>(_actor);
-					_damageActor->SetActorLocation(GetActorLocation());
-					_damageActor->damage = hitdam;
-					_damageActor->CreateWBP();
+					AEnemyBase* _enemy = Cast<AEnemyBase>(OtherActor);
+					_enemy->Damage(hitDamage);
+					hitdam = hitDamage;
+					if (hitdam > 0)
+					{
+						FString path = "/Game/UI/Damage/DamageActorBP.DamageActorBP_C"; // /Content 以下のパスが /Game 以下のパスに置き換わり、コンテントブラウザーで名前が test なら test.test_C を指定する。
+						TSubclassOf<class AActor> sc = TSoftClassPtr<AActor>(FSoftObjectPath(*path)).LoadSynchronous(); // 上記で設定したパスに該当するクラスを取得
+						if (sc != nullptr)
+						{
+							AActor* _actor = GetWorld()->SpawnActor<AActor>(sc); // スポーン処理
+							ADamageActor* _damageActor = Cast<ADamageActor>(_actor);
+							_damageActor->SetActorLocation(GetActorLocation());
+							_damageActor->damage = hitdam;
+							_damageActor->CreateWBP();
+						}
+					}
 				}
 			}
 		}
@@ -126,6 +133,7 @@ void ABaseAmmo::OnHit(
 	const FHitResult& Hit
 )
 {
+
 	// プレイヤーを取得し、キャストする
 	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
@@ -139,10 +147,15 @@ void ABaseAmmo::OnHit(
 			if (OtherComp->ComponentTags[0] == "Wepon") return;
 			if (OtherComp->ComponentTags[0] == "Enemy")
 			{
-				AEnemyBase* _enemy = Cast<AEnemyBase>(OtherActor);
-				_enemy->Damage(hitDamage);
-				hitdam = hitDamage;
-
+				if (Tags.Num() != 0)
+				{
+					if (Tags[0] != "BlasterAndBombGun" || Tags[0] != "BombGun" || Tags[0] != "RfBombGun")
+					{
+						AEnemyBase* _enemy = Cast<AEnemyBase>(OtherActor);
+						_enemy->Damage(hitDamage);
+						hitdam = hitDamage;
+					}
+				}
 			}
 		}
 		AmmoDestroy();

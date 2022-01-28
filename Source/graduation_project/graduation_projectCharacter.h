@@ -53,6 +53,11 @@ private:
 
 public:
 	bool onGacha;
+	bool onOption;
+	bool onCameraSetting;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+		bool notDisplayUI;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 		class UCameraComponent* camera;
@@ -188,6 +193,8 @@ protected:
 	void StopAimWepon();
 
 	void ReleasePause();
+
+	void Option();
 
 	void Respawn();
 protected:
