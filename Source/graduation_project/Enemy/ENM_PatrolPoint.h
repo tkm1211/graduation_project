@@ -32,6 +32,9 @@ public:
 		class AEnemyBase* enm;
 
 	UPROPERTY(EditDefaultsOnly, Category = "STATUS")
+		float MaxHP = 100.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "STATUS")
 		float IDLE_MOVE_SPEED = 100.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "STATUS")
