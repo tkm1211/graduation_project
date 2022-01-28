@@ -121,8 +121,8 @@ void ABallistaOrigin::BallistaInput()
 		InputComponent = PlayerController->InputComponent;
 		check(InputComponent);
 
-		InputComponent->BindAxis("BallistaYAxis", this, &ABallistaOrigin::LookUpBallista).bConsumeInput = true;
-		InputComponent->BindAxis("BallistaXAxis", this, &ABallistaOrigin::TurnBallista).bConsumeInput = true;
+		InputComponent->BindAxis("BallistaYAxis", this, &ABallistaOrigin::LookUpBallista).bConsumeInput = false;
+		InputComponent->BindAxis("BallistaXAxis", this, &ABallistaOrigin::TurnBallista).bConsumeInput = false;
 
 		InputComponent->BindAction("BallistaShot", IE_Pressed, this, &ABallistaOrigin::FirstShot).bConsumeInput = false;
 		InputComponent->BindAction("BallistaShot", IE_Released, this, &ABallistaOrigin::EndShot).bConsumeInput = false;

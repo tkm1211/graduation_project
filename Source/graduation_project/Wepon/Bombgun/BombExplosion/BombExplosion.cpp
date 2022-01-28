@@ -4,6 +4,9 @@
 #include "BombExplosion.h"
 #include "Components/SphereComponent.h"
 #include "../../../Enemy/Base/EnemyBase.h"
+#include "Blueprint/UserWidget.h"
+#include "../../../UI/Damage/DamageActor.h"
+
 // 
 // Sets default values
 ABombExplosion::ABombExplosion()
@@ -51,6 +54,16 @@ void ABombExplosion::OnHit(class UPrimitiveComponent* HitComp, class AActor* Oth
 			{
 				AEnemyBase* _enemy = Cast<AEnemyBase>(OtherActor);
 				_enemy->Damage(damage);
+				FString path = "/Game/UI/Damage/DamageActorBP.DamageActorBP_C"; // /Content 以下のパスが /Game 以下のパスに置き換わり、コンテントブラウザーで名前が test なら test.test_C を指定する。
+				TSubclassOf<class AActor> sc = TSoftClassPtr<AActor>(FSoftObjectPath(*path)).LoadSynchronous(); // 上記で設定したパスに該当するクラスを取得
+				if (sc != nullptr)
+				{
+					AActor* _actor = GetWorld()->SpawnActor<AActor>(sc); // スポーン処理
+					ADamageActor* _damageActor = Cast<ADamageActor>(_actor);
+					_damageActor->SetActorLocation(GetActorLocation());
+					_damageActor->damage = damage;
+					_damageActor->CreateWBP();
+				}
 			}
 		}
 	}

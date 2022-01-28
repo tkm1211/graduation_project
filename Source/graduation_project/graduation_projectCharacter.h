@@ -12,6 +12,8 @@ class AWeaponPuzzle;
 class AGimmickPuzzle;
 class AGacha;
 class ABallistaOrigin;
+class UNiagaraSystem;
+class UNiagaraComponent;
 
 UCLASS(config = Game)
 class Agraduation_projectCharacter : public ACharacter
@@ -140,7 +142,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Respawn")
 		float respawnJudgeLocZ;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Heal", meta = (AllowPrivateAccess = "true"))
+		UNiagaraSystem* healEffect;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Heal")
+		float healPoint;
 
+private:
+	float haveTotalPiece;
+
+	bool stopPlayer;
 public:
 	Agraduation_projectCharacter();
 
@@ -210,6 +220,9 @@ public:
 	void Pause();
 
 	bool RespawnJudge(FVector _location);
+
+	UFUNCTION(BlueprintCallable)
+		void StopPlayer();
 
 	UFUNCTION()
 		void BeginOverlap(
