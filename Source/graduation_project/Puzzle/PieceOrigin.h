@@ -39,6 +39,19 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
 	FVector originPos;
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SE", meta = (AllowPrivateAccess = "true"))
+	class USoundCue* MoveSE; // ピース移動時のSE（エディタで設定）
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SE", meta = (AllowPrivateAccess = "true"))
+	class USoundCue* ChoiseSE; // ピーススロット移動時のSE（エディタで設定）
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SE", meta = (AllowPrivateAccess = "true"))
+	class USoundCue* RotateSE; // ピース回転時のSE（エディタで設定）
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SE", meta = (AllowPrivateAccess = "true"))
+	class USoundCue* DecisionSE; // ピース配置時のSE（エディタで設定）
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
 	FPieceShareData mainData;
@@ -65,6 +78,7 @@ public:
 	void Update(float DeltaTime);
 	void UpdateEnd();
 	void PieceMove(FVector originPiecePos, FVector spawnGridPos, FVector rightVec, FVector upVec);
+	void PieceChoice();
 	void PieceDecision();
 	void UndoData();
 	void OnPieceUp();

@@ -11,6 +11,7 @@
 #include "Components.h"
 #include "PieceBlockDropper.h"
 #include "NiagaraSystem.h"
+#include "Sound/SoundCue.h"
 #include "../Wepon/BaseAmmo.h"
 
 
@@ -55,6 +56,8 @@ void APieceBox::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPr
 		SpawnDropPieces();
 		SpawnEffect();
 		Destroy();
+
+		UGameplayStatics::PlaySound2D(GetWorld(), BreakSE, 10.0f, 1.0f, 0.0f, nullptr, this);
 	}
 }
 

@@ -371,6 +371,8 @@ void AGrid::UpdateSlot(float DeltaTime)
 
 		// 回転固定
 		PieceTurnLock(pieces[selectPieceNum], pieceDatas[selectPieceNum].shape);
+
+		pieces[selectPieceNum]->PieceChoice();
 	}
 
 	/*if (!onVisible && puzzleType == PuzzleType::TypeWeaponPuzzle)
@@ -1265,6 +1267,7 @@ void AGrid::PieceCancel(APieceOrigin* piece)
 	{
 		auto render = piece->GetRenderComponent();
 		render->SetVisibility(false);
+		visibilityPiece[selectPieceNum] = false;
 	}
 
 	// 一個前のピースの情報に現状を戻す

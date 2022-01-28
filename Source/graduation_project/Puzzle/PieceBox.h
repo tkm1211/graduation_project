@@ -26,6 +26,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "DropPiece", meta = (AllowPrivateAccess = "true"))
 	FDropPieceData DropPieceData;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SE", meta = (AllowPrivateAccess = "true"))
+	class USoundCue* BreakSE; // 壊した時のSE（エディタで設定）
+
 private:
 	UPieceBlockDropper* pieceBlockDropper;
 	

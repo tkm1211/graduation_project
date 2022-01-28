@@ -9,6 +9,8 @@
 #include "GameFramework/Character.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Sound/SoundCue.h"
+#include "Kismet/GameplayStatics.h"
 #include "../graduation_projectCharacter.h"
 
 
@@ -79,7 +81,7 @@ void ADropPiece::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UP
 		AddPiece();
 		Destroy();
 
-		//UE_LOG(LogTemp, Warning, TEXT("Destroy"));
+		UGameplayStatics::PlaySound2D(GetWorld(), GetSE, 5.0f, 1.0f, 0.0f, nullptr, this);
 	}
 }
 

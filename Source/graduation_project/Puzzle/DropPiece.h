@@ -25,6 +25,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	class UStaticMeshComponent* PieceMesh;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SE", meta = (AllowPrivateAccess = "true"))
+	class USoundCue* GetSE; // ピース取得時のSE（エディタで設定）
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Drop Piece Data", meta = (AllowPrivateAccess = "true"))
 	TEnumAsByte<PieceShape> Shape;
 

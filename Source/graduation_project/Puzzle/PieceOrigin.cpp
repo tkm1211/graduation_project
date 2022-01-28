@@ -2,6 +2,8 @@
 
 
 #include "PieceOrigin.h"
+#include "Sound/SoundCue.h"
+#include "Kismet/GameplayStatics.h"
 
 
 void APieceOrigin::Initialize(int selectNum, int panelWidthNum, int panelHegihtNum, float onePieceSize)
@@ -62,11 +64,18 @@ void APieceOrigin::PieceMove(FVector originPiecePos, FVector spawnGridPos, FVect
 	mainData.pieceMaxX = (mainData.pieceMaxXPos - spawnGridPos).Size();
 	mainData.pieceMinY = (mainData.pieceMinYPos - spawnGridPos).Size();
 	mainData.pieceMaxY = (mainData.pieceMaxYPos - spawnGridPos).Size();
+
+	if (onPieceUp || onPieceDown || onPieceLeft || onPieceRight) UGameplayStatics::PlaySound2D(GetWorld(), MoveSE, 10.0f, 1.0f, 0.0f, nullptr, this);
+}
+
+void APieceOrigin::PieceChoice()
+{
+	UGameplayStatics::PlaySound2D(GetWorld(), ChoiseSE, 10.0f, 1.0f, 0.0f, nullptr, this);
 }
 
 void APieceOrigin::PieceDecision()
 {
-
+	UGameplayStatics::PlaySound2D(GetWorld(), DecisionSE, 5.0f, 1.0f, 0.0f, nullptr, this);
 }
 
 void APieceOrigin::UndoData()
@@ -126,6 +135,8 @@ void APieceOrigin::TurnLeft()
 
 	TurnPiece(-1);
 	DoTurnLeft();
+
+	UGameplayStatics::PlaySound2D(GetWorld(), RotateSE, 10.0f, 1.0f, 0.0f, nullptr, this);
 }
 
 void APieceOrigin::TurnRight()
@@ -134,6 +145,8 @@ void APieceOrigin::TurnRight()
 
 	TurnPiece(1);
 	DoTurnRight();
+
+	UGameplayStatics::PlaySound2D(GetWorld(), RotateSE, 10.0f, 1.0f, 0.0f, nullptr, this);
 }
 
 void APieceOrigin::TurnLock(int turnCnt)
