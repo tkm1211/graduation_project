@@ -67,8 +67,9 @@ void AENM_ChaFireball::BeginPlay()
 	FCollisionResponseContainer col_response;
 	col_response.SetAllChannels(ECollisionResponse::ECR_Overlap);
 	col_response.Camera = ECollisionResponse::ECR_Ignore;
-	col_response.Visibility = ECollisionResponse::ECR_Ignore;
+	//col_response.Visibility = ECollisionResponse::ECR_Ignore;
 
+	//col_response.WorldStatic = ECollisionResponse::ECR_Block;
 	CollisionComponent->SetCollisionResponseToChannels(col_response);
 
 	FAttachmentTransformRules transform_rules(EAttachmentRule::KeepRelative, false);

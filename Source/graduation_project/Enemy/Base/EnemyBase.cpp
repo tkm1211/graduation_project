@@ -24,7 +24,7 @@ AEnemyBase::AEnemyBase()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	GetCapsuleComponent()->ComponentTags.Add(TEXT("Enemy"));
-
+	GetMesh()->ComponentTags.Add(TEXT("Enemy"));
 	//GetMesh()->SetCollisionProfileName("NoCollision");
 
 	b_rigor = false;
@@ -148,11 +148,10 @@ bool AEnemyBase::Death(float DeltaTime)
 void AEnemyBase::OnHit(class UPrimitiveComponent* HitComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 
-	if (OtherComp->ComponentTags[0] == TEXT("Player"))
+	if (OtherComp->ComponentTags.Num() != 0 && OtherComp->ComponentTags[0] == TEXT("Player"))
 	{
 		Agraduation_projectCharacter* _player = Cast<Agraduation_projectCharacter>(OtherActor);
 
-		float hitDamage = 20.f;
 
 		_player->Damage(ATK_POWER, SweepResult.Location);
 	}

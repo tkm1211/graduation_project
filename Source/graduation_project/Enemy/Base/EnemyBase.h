@@ -31,6 +31,8 @@ public:
 		float ATK_RANGE = 250.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "STATUS")
 		float ATK_POWER = 10.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "STATUS")
+		int AtkState = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "STATUS")
 		TArray<bool> bFire;
