@@ -52,6 +52,7 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		FDoOnce DeadEffectDoOnce;
 
+	float lost_time = 0.f;
 	bool is_combat = false;
 	bool atk_collision_on = false;
 
