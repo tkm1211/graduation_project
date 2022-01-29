@@ -26,7 +26,10 @@ void UCameraSetting::NativeConstruct()
 
 void UCameraSetting::Init()
 {
-	cameraRate = 1;
+	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
+	
+	cameraRate = _playerCharacter->BaseTurnRate / 10.0f;
 	cursolMoveTimer = 0;
 	mode = 0;
 	onDestory = false;
@@ -47,6 +50,7 @@ void UCameraSetting::Select(float rate)
 {
 	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
+	if (_playerCharacter->nowOption) return;
 	if (rate == 0)
 	{
 		_playerCharacter->onCameraSetting = false;
@@ -65,6 +69,9 @@ void UCameraSetting::Select(float rate)
 	}
 
 	onDestory = true;
+	_playerCharacter->onCameraSetting = true;
+
+	RemoveFromParent();
 
 }
 

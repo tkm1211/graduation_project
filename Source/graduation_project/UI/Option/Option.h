@@ -28,13 +28,25 @@ public:
 		class UImage* title= nullptr;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 		class UImage* title_choise = nullptr;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+		class UImage* camera_set = nullptr;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+		class UTextBlock* camera_rate = nullptr;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Finish")
 		bool onDestory;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
+		class USoundCue* select;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
+		class USoundCue* move;
+
 private:
 	int mode;
-
+	bool onCameraSetting;
 	float cursolMoveTimer;
+	float cameraRateTimer;
+	int cameraRate;
 public:
 	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry&, float) override;
@@ -44,6 +56,7 @@ public:
 private:
 	void SetVisilityUI(int _mode);
 	void CursolMove(float rate);
+	void CameraRate(float rate);
 	void Select();
 	void ReleaseSelect();
 };

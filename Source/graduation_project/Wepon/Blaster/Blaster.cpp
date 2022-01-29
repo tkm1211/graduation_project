@@ -12,16 +12,14 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "UObject/NameTypes.h"
-
+#include "Sound/SoundCue.h"
 ABlaster::ABlaster()
 {
-
 }
 
 void ABlaster::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 void ABlaster::Tick(float DeltaTime)
@@ -49,6 +47,7 @@ void ABlaster::Fire()
 	// 1î≠ÇæÇØèoÇ∑
 	if (ammoClass)
 	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), Sound_Obj, GetActorLocation());
 		SpawnShot();
 	}
 }

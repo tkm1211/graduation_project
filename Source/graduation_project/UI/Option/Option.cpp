@@ -5,7 +5,9 @@
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/Image.h"
+#include "Components/TextBlock.h"
 #include "../../graduation_projectCharacter.h"
+#include "Sound/SoundCue.h"
 
 void UOption::NativeConstruct()
 {
@@ -20,17 +22,30 @@ void UOption::NativeConstruct()
 		InputComponent->BindAction("OptionSelect", IE_Pressed, this, &UOption::Select).bConsumeInput = false;
 		InputComponent->BindAction("OptionSelect", IE_Released, this, &UOption::ReleaseSelect).bConsumeInput = false;
 
+		InputComponent->BindAxis("OptionAxisX", this, &UOption::CameraRate).bConsumeInput = false;
 		InputComponent->BindAxis("OptionAxisY", this, &UOption::CursolMove).bConsumeInput = false;
 
 	}
+
+	Init();
 }
 
 void UOption::Init()
 {
 	onDestory = false;
+	onCameraSetting = false;
 	mode = 0;
 	cursolMoveTimer = 0;
 	SetVisilityUI(mode);
+	camera_rate->SetVisibility(ESlateVisibility::Collapsed);
+	camera_set->SetVisibility(ESlateVisibility::Collapsed);
+
+	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
+
+	cameraRate = _playerCharacter->BaseTurnRate / 10;
+
+	camera_rate->SetText(FText::FromString(FString::FromInt(cameraRate)));
 }
 
 void UOption::NativeTick(const FGeometry& g, float InDeltaTime)
@@ -39,13 +54,17 @@ void UOption::NativeTick(const FGeometry& g, float InDeltaTime)
 
 	cursolMoveTimer -= InDeltaTime;
 	if (cursolMoveTimer < 0) cursolMoveTimer = 0.0f;
+	cameraRateTimer -= InDeltaTime;
+	if (cameraRateTimer < 0) cameraRateTimer = 0.0f;
 }
 
 void UOption::CursolMove(float rate)
 {
 	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
-	if (_playerCharacter->onCameraSetting) return;
+	if (!_playerCharacter->NowPlayerStop()) return;
+
+	if (onCameraSetting) return;
 
 	if (rate == 0) cursolMoveTimer = 0.0f;
 	if (cursolMoveTimer > 0) return;
@@ -53,6 +72,7 @@ void UOption::CursolMove(float rate)
 	{
 		if (mode > 0)
 		{
+			UGameplayStatics::PlaySound2D(GetWorld(), move);
 			mode--;
 			cursolMoveTimer = 0.3f;
 		}
@@ -62,44 +82,53 @@ void UOption::CursolMove(float rate)
 	{
 		if (mode < 2)
 		{
+			UGameplayStatics::PlaySound2D(GetWorld(), move);
 			mode++;
 			cursolMoveTimer = 0.3f;
 		}
 		SetVisilityUI(mode);
 	}
+
+
 }
 
 void UOption::Select()
 {
-	FString path = "/Game/UI/Camera/CameraSettingBP.CameraSettingBP_C"; // /Content 以下のパスが /Game 以下のパスに置き換わり、コンテントブラウザーで名前が test なら test.test_C を指定する。
-	TSubclassOf<class AActor> sc = TSoftClassPtr<AActor>(FSoftObjectPath(*path)).LoadSynchronous(); // 上記で設定したパスに該当するクラスを取得
 	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
-	if (_playerCharacter->onCameraSetting) return;
-
-	switch (mode)
+	if (!_playerCharacter->NowPlayerStop()) return;
+	if (!onCameraSetting)
 	{
-	case 0:
-		onDestory = true;
+		UGameplayStatics::PlaySound2D(GetWorld(), select);
 
-		// プレイヤーを取得し、キャストする
-		_playerCharacter->onOption = false;
-		_playerCharacter->Pause();
-		break;
-	case 1:
-		_playerCharacter->onCameraSetting = true;
-		if (sc != nullptr)
+		switch (mode)
 		{
-			AActor* _actor = GetWorld()->SpawnActor<AActor>(sc); // スポーン処理
+		case 0:
+			onDestory = true;
+
+			// プレイヤーを取得し、キャストする
+			_playerCharacter->onOption = false;
+			_playerCharacter->Pause();
+			break;
+		case 1:
+			camera_rate->SetVisibility(ESlateVisibility::Visible);
+			camera_set->SetVisibility(ESlateVisibility::Visible);
+			onCameraSetting = true;
+			break;
+		case 2:
+			onDestory = true;
+			UGameplayStatics::OpenLevel(GetWorld(), FName("TITLE"));
+			break;
+		default:
+			break;
 		}
-		onDestory = true;
-		break;
-	case 2:
-		onDestory = true;
-		UGameplayStatics::OpenLevel(GetWorld(), FName("Title"));
-		break;
-	default:
-		break;
+	}
+	else
+	{
+		UGameplayStatics::PlaySound2D(GetWorld(), select);
+		onCameraSetting = false;
+		camera_rate->SetVisibility(ESlateVisibility::Collapsed);
+		camera_set->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
 
@@ -125,6 +154,35 @@ void UOption::SetVisilityUI(int _mode)
 	default:
 		break;
 	}
+}
+
+void UOption::CameraRate(float rate)
+{
+	if (!onCameraSetting) return;
+	if (cameraRateTimer > 0) return;
+	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
+	if (!_playerCharacter->NowPlayerStop()) return;
+
+	if (rate > 0.8f)
+	{
+		cameraRate++;
+		if (cameraRate > 20) cameraRate = 20;
+		_playerCharacter->BaseTurnRate = cameraRate * 10.0f;
+		cameraRateTimer = 0.2f;
+		UGameplayStatics::PlaySound2D(GetWorld(), move);
+
+	}
+	else if (rate < -0.8f)
+	{
+		cameraRate--;
+		if (cameraRate < 1) cameraRate = 1;
+		_playerCharacter->BaseTurnRate = cameraRate * 10.0f;
+		cameraRateTimer = 0.2f;
+		UGameplayStatics::PlaySound2D(GetWorld(), move);
+
+	}
+	camera_rate->SetText(FText::FromString(FString::FromInt(cameraRate)));
 }
 
 void UOption::ReleaseSelect()

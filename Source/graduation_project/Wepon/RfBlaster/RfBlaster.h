@@ -14,7 +14,10 @@ class GRADUATION_PROJECT_API ARfBlaster : public ABaseWepon
 public:
 	// 弾薬をエディット側で設定させる
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ammo")
-		TSubclassOf<ABaseAmmo> ammoClass;
+		TSubclassOf<ABaseAmmo> ammoClass;	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
+		class USoundCue* Sound_Obj;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

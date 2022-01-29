@@ -54,6 +54,7 @@ private:
 public:
 	bool onGacha;
 	bool onOption;
+	bool nowOption;
 	bool onCameraSetting;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
@@ -151,6 +152,8 @@ public:
 		UNiagaraSystem* healEffect;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Heal")
 		float healPoint;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
+		class USoundCue* Sound_Obj;
 
 private:
 	float haveTotalPiece;
@@ -219,6 +222,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void ChangeWepon(ABaseWepon* nextWepon);
 
+	UFUNCTION(BlueprintCallable)
 	void Damage(float giveDamage, FVector hitPosition);
 
 	ABaseWepon* GetUseWepone() { return useWepon; }
@@ -227,6 +231,7 @@ public:
 	void Pause();
 
 	bool RespawnJudge(FVector _location);
+	bool NowPlayerStop() { return changePlayerInput; }
 
 	UFUNCTION(BlueprintCallable)
 		void StopPlayer();

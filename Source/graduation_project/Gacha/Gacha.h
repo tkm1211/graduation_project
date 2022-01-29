@@ -103,6 +103,16 @@ public:
 	FGachaPieceCnt bluePiece;
 	FGachaPieceCnt pinkPiece;
 	FGachaPieceCnt yellowPiece;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
+		class USoundCue* select;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
+		class USoundCue* move;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
+		class USoundCue* kyuin;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
+		class USoundCue* renda;
+
 private:
 	// ÉsÅ[ÉXälìæêî
 	AcquisitionPieces acquisitionPieces;

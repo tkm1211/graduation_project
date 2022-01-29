@@ -95,6 +95,8 @@ private:
 		UNiagaraSystem* rfShotGunAmmoExplosion;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "RfShotGunMuzzuleFlash", meta = (AllowPrivateAccess = "true"))
 		UNiagaraSystem* rfShotGunMuzzuleFlash;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "RfShotGunMuzzuleFlash", meta = (AllowPrivateAccess = "true"))
+		UNiagaraSystem* rfShotGunMuzzuleFlash1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "BallistaExplosion", meta = (AllowPrivateAccess = "true"))
 		UNiagaraSystem* ballistaAmmoExplosion;

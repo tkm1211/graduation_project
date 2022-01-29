@@ -17,17 +17,15 @@
 #include "NiagaraComponent.h"
 #include "Components/SphereComponent.h"
 #include "Camera/CameraComponent.h"
-
+#include "Sound/SoundCue.h"
 
 ABlasterAndShotgun::ABlasterAndShotgun()
 {
-
 }
 
 void ABlasterAndShotgun::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 void ABlasterAndShotgun::Tick(float DeltaTime)
@@ -55,6 +53,7 @@ void ABlasterAndShotgun::Fire()
 	// 1î≠ÇæÇØèoÇ∑
 	if (ammoClass)
 	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), Sound_Obj, GetActorLocation());
 		SpawnShot();
 	}
 }

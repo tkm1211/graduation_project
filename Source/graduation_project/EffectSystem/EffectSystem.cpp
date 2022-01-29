@@ -113,9 +113,9 @@ void AEffectSystem::SpawnEffect(EffectType type, FVector location)
 		{
 			ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 			Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
-			float Z = _playerCharacter->GetActorRotation().Yaw * -1.0f;
+			float Z = _playerCharacter->GetActorRotation().Yaw;
 			float X = _playerCharacter->GetUseWepone()->GetFirePoint()->GetSocketRotation(FName("None")).Roll * -1;
-			UNiagaraFunctionLibrary::SpawnSystemAttached(shotgunAndBombGunAmmoMuzzuleFlash, RootComponent, FName("None"), location, FRotator(0.0f, 0.0f, Z), EAttachLocation::Type::KeepWorldPosition, false);
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), shotgunAndBombGunAmmoMuzzuleFlash, location, FRotator(0.0f, Z, 0), FVector(1, 1, 1));
 		}
 		break;
 
@@ -156,9 +156,10 @@ void AEffectSystem::SpawnEffect(EffectType type, FVector location)
 		{
 			ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 			Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
-			float Z = _playerCharacter->GetActorRotation().Yaw * -1.0f;
+			float Z = _playerCharacter->GetActorRotation().Yaw;
 			float X = _playerCharacter->GetUseWepone()->GetFirePoint()->GetSocketRotation(FName("None")).Roll * -1;
-			UNiagaraFunctionLibrary::SpawnSystemAttached(rfShotGunMuzzuleFlash, RootComponent, FName("None"), location, FRotator(0.0f, 0.0f, Z), EAttachLocation::Type::KeepWorldPosition, false);
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), rfShotGunMuzzuleFlash, location, FRotator(0.0f, Z, 0), FVector(1, 1, 1));
+			UNiagaraFunctionLibrary::SpawnSystemAttached(rfShotGunMuzzuleFlash1, RootComponent, FName("None"), location, FRotator(0, 0, 0), EAttachLocation::Type::KeepWorldPosition, false);
 		}
 		break;
 	case EffectType::BallistaAmmoExplosion:

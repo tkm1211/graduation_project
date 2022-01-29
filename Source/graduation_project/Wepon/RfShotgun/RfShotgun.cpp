@@ -17,10 +17,9 @@
 #include "NiagaraComponent.h"
 #include "Components/SphereComponent.h"
 #include "Camera/CameraComponent.h"
-
+#include "Sound/SoundCue.h"
 ARfShotgun::ARfShotgun()
 {
-
 }
 
 void ARfShotgun::BeginPlay()
@@ -74,6 +73,7 @@ void ARfShotgun::Fire()
 	// 1î≠ÇæÇØèoÇ∑
 	if (ammoClass)
 	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), Sound_Obj, GetActorLocation());
 		SpawnShot();
 	}
 }

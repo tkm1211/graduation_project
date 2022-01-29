@@ -15,6 +15,8 @@ public:
 	// 弾薬をエディット側で設定させる
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ammo")
 		TSubclassOf<ABaseAmmo> ammoClass;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
+		class USoundCue* Sound_Obj;
 
 public:
 	ABlasterAndBombgun();

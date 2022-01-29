@@ -17,6 +17,8 @@ public:
 		TSubclassOf<ABaseAmmo> ammoClass;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AmmoDetails")
 		float spawnAmmoSpace;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
+		class USoundCue* Sound_Obj;
 
 protected:
 	// Called when the game starts or when spawned

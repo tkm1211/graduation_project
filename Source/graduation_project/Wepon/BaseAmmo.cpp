@@ -13,7 +13,7 @@
 #include "../Enemy/Base/EnemyBase.h"
 #include "Blueprint/UserWidget.h"
 #include "../UI/Damage/DamageActor.h"
-
+#include "Sound/SoundCue.h"
 // Sets default values
 ABaseAmmo::ABaseAmmo()
 {
@@ -38,7 +38,6 @@ ABaseAmmo::ABaseAmmo()
 void ABaseAmmo::BeginPlay()
 {
 	Super::BeginPlay();
-
 	//	mesh->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
 }
 
@@ -164,7 +163,15 @@ void ABaseAmmo::OnHit(
 
 void ABaseAmmo::AmmoDestroy()
 {
-	
+	if (ammoName == "BombGun" || ammoName == "RfBombGun")
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), Sound_Obj2, GetActorLocation());
+	}
+	else
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), Sound_Obj, GetActorLocation());
+	}
+
 	TArray<AActor*> foundActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEffectSystem::StaticClass(), foundActors);
 	if (foundActors[0])

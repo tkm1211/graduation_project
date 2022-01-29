@@ -14,6 +14,8 @@
 #include "GachaGage.h"
 #include "../Puzzle/PieceResourceManager.h"
 #include "../graduation_projectCharacter.h"
+#include "Sound/SoundCue.h"
+
 // Sets default values
 AGacha::AGacha()
 {
@@ -227,6 +229,8 @@ void AGacha::AddGage()
 
 	gageValue += GetWorld()->DeltaTimeSeconds * addGageValue;
 
+	UGameplayStatics::PlaySound2D(GetWorld(), renda);
+
 	if (limitGageValue <= gageValue)
 	{
 		gageValue = limitGageValue;
@@ -236,6 +240,10 @@ void AGacha::AddGage()
 
 void AGacha::ChoiseAxisX(float rate)
 {
+	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
+	if (!_playerCharacter->NowPlayerStop()) return;
+
 	if (!onGacha) return;
 
 	if (rate == 0.0f) moveCursolXDelay = 0.0f;
@@ -249,6 +257,7 @@ void AGacha::ChoiseAxisX(float rate)
 	if (rate <= -0.8f)
 	{
 		if (choiseIndexX <= 0) return;
+		UGameplayStatics::PlaySound2D(GetWorld(), move);
 
 		choiseIndexX--;
 		moveCursolXDelay = defaultMoveCursolDelay;
@@ -256,6 +265,7 @@ void AGacha::ChoiseAxisX(float rate)
 	else if (rate >= 0.8f)
 	{
 		if (choiseIndexX >= 2) return;
+		UGameplayStatics::PlaySound2D(GetWorld(), move);
 
 		choiseIndexX++;
 		moveCursolXDelay = defaultMoveCursolDelay;
@@ -265,6 +275,10 @@ void AGacha::ChoiseAxisX(float rate)
 
 void AGacha::ChoiseAxisY(float rate)
 {
+	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
+	if (!_playerCharacter->NowPlayerStop()) return;
+
 	if (!onGacha) return;
 
 	if (rate == 0.0f) moveCursolYDelay = 0.0f;
@@ -278,6 +292,7 @@ void AGacha::ChoiseAxisY(float rate)
 	if (rate <= -0.8f)
 	{
 		if (choiseIndexY >= 4) return;
+		UGameplayStatics::PlaySound2D(GetWorld(), move);
 
 		choiseIndexY++;
 		moveCursolYDelay = defaultMoveCursolDelay;
@@ -285,6 +300,7 @@ void AGacha::ChoiseAxisY(float rate)
 	else if (rate >= 0.8f)
 	{
 		if (choiseIndexY <= 0) return;
+		UGameplayStatics::PlaySound2D(GetWorld(), move);
 
 		choiseIndexY--;
 		moveCursolYDelay = defaultMoveCursolDelay;
@@ -299,7 +315,7 @@ void AGacha::CalcProbability()
 {
 
 	float randomRange = FMath::RandRange(1.0f, 100.0f);
-	addGageValue = FMath::RandRange(3.0f, 6.0f);
+	addGageValue = FMath::RandRange(50.0f, 200.0f) / 100.0f;
 	float _addLimitGage = 1.0f / 4.0f;
 
 	for (int i = 0; i < 5; i++)
@@ -331,8 +347,20 @@ void AGacha::CalcProbability()
 				acquisitionPieces = AcquisitionPieces::FourPiece;
 				limitGageValue = _addLimitGage * 5.0f;
 
-				if (FMath::RandRange(1.0f, 100.0f) <= 4.0f) addGageValue = 0.0f;
-				if (FMath::RandRange(1.0f, 100.0f) >= 96.0f) addGageValue = 100.0f;
+				if (FMath::RandRange(1.0f, 100.0f) <= 10)
+				{
+					UGameplayStatics::PlaySound2D(GetWorld(), kyuin);
+				}
+				if (FMath::RandRange(1.0f, 100.0f) <= 4.0f)
+				{
+					UGameplayStatics::PlaySound2D(GetWorld(), kyuin);
+					addGageValue = 0.0f;
+				}
+				if (FMath::RandRange(1.0f, 100.0f) >= 96.0f)
+				{
+					UGameplayStatics::PlaySound2D(GetWorld(), kyuin);
+					addGageValue = 100.0f;
+				}
 			}break;
 		}
 		randomRange -= probability[i];
@@ -341,9 +369,14 @@ void AGacha::CalcProbability()
 
 void AGacha::Select()
 {
+	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
+	if (!_playerCharacter->NowPlayerStop()) return;
+
 	if (!onGacha) return;
 
 	pressSelect = true;
+
 }
 
 void AGacha::SelectRelease()

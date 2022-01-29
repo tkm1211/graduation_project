@@ -13,16 +13,16 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "UObject/NameTypes.h"
 #include "NiagaraComponent.h"
-
+#include "Sound/SoundCue.h"
 AAssultRifle::AAssultRifle()
 {
+
 
 }
 
 void AAssultRifle::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 void AAssultRifle::Tick(float DeltaTime)
@@ -49,6 +49,7 @@ void AAssultRifle::Fire()
 	// 1î≠ÇæÇØèoÇ∑
 	if (ammoClass)
 	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), Sound_Obj, GetActorLocation());
 
 		SpawnShot();
 

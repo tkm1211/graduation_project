@@ -11,7 +11,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "../Wepon/BaseAmmo.h"
 #include "../EffectSystem/EffectSystem.h"
-
+#include "Sound/SoundCue.h"
 // Sets default values
 ABallistaOrigin::ABallistaOrigin()
 {
@@ -161,6 +161,7 @@ void ABallistaOrigin::Shot()
 
 	if (shotDelay <= 0.0f)
 	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), Sound_Obj, GetActorLocation());
 		SpawnAmmo();
 	}
 }

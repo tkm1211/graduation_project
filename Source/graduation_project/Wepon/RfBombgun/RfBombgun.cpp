@@ -12,16 +12,14 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "UObject/NameTypes.h"
 #include "NiagaraComponent.h"
-
+#include "Sound/SoundCue.h"
 ARfBombgun::ARfBombgun()
 {
-
 }
 
 void ARfBombgun::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 void ARfBombgun::Tick(float DeltaTime)
@@ -48,6 +46,7 @@ void ARfBombgun::Fire()
 	// 1î≠ÇæÇØèoÇ∑
 	if (ammoClass)
 	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), Sound_Obj, GetActorLocation());
 
 		SpawnShot();
 

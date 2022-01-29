@@ -34,6 +34,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AmmoName")
 		FString ammoName;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
+		class USoundCue* Sound_Obj;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
+		class USoundCue* Sound_Obj2;
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ammo")
 		float movementSpeed = 1500.0f;

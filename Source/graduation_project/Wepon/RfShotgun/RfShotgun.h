@@ -27,7 +27,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ammo")
 		float ammoRayCastRange;
-
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
+		class USoundCue* Sound_Obj;
 public:
 	ARfShotgun();
 

@@ -11,6 +11,7 @@
 #include "../graduation_projectCharacter.h"
 #include "Animation/AnimMontage.h"
 #include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 
 void UGachaGage::NativeConstruct()
 {
@@ -81,6 +82,7 @@ void UGachaGage::NativeTick(const FGeometry& g, float InDeltaTime)
 				{
 					if (totalBet > 0)
 					{
+						UGameplayStatics::PlaySound2D(GetWorld(), nowGacha->select);
 						UsePieces();
 						productionState = GachaProductionState::Main;
 						HideSelectMode();
@@ -91,12 +93,14 @@ void UGachaGage::NativeTick(const FGeometry& g, float InDeltaTime)
 				}
 				else if (_indexX == 1 && _indexY == 4)
 				{
+					UGameplayStatics::PlaySound2D(GetWorld(), nowGacha->select);
 					Reset();
 					DisplayPieceNum();
 					return;
 				}
 				else if (_indexX == 2 && _indexY == 4)
 				{
+					UGameplayStatics::PlaySound2D(GetWorld(), nowGacha->select);
 					nowGacha->EndGacha();
 					// プレイヤーを取得し、キャストする
 					ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
@@ -112,18 +116,21 @@ void UGachaGage::NativeTick(const FGeometry& g, float InDeltaTime)
 					{
 						if (_indexX == 0)
 						{
+							UGameplayStatics::PlaySound2D(GetWorld(), nowGacha->select);
 							ShowPieceNum(GachaPieceType::Blue);
 							howColumn = 0;
 							firstSelect = true;
 						}
 						else if (_indexX == 1)
 						{
+							UGameplayStatics::PlaySound2D(GetWorld(), nowGacha->select);
 							ShowPieceNum(GachaPieceType::Pink);
 							howColumn = 1;
 							firstSelect = true;
 						}
 						else
 						{
+							UGameplayStatics::PlaySound2D(GetWorld(), nowGacha->select);
 							ShowPieceNum(GachaPieceType::Yellow);
 							howColumn = 2;
 							firstSelect = true;
@@ -142,6 +149,7 @@ void UGachaGage::NativeTick(const FGeometry& g, float InDeltaTime)
 					
 					if (CanAddPiece(_indexY, _indexX))
 					{
+						UGameplayStatics::PlaySound2D(GetWorld(), nowGacha->select);
 						AddPiece(_indexY, _indexX);
 						DisplayPieceNum();
 					}
@@ -243,11 +251,15 @@ void UGachaGage::MainProduction()
 	{
 		gageValue = roundDownValue;
 		roundDownValue += 1.0f / 12.0f;
-		if (nowGacha->addGageValue != 0.0f) nowGacha->addGageValue = FMath::RandRange(1.0f, 4.0f);
+		if (nowGacha->addGageValue != 0.0f)
+		{
+			if(nowGacha->addGageValue != 100.0f) nowGacha->addGageValue = FMath::RandRange(50.0f, 200.0f) / 100.0f;
+		}
 	}
 
 	if (nowGacha->gageValue >= 1.25f)
 	{
+		UGameplayStatics::PlaySound2D(GetWorld(), nowGacha->kyuin);
 		rainbow->SetVisibility(ESlateVisibility::Visible);
 	}
 }
@@ -525,6 +537,7 @@ void UGachaGage::AddPiece(int row, int column)
 void UGachaGage::TakePiece(int row, int column)
 {
 	if (column != howColumn) return;
+	UGameplayStatics::PlaySound2D(GetWorld(), nowGacha->select);
 
 	switch (howColumn * 5 + row)
 	{

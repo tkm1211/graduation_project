@@ -59,6 +59,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GroupID")
 		int groupID;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
+		class USoundCue* Sound_Obj;
 private:
 	bool onBaliista;
 	bool onShot;

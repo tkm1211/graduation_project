@@ -13,17 +13,15 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "UObject/NameTypes.h"
-
+#include "Sound/SoundCue.h"
 
 ARfBlaster::ARfBlaster()
 {
-
 }
 
 void ARfBlaster::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 void ARfBlaster::Tick(float DeltaTime)
@@ -51,6 +49,7 @@ void ARfBlaster::Fire()
 	// 1î≠ÇæÇØèoÇ∑
 	if (ammoClass)
 	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), Sound_Obj, GetActorLocation());
 		SpawnShot();
 	}
 }

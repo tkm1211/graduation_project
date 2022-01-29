@@ -8,6 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "../Bombgun/BombExplosion/BombExplosion.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Sound/SoundCue.h"
 
 APursuitAmmo::APursuitAmmo()
 {
@@ -32,4 +33,5 @@ void APursuitAmmo::Explosion()
 
 	ABombExplosion* _tempbombExplosion = GetWorld()->SpawnActor<ABombExplosion>(explosionActor, GetActorLocation(), GetActorRotation());
 	_tempbombExplosion->SetOwner(this);
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), Sound_Obj2, GetActorLocation());
 }

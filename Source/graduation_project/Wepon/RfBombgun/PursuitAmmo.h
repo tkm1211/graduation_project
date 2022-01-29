@@ -18,7 +18,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ExplosionActor")
 		TSubclassOf<AActor> explosionActor;
 
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

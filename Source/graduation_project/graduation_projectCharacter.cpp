@@ -6,7 +6,6 @@
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
-#include "Kismet/GameplayStatics.h"
 #include "Wepon/BaseWepon.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -21,7 +20,8 @@
 #include "Ballista/BallistaOrigin.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
-
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 //////////////////////////////////////////////////////////////////////////
 // Agraduation_projectCharacter
 
@@ -69,6 +69,8 @@ Agraduation_projectCharacter::Agraduation_projectCharacter()
 	isInvincible = false;
 	isDead = false;
 	cameraChangeTimer = 0.0f;
+
+
 }
 
 void Agraduation_projectCharacter::BeginPlay()
@@ -92,7 +94,9 @@ void Agraduation_projectCharacter::BeginPlay()
 	isDead = false;
 	cameraChangeTimer = 0.0f;
 	haveTotalPiece = 0;
-}
+
+	BaseTurnRate = 40;
+	}
 
 //////////////////////////////////////////////////////////////////////////
 // Input
@@ -151,6 +155,7 @@ void Agraduation_projectCharacter::Tick(float DeltaTime)
 	// 死んだ時の処理
 	if (isDead)
 	{
+		
 		// 空中時に移動させる
 		if (GetCharacterMovement()->IsFalling())
 		{
@@ -257,6 +262,7 @@ void Agraduation_projectCharacter::Tick(float DeltaTime)
 			if (haveTotalPiece < _tmpPiecesNum)
 			{
 				// 回復
+				UGameplayStatics::PlaySoundAtLocation(GetWorld(), Sound_Obj, GetActorLocation());
 				hp += healPoint;
 				if (defaultHp < hp) hp = defaultHp;
 				if (healEffect)
@@ -443,7 +449,7 @@ void Agraduation_projectCharacter::ChangeWepon(ABaseWepon* nextWepon)
 // ポーズ処理
 void Agraduation_projectCharacter::Pause()
 {
-	if (onBallista || onGacha || onGimmickPuzzle || onWeponePuzzle || onOption)
+	if (onBallista || onGacha || onGimmickPuzzle || onWeponePuzzle || onOption || isDead)
 	{
 		changePlayerInput = true;
 	}
@@ -491,6 +497,7 @@ void Agraduation_projectCharacter::Damage(float giveDamage, FVector hitPosition)
 		// 死ぬアニメーションを再生
 		if (!animInstance->Montage_IsPlaying(deadMontages))
 		{
+			Pause();
 			animInstance->Montage_Play(deadMontages, 1.0f);
 
 			Super::Jump();

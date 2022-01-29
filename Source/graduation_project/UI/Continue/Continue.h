@@ -27,6 +27,12 @@ public:
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 		class UImage* yes_choise = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
+		class USoundCue* select;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
+		class USoundCue* move;
+
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Finish")
 		bool onDestory;
 private:
