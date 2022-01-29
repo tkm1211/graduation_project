@@ -84,6 +84,12 @@ void AENM_ChaFireball::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	time += DeltaTime;
+	if (time > 15.f)
+	{
+		Destroy();
+	}
+	
 }
 
 void AENM_ChaFireball::OnHit(class UPrimitiveComponent* HitComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
