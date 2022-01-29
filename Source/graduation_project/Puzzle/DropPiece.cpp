@@ -81,7 +81,7 @@ void ADropPiece::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UP
 		AddPiece();
 		Destroy();
 
-		UGameplayStatics::PlaySound2D(GetWorld(), GetSE, 5.0f, 1.0f, 0.0f, nullptr, this);
+		UGameplayStatics::PlaySound2D(GetWorld(), GetSE, 0.5f, 1.0f, 0.0f, nullptr, this);
 	}
 }
 
