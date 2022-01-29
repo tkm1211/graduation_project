@@ -86,6 +86,8 @@ void AGrid::Initialize()
 		didPlacePiece = false;
 		didRemovePiece = false;
 
+		onPause = false;
+
 		panelSize = OriginPanelSize * gridScale.X;
 		originPiecePos = FVector(0.0f, 0.0f, 0.0f);
 		forwardVec = GetActorRightVector();
@@ -883,6 +885,12 @@ void AGrid::SetUpPiece(APieceOrigin* piece, PieceShape shape)
 
 void AGrid::JudgeInput(APieceOrigin* piece)
 {
+	if (onPause)
+	{
+		ResetFlags();
+		return;
+	}
+
 	if (onPieceUp)
 	{
 		piece->OnPieceUp();
@@ -1128,6 +1136,8 @@ void AGrid::PieceMove(APieceOrigin* piece)
 
 void AGrid::PieceDecision(APieceOrigin* piece)
 {
+	if (onPause) return;
+
 	if (onPieceDecision && canPieceDecision && !onPieceInPiece)
 	{
 		int pastSelectPieceNum = selectPieceNum;
@@ -1258,6 +1268,7 @@ void AGrid::PieceDecision(int pieceNum)
 
 void AGrid::PieceCancel(APieceOrigin* piece)
 {
+	if (onPause) return;
 	if (!onPieceCancel) return; // ì¸óÕîªíË
 	if (didPlacePiece) return; // îzíuÇ≥ÇÍÇƒÇ¢Ç»Ç¢èÍçá
 	if (backUpNum < 0) return; // àÍå¬ëOÇ…èÓïÒÇ™Ç»Ç¢èÍçá

@@ -413,6 +413,8 @@ private:
 	bool didPlacePiece = false;
 	bool didRemovePiece = false;
 
+	bool onPause = false;
+
 public:	
 	// Sets default values for this actor's properties
 	AGrid(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
@@ -449,6 +451,9 @@ public:
 
 	// 武器ギミックパズル用
 	TArray<bool> GetOnPiece() { return onPiece; }
+
+	UFUNCTION(BlueprintCallable)
+	void PauseGrid() { onPause = !onPause; }
 
 private:
 	void UpdatePuzzle(float DeltaTime);
