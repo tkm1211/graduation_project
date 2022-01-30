@@ -116,7 +116,8 @@ void AENM_PatrolPoint::Spawn()
 		enm->SpawnDefaultController();
 		enm->lookat_patpt = spline->GetLocationAtSplinePoint(enm->current_patpt, ESplineCoordinateSpace::World);
 
-		enm->healthpoint = MaxHP;
+
+		enm->MAX_HP = enm->healthpoint = MaxHP;
 		enm->IDLE_WALK_SPEED = IDLE_MOVE_SPEED;
 		enm->COMBAT_WALK_SPEED = COMBAT_MOVE_SPEED;
 		/*enm->GetController()->*/
