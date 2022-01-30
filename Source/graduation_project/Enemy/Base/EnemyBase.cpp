@@ -2,8 +2,6 @@
 
 
 #include "EnemyBase.h"
-#include "BaseAIController.h"
-#include "BehaviorTree/BlackboardComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "../Anim/AnimIns_EnemyBase.h"
@@ -26,7 +24,7 @@ AEnemyBase::AEnemyBase()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	GetCapsuleComponent()->ComponentTags.Add(TEXT("Enemy"));
-	GetMesh()->ComponentTags.Add(TEXT("Enemy"));
+
 	//GetMesh()->SetCollisionProfileName("NoCollision");
 
 	b_rigor = false;
@@ -34,10 +32,6 @@ AEnemyBase::AEnemyBase()
 	LIFETIMER = 1.0f;
 
 	GetMesh()->SetMaterial(0, nullptr);
-
-	static ConstructorHelpers::FClassFinder<AActor> BP_Actor(TEXT("/Game/Enemy/Minimon/Blueprints/BP_NS_Dead"));
-	FX_DeadClass = BP_Actor.Class;
-
 }
 
 // Called when the game starts or when spawned
@@ -68,7 +62,6 @@ void AEnemyBase::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 
-	lost_time += DeltaTime;
 }
 
 void AEnemyBase::LookAtPlayer()
@@ -155,10 +148,11 @@ bool AEnemyBase::Death(float DeltaTime)
 void AEnemyBase::OnHit(class UPrimitiveComponent* HitComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 
-	if (OtherComp->ComponentTags.Num() != 0 && OtherComp->ComponentTags[0] == TEXT("Player"))
+	if (OtherComp->ComponentTags[0] == TEXT("Player"))
 	{
 		Agraduation_projectCharacter* _player = Cast<Agraduation_projectCharacter>(OtherActor);
 
+		float hitDamage = 20.f;
 
 		_player->Damage(ATK_POWER, SweepResult.Location);
 	}
@@ -170,11 +164,6 @@ void AEnemyBase::Damage(float _indamage)
 {
 	healthpoint -= _indamage;
 
-	is_combat = true;
-	lost_time = 0.f;
-	ABaseAIController* con =  Cast<ABaseAIController>(Controller);
-
-	con->BlackboardComp->SetValueAsObject("PlayerActor", pl);
 	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White, FString::Printf(TEXT("Damage")), true, FVector2D(1.0f, 1.0f));
 
 }

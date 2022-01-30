@@ -23,8 +23,6 @@ public:
 		float hormingCastRadius = 100.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HormingRayCast")
 		float hormingCastDelay = 0.1f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HormingRayCast")
-		TArray<TEnumAsByte<EObjectTypeQuery>> objectType;
 private:
 		float hormingCastDelayTimer = 0.0f;
 

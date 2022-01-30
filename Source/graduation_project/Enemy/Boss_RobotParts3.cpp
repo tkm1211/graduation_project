@@ -100,34 +100,37 @@ void ABoss_RobotParts3::OnSeePlayer()
 
 void ABoss_RobotParts3::OnHit(class UPrimitiveComponent* HitComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	Agraduation_projectCharacter* player = Cast<Agraduation_projectCharacter>(OtherActor);
 
-	if (OtherComp->ComponentTags.Num() != 0 && OtherComp->ComponentTags[0] == TEXT("Player"))
+	if (player == nullptr)
 	{
 
-		float times = 1.f;
-		switch (WitchAtk)
-		{
-		case ABoss_RobotParts3::SLAM_ATK:
-			times = 0.85f;
-			break;
-		case ABoss_RobotParts3::FLAME_FIRE:
-			times = 0.65f;
-			break;
-		case ABoss_RobotParts3::WIDERANGEBEEM:
-			times = 1.7f;
-			break;
-		case ABoss_RobotParts3::IDLE:
-		case ABoss_RobotParts3::MISSILE_FIRE:
-		default:
-			break;
-		}
 
-		pl->Damage(20.f * times, SweepResult.Location);
-
-		LFireColOFF.Broadcast();
-		RFireColOFF.Broadcast();
-
+		return;
 	}
+
+	float times = 1.f;
+	switch (WitchAtk)
+	{
+	case ABoss_RobotParts3::SLAM_ATK:
+		times = 0.85f;
+		break;
+	case ABoss_RobotParts3::FLAME_FIRE:
+		times = 0.65f;
+		break;
+	case ABoss_RobotParts3::WIDERANGEBEEM:
+		times = 1.7f;
+		break;
+	case ABoss_RobotParts3::IDLE:
+	case ABoss_RobotParts3::MISSILE_FIRE:
+	default:
+		break;
+	}
+
+	pl->Damage(20.f * times, SweepResult.Location);
+
+	LFireColOFF.Broadcast();
+	RFireColOFF.Broadcast();
 }
 
 void ABoss_RobotParts3::FireMissile()

@@ -75,13 +75,10 @@ void AE_ChaichaiAIController::LostPlayerActor(const FActorPerceptionUpdateInfo& 
 		{
 
 			float dist = BlackboardComp->GetValueAsFloat("DistanceToPlayer");
-			if (enm->lost_time > 10.f)
+			if (dist >= LoseRange)
 			{
-				if (dist >= LoseRange)
-				{
-					BlackboardComp->SetValueAsObject(PlayerActorKeyName, nullptr);
+				BlackboardComp->SetValueAsObject(PlayerActorKeyName, nullptr);
 
-				}
 			}
 		}
 	}

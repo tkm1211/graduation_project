@@ -19,11 +19,7 @@ ARP3_MissileTarget::ARP3_MissileTarget()
 
 	MeshComp->SetStaticMesh(asset);
 
-	MeshComp->SetCollisionProfileName("Custom...");
-	MeshComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	MeshComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-	MeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Block);
-	MeshComp->SetGenerateOverlapEvents(true);
+	MeshComp->SetCollisionProfileName("NoCollision");
 }
 
 // Called when the game starts or when spawned

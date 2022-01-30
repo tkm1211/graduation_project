@@ -83,13 +83,10 @@ void AE_MinimonController::LostPlayerActor(const FActorPerceptionUpdateInfo& inf
 		{
 
 			float dist = BlackboardComp->GetValueAsFloat("DistanceToPlayer");
-			if (enm->lost_time > 10.f)
+			if (dist >= LoseRange)
 			{
-				if (dist >= LoseRange)
-				{
-					BlackboardComp->SetValueAsObject(PlayerActorKeyName, nullptr);
+				BlackboardComp->SetValueAsObject(PlayerActorKeyName, nullptr);
 
-				}
 			}
 		}
 	}
