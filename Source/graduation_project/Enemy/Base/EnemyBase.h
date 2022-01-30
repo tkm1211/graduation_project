@@ -21,8 +21,9 @@ public:
 	int current_patpt;
 	bool reachto_patpt = false;
 
+	float MAX_HP = 100.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "STATUS")
-		float healthpoint = 100.f;
+		float healthpoint = MAX_HP;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "STATUS")
 		float IDLE_WALK_SPEED = 100.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "STATUS")
