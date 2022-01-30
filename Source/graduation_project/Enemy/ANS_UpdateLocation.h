@@ -20,7 +20,6 @@ class GRADUATION_PROJECT_API UANS_UpdateLocation : public UAnimNotifyState
 		float UpOffset;
 
 	class ABoss_RobotParts3* boss;
-	class Agraduation_projectCharacter* pl;
 	FVector prev, goal;
 	FTransform transform;
 	float total_time;

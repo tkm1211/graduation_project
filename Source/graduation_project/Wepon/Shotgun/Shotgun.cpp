@@ -132,6 +132,7 @@ void AShotgun::SpawnShot()
 		right = FVector(right.X * adjustX, right.Y * adjustX, right.Z * adjustX);
 		up = FVector(up.X * adjustY, up.Y * adjustY, up.Z * adjustY);
 
+		// レイのスタート位置取得(ホーミング用)
 		FVector _rayStart = firePoint->GetComponentLocation() + _rayForward + right + up;
 
 		adjustX = FMath::Cos(rad) * spawnAmmoSpace;

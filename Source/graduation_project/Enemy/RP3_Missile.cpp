@@ -132,21 +132,7 @@ void ARP3_Missile::Tick(float DeltaTime)
 			SpawnParams.Instigator = GetInstigator();
 
 			FVector target_pos = target_offset[missile_number] + player->GetActorLocation();
-			target_pos.Z -= 40.f;
-			FVector start = target_pos + FVector(0.f, 0.f, 1.f) * FVector(1000.f);
-			FVector end = target_pos + FVector(0.f, 0.f, 1.f) * FVector(-1000.f);
-
-			FHitResult hit;
-			TArray<AActor*> ignore;
-			ignore.Add(player);
-			bool isHit = UKismetSystemLibrary::LineTraceSingle(GetWorld(), start, end, ETraceTypeQuery::TraceTypeQuery3, false, ignore,
-				EDrawDebugTrace::None, hit, false);
-			if (hit.bBlockingHit)
-			{
-				target_pos = hit.Location;
-				target_pos.Z += 20.f;
-			}
-
+			target_pos.Z = 60.f;
 			FRotator target_rot = { 0.f, 0.f, 0.f };
 			marker = GetWorld()->SpawnActor<ARP3_MissileTarget>(target_pos, target_rot, SpawnParams);
 

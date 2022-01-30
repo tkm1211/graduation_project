@@ -4,6 +4,7 @@
 #include "BaseAmmo.h"
 #include "Kismet/GameplayStatics.h"
 #include "../graduation_projectCharacter.h"
+#include "../Enemy/TestBoss_MK1.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
@@ -95,38 +96,28 @@ void ABaseAmmo::BeginOverlap(
 		if (OtherComp->ComponentTags[0] == "Wepon") return;
 		if (OtherComp->ComponentTags[0] == "Enemy")
 		{
-			if (ammoName == "BlasterAndBombGun")
+			if (Tags.Num() != 0)
 			{
-				AmmoDestroy();
-				return;
+				if (Tags[0] != "BlasterAndBombGun" || Tags[0] != "BombGun" || Tags[0] != "RfBombGun")
+				{
+					AEnemyBase* _enemy = Cast<AEnemyBase>(OtherActor);
+					_enemy->Damage(hitDamage);
+					hitdam = hitDamage;
+					if (hitdam > 0)
+					{
+						FString path = "/Game/UI/Damage/DamageActorBP.DamageActorBP_C"; // /Content 以下のパスが /Game 以下のパスに置き換わり、コンテントブラウザーで名前が test なら test.test_C を指定する。
+						TSubclassOf<class AActor> sc = TSoftClassPtr<AActor>(FSoftObjectPath(*path)).LoadSynchronous(); // 上記で設定したパスに該当するクラスを取得
+						if (sc != nullptr)
+						{
+							AActor* _actor = GetWorld()->SpawnActor<AActor>(sc); // スポーン処理
+							ADamageActor* _damageActor = Cast<ADamageActor>(_actor);
+							_damageActor->SetActorLocation(GetActorLocation());
+							_damageActor->damage = hitdam;
+							_damageActor->CreateWBP();
+						}
+					}
+				}
 			}
-			if (ammoName == "BombGun")
-			{
-				AmmoDestroy();
-				return;
-			}
-			if (ammoName == "RfBombGun")
-			{
-				AmmoDestroy();
-				return;
-			}
-
-		AEnemyBase* _enemy = Cast<AEnemyBase>(OtherActor);
-		_enemy->Damage(hitDamage);
-		hitdam = hitDamage;
-		if (hitdam > 0)
-		{
-			FString path = "/Game/UI/Damage/DamageActorBP.DamageActorBP_C"; // /Content 以下のパスが /Game 以下のパスに置き換わり、コンテントブラウザーで名前が test なら test.test_C を指定する。
-			TSubclassOf<class AActor> sc = TSoftClassPtr<AActor>(FSoftObjectPath(*path)).LoadSynchronous(); // 上記で設定したパスに該当するクラスを取得
-			if (sc != nullptr)
-			{
-				AActor* _actor = GetWorld()->SpawnActor<AActor>(sc); // スポーン処理
-				ADamageActor* _damageActor = Cast<ADamageActor>(_actor);
-				_damageActor->SetActorLocation(GetActorLocation());
-				_damageActor->damage = hitdam;
-				_damageActor->CreateWBP();
-			}
-		}
 		}
 		AmmoDestroy();
 	}
@@ -155,35 +146,13 @@ void ABaseAmmo::OnHit(
 			if (OtherComp->ComponentTags[0] == "Wepon") return;
 			if (OtherComp->ComponentTags[0] == "Enemy")
 			{
-				if (ammoName == "BlasterAndBombGun")
+				if (Tags.Num() != 0)
 				{
-					AmmoDestroy();
-					return;
-				}
-				if (ammoName == "BombGun")
-				{
-					AmmoDestroy();
-					return;
-				}
-				if (ammoName == "RfBombGun")
-				{
-					AmmoDestroy();
-					return;
-				}
-				AEnemyBase* _enemy = Cast<AEnemyBase>(OtherActor);
-				_enemy->Damage(hitDamage);
-				hitdam = hitDamage;
-				if (hitdam > 0)
-				{
-					FString path = "/Game/UI/Damage/DamageActorBP.DamageActorBP_C"; // /Content 以下のパスが /Game 以下のパスに置き換わり、コンテントブラウザーで名前が test なら test.test_C を指定する。
-					TSubclassOf<class AActor> sc = TSoftClassPtr<AActor>(FSoftObjectPath(*path)).LoadSynchronous(); // 上記で設定したパスに該当するクラスを取得
-					if (sc != nullptr)
+					if (Tags[0] != "BlasterAndBombGun" || Tags[0] != "BombGun" || Tags[0] != "RfBombGun")
 					{
-						AActor* _actor = GetWorld()->SpawnActor<AActor>(sc); // スポーン処理
-						ADamageActor* _damageActor = Cast<ADamageActor>(_actor);
-						_damageActor->SetActorLocation(GetActorLocation());
-						_damageActor->damage = hitdam;
-						_damageActor->CreateWBP();
+						AEnemyBase* _enemy = Cast<AEnemyBase>(OtherActor);
+						_enemy->Damage(hitDamage);
+						hitdam = hitDamage;
 					}
 				}
 			}
@@ -194,11 +163,7 @@ void ABaseAmmo::OnHit(
 
 void ABaseAmmo::AmmoDestroy()
 {
-	if (ammoName == "BombGun")
-	{
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), Sound_Obj2, GetActorLocation());
-	}
-	else if (ammoName == "RfBombGun")
+	if (ammoName == "BombGun" || ammoName == "RfBombGun")
 	{
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), Sound_Obj2, GetActorLocation());
 	}

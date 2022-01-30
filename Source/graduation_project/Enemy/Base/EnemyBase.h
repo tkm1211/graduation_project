@@ -21,9 +21,8 @@ public:
 	int current_patpt;
 	bool reachto_patpt = false;
 
-	float MAX_HP = 100.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "STATUS")
-		float healthpoint = MAX_HP;
+		float healthpoint = 100.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "STATUS")
 		float IDLE_WALK_SPEED = 100.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "STATUS")
@@ -32,8 +31,6 @@ public:
 		float ATK_RANGE = 250.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "STATUS")
 		float ATK_POWER = 10.f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "STATUS")
-		int AtkState = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "STATUS")
 		TArray<bool> bFire;
@@ -53,7 +50,6 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		FDoOnce DeadEffectDoOnce;
 
-	float lost_time = 0.f;
 	bool is_combat = false;
 	bool atk_collision_on = false;
 

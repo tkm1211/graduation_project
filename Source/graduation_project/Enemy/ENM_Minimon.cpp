@@ -142,7 +142,7 @@ bool AENM_Minimon::Death(float DeltaTime)
 
 void AENM_Minimon::OnHit(class UPrimitiveComponent* HitComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-    if (OtherComp->ComponentTags.Num() != 0 && OtherComp->ComponentTags[0] == "Player")
+    if (OtherComp->ComponentTags[0] == "Player")
     {
         Agraduation_projectCharacter* _player = Cast<Agraduation_projectCharacter>(OtherActor);
 

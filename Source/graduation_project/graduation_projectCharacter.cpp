@@ -22,6 +22,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
+#include "PlayerSubSystem.h"
 //////////////////////////////////////////////////////////////////////////
 // Agraduation_projectCharacter
 
@@ -94,9 +95,23 @@ void Agraduation_projectCharacter::BeginPlay()
 	isDead = false;
 	cameraChangeTimer = 0.0f;
 	haveTotalPiece = 0;
-
 	BaseTurnRate = 40;
+
+	UGameInstance* instance = GetWorld()->GetGameInstance();
+	UPlayerSubSystem* _playerSub = instance->GetSubsystem<UPlayerSubSystem>();
+	if (_playerSub)
+	{
+		hp = _playerSub->hp;
+		BaseTurnRate = _playerSub->cameraRate;
+		if (_playerSub->weaponIndex < 9)
+		{
+			useWepon = weaponArray[_playerSub->weaponIndex];
+			useWepon->mesh->SetVisibility(true);
+			ChangeWepon(useWepon);
+		}
 	}
+
+}
 
 //////////////////////////////////////////////////////////////////////////
 // Input
@@ -293,6 +308,17 @@ void Agraduation_projectCharacter::Tick(float DeltaTime)
 
 	if (RespawnJudge(GetActorLocation())) Respawn();
 
+
+	UPlayerSubSystem* _playerSub = instance->GetSubsystem<UPlayerSubSystem>();
+	if (_playerSub)
+	{
+		_playerSub->hp = hp;
+		_playerSub->cameraRate= BaseTurnRate;
+		weaponMediator = instance->GetSubsystem<UWeaponPuzzleMediator>();
+		{
+			_playerSub->weaponIndex = weaponMediator->GetWeaponType();
+		}
+	}
 
 	Pause();
 }

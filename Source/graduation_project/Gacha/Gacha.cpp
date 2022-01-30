@@ -240,8 +240,6 @@ void AGacha::AddGage()
 
 void AGacha::ChoiseAxisX(float rate)
 {
-	if (!onGacha) return;
-
 	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
 	if (!_playerCharacter->NowPlayerStop()) return;
@@ -277,8 +275,6 @@ void AGacha::ChoiseAxisX(float rate)
 
 void AGacha::ChoiseAxisY(float rate)
 {
-	if (!onGacha) return;
-
 	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
 	if (!_playerCharacter->NowPlayerStop()) return;
