@@ -184,7 +184,7 @@ void ARP3_Missile::OnHit(class UPrimitiveComponent* HitComp, class AActor* Other
 	{
 		GetWorld()->SpawnActor<AActor>(FX_MissileHitClass, GetActorTransform());
 	}
-	marker->SetDestroy();
+	if(marker)marker->SetDestroy();
 	Destroy();
 
 
