@@ -72,10 +72,13 @@ void AE_PoponAIController::LostPlayerActor(const FActorPerceptionUpdateInfo& inf
 		{
 
 			float dist = BlackboardComp->GetValueAsFloat("DistanceToPlayer");
-			if (dist >= LoseRange)
+			if (enm->lost_time > 10.f)
 			{
-				BlackboardComp->SetValueAsObject(PlayerActorKeyName, nullptr);
+				if (dist >= LoseRange)
+				{
+					BlackboardComp->SetValueAsObject(PlayerActorKeyName, nullptr);
 
+				}
 			}
 		}
 	}

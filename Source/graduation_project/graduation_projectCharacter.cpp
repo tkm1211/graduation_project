@@ -22,7 +22,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
-#include "MyGameInstance.h"
+#include "PlayerSubSystem.h"
 //////////////////////////////////////////////////////////////////////////
 // Agraduation_projectCharacter
 
@@ -97,14 +97,15 @@ void Agraduation_projectCharacter::BeginPlay()
 	haveTotalPiece = 0;
 	BaseTurnRate = 40;
 
-	UMyGameInstance* instance = Cast<UMyGameInstance>(GetGameInstance());
-	if (instance)
+	UGameInstance* instance = GetWorld()->GetGameInstance();
+	UPlayerSubSystem* _playerSub = instance->GetSubsystem<UPlayerSubSystem>();
+	if (_playerSub)
 	{
-		hp = instance->playerHp;
-		BaseTurnRate = instance->playerCameraRate;
-		if (instance->playerWeaponIndex < 9)
+		hp = _playerSub->hp;
+		BaseTurnRate = _playerSub->cameraRate;
+		if (_playerSub->weaponIndex < 9)
 		{
-			useWepon = weaponArray[instance->playerWeaponIndex];
+			useWepon = weaponArray[_playerSub->weaponIndex];
 			useWepon->mesh->SetVisibility(true);
 			ChangeWepon(useWepon);
 		}
@@ -307,18 +308,17 @@ void Agraduation_projectCharacter::Tick(float DeltaTime)
 
 	if (RespawnJudge(GetActorLocation())) Respawn();
 
-	UMyGameInstance* gameInstance = Cast<UMyGameInstance>(GetGameInstance());
-	if (gameInstance)
+
+	UPlayerSubSystem* _playerSub = instance->GetSubsystem<UPlayerSubSystem>();
+	if (_playerSub)
 	{
-		gameInstance->playerHp = hp;
-		gameInstance->playerCameraRate = BaseTurnRate;
-		UGameInstance* weaponInstance = GetWorld()->GetGameInstance();
-		weaponMediator = weaponInstance->GetSubsystem<UWeaponPuzzleMediator>();
+		_playerSub->hp = hp;
+		_playerSub->cameraRate= BaseTurnRate;
+		weaponMediator = instance->GetSubsystem<UWeaponPuzzleMediator>();
 		{
-			gameInstance->playerWeaponIndex = weaponMediator->GetWeaponType();
+			_playerSub->weaponIndex = weaponMediator->GetWeaponType();
 		}
 	}
-
 
 	Pause();
 }
