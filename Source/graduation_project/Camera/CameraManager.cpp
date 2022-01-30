@@ -61,17 +61,16 @@ void ACameraManager::SphereCastFrontCamera()
 
 
 	// レイのスタート位置取得(ホーミング用)
-	FVector _rayStart = GetActorLocation() + GetActorUpVector() * hormingCastRadius;
+	FVector _rayStart = GetActorLocation();
 	FVector _rayForward = GetActorForwardVector();
 
 	// レイのヒットしたアクター保存用
 	TArray<AActor*> IngoreActors;
-	IngoreActors.Add(this);
 	TArray<FHitResult> HitRetArray;
 
 	// SphereCast
-	bool isHit = UKismetSystemLibrary::SphereTraceMultiByProfile(GetWorld(), _rayStart, _rayStart + (_rayForward * hormingCastRange), hormingCastRadius, TEXT("WorldDynamic"), false, IngoreActors, EDrawDebugTrace::Type::None, HitRetArray, true);
-
+	//bool isHit = UKismetSystemLibrary::SphereTraceMultiByProfile(GetWorld(), _rayStart, _rayStart + (_rayForward * hormingCastRange), hormingCastRadius, TEXT("WorldDynamic"), false, IngoreActors, EDrawDebugTrace::Type::ForOneFrame, HitRetArray, true);
+	bool isHit = UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(), _rayStart, _rayStart + (_rayForward * hormingCastRange), hormingCastRadius, objectType, false, IngoreActors, EDrawDebugTrace::Type::None, HitRetArray, true, FLinearColor::Red, FLinearColor::Green, 2.0f);
 	if (isHit)
 	{
 		// SphereCastにHitしたEnemyの数
