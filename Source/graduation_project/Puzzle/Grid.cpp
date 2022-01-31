@@ -195,6 +195,12 @@ void AGrid::Tick(float DeltaTime)
 	rightVec = GetActorForwardVector();
 	upVec = GetActorUpVector();
 
+	// バックアップ
+	SetBackUpData();
+
+	// グリッドデータの最初のデータが読み込みできていなければ更新中止
+	if (widthNum == 0) return;
+
 	// グリッド移動
 	MoveGrid(DeltaTime); // ピース情報が無くても表示するため
 
@@ -233,7 +239,30 @@ void AGrid::Tick(float DeltaTime)
 #endif
 
 	// パズルシーン以外、早期リターン
-	if (!onPuzzle) return;
+	if (!onPuzzle)
+	{
+		for (int i = 0; i < 20; ++i)
+		{
+			if (pieceCntPanelBlue.Num() <= 0) continue;
+
+			auto panelBlue = pieceCntPanelBlue[i];
+			auto panelYellow = pieceCntPanelYellow[i];
+			auto panelPurple = pieceCntPanelPurple[i];
+
+			panelBlue->GetRenderComponent()->SetVisibility(false);
+			panelYellow->GetRenderComponent()->SetVisibility(false);
+			panelPurple->GetRenderComponent()->SetVisibility(false);
+		}
+		for (auto& direction : pieceDirections)
+		{
+			direction->GetRenderComponent()->SetVisibility(false);
+		}
+		for (auto& outLine : pieceOutLines)
+		{
+			outLine.Value->GetRenderComponent()->SetVisibility(false);
+		}
+		return;
+	}
 
 	// 選択中の番号を取得
 	if (selectSlotPieceNum == -1)
@@ -253,7 +282,7 @@ void AGrid::Tick(float DeltaTime)
 
 				pieces[selectPieceNum]->GetRenderComponent()->SetVisibility(true);
 				slotPieceDatas[selectSlotPieceNum].slotPiece->GetRenderComponent()->SetVisibility(true);
-				pieceOutLines[pieceDatas[selectPieceNum].shape]->GetRenderComponent()->SetVisibility(true);
+				//pieceOutLines[pieceDatas[selectPieceNum].shape]->GetRenderComponent()->SetVisibility(true);
 
 				hit = true;
 
@@ -284,6 +313,9 @@ void AGrid::Tick(float DeltaTime)
 		// スロット移動
 		MoveSlot(DeltaTime);
 	}
+
+	// バックアップ
+	SetBackUpData();
 }
 
 void AGrid::UpdatePuzzle(float DeltaTime)
@@ -1153,6 +1185,8 @@ void AGrid::PieceDecision(APieceOrigin* piece)
 			placedPieceData.type = pieceDatas[selectPieceNum].type;
 		}
 
+		pieceDatas[selectPieceNum].turnCnt = piece->GetTurnCnt();
+
 		resourceManager->PlacementPiece(selectPieceNum, true);
 
 		switch (placedPieceData.type)
@@ -1313,6 +1347,9 @@ void AGrid::PieceCancel(APieceOrigin* piece)
 
 	default: break;
 	}
+
+	// 番号振り分け
+	SelectPieceNum(pieces[selectPieceNum]);
 
 	// パネルに配置できるように変更
 	auto pieceNums = pieces[selectPieceNum]->GetPieceNums();
@@ -2055,6 +2092,270 @@ void AGrid::ResetFlags()
 	onPieceCancel = false;
 	onPieceSlotLeft = false;
 	onPieceSlotRight = false;
+}
+
+void AGrid::SetBackUpData()
+{
+	backUpData.pieceDatas = pieceDatas;
+	backUpData.visibilityPiece = visibilityPiece;
+	backUpData.visibilitySlotPiece = visibilitySlotPiece;
+	backUpData.onDecisionPieces = onDecisionPieces;
+	backUpData.currentResourceIndex = currentResourceIndex;
+	backUpData.onPanel = onPanel;
+	backUpData.onPiece = onPiece;
+	backUpData.panelPositions = panelPositions;
+	backUpData.decisionPieces = decisionPieces;
+	backUpData.visibilityPanel = visibilityPanel;
+	backUpData.originPiecePosAtBackUp = originPiecePosAtBackUp;
+	backUpData.forwardVec = forwardVec;
+	backUpData.rightVec = rightVec;
+	backUpData.upVec = upVec;
+	backUpData.panelMinXPos = panelMinXPos;
+	backUpData.panelMaxXPos = panelMaxXPos;
+	backUpData.panelMinYPos = panelMinYPos;
+	backUpData.panelMaxYPos = panelMaxYPos;
+	backUpData.originPiecePos = originPiecePos;
+	backUpData.gridScale = gridScale;
+	backUpData.panelFilePath = "BackData03";
+	backUpData.gridData = gridData;
+	backUpData.placedPieceData = placedPieceData;
+	backUpData.removePieceData = removePieceData;
+	backUpData.resourceManager = resourceManager;
+	backUpData.puzzleType = puzzleType;
+	backUpData.inputYAxisTimer = inputYAxisTimer;
+	backUpData.inputXAxisTimer = inputXAxisTimer;
+	backUpData.selectPieceNum = selectPieceNum;
+	backUpData.selectSlotPieceNum = selectSlotPieceNum;
+	backUpData.panelNumAtOriginPiece = panelNumAtOriginPiece;
+	backUpData.panelNumAtBackUp = panelNumAtBackUp;
+	backUpData.slotLeftNum = slotLeftNum;
+	backUpData.slotRightNum = slotRightNum;
+	backUpData.slotMostLeftNum = slotMostLeftNum;
+	backUpData.slotMostRightNum = slotMostRightNum;
+	backUpData.widthNum = widthNum;
+	backUpData.heightNum = heightNum;
+	backUpData.backUpNum = backUpNum;
+	backUpData.blasterPieceNum = blasterPieceNum;
+	backUpData.shotGunPieceNum = shotGunPieceNum;
+	backUpData.bombGunPieceNum = bombGunPieceNum;
+	backUpData.panelSize = panelSize;
+	backUpData.panelMinX = panelMinX;
+	backUpData.panelMaxX = panelMaxX;
+	backUpData.panelMinY = panelMinY;
+	backUpData.panelMaxY = panelMaxY;
+	backUpData.adjustHeight = adjustHeight;
+	backUpData.adjustLen = adjustLen;
+	backUpData.onPuzzle = onPuzzle;
+	backUpData.onPieceUp = onPieceUp;
+	backUpData.onPieceDown = onPieceDown;
+	backUpData.onPieceLeft = onPieceLeft;
+	backUpData.onPieceRight = onPieceRight;
+	backUpData.onPieceTurnLeft = onPieceTurnLeft;
+	backUpData.onPieceTurnRight = onPieceTurnRight;
+	backUpData.onPieceDecision = onPieceDecision;
+	backUpData.onPieceCancel = onPieceCancel;
+	backUpData.onPieceSlotLeft = onPieceSlotLeft;
+	backUpData.onPieceSlotRight = onPieceSlotRight;
+	backUpData.onPieceOrigin = onPieceOrigin;
+	backUpData.onVisible = onVisible;
+	backUpData.onPieceInPiece = onPieceInPiece;
+	backUpData.canPieceDecision = canPieceDecision;
+	backUpData.didCreateGrid = didCreateGrid;
+	backUpData.didPlacePiece = didPlacePiece;
+	backUpData.didRemovePiece = didRemovePiece;
+	backUpData.onPause = onPause;
+}
+
+void AGrid::SetDataOfBackUp(FWeaponPuzzleGridData data)
+{
+	pieceDatas = data.pieceDatas;
+	visibilityPiece = data.visibilityPiece;
+	visibilitySlotPiece = data.visibilitySlotPiece;
+	onDecisionPieces = data.onDecisionPieces;
+	currentResourceIndex = data.currentResourceIndex;
+	onPanel = data.onPanel;
+	onPiece = data.onPiece;
+	panelPositions = data.panelPositions;
+	decisionPieces = data.decisionPieces;
+	visibilityPanel = data.visibilityPanel;
+	originPiecePosAtBackUp = data.originPiecePosAtBackUp;
+	forwardVec = data.forwardVec;
+	rightVec = data.rightVec;
+	upVec = data.upVec;
+	panelMinXPos = data.panelMinXPos;
+	panelMaxXPos = data.panelMaxXPos;
+	panelMinYPos = data.panelMinYPos;
+	panelMaxYPos = data.panelMaxYPos;
+	originPiecePos = data.originPiecePos;
+	gridScale = data.gridScale;
+	panelFilePath = "BackData03";
+	gridData = data.gridData;
+	placedPieceData = data.placedPieceData;
+	removePieceData = data.removePieceData;
+	resourceManager = data.resourceManager;
+	puzzleType = data.puzzleType;
+	inputYAxisTimer = data.inputYAxisTimer;
+	inputXAxisTimer = data.inputXAxisTimer;
+	selectPieceNum = data.selectPieceNum;
+	selectSlotPieceNum = data.selectSlotPieceNum;
+	panelNumAtOriginPiece = data.panelNumAtOriginPiece;
+	panelNumAtBackUp = data.panelNumAtBackUp;
+	slotLeftNum = data.slotLeftNum;
+	slotRightNum = data.slotRightNum;
+	slotMostLeftNum = data.slotMostLeftNum;
+	slotMostRightNum = data.slotMostRightNum;
+	widthNum = data.widthNum;
+	heightNum = data.heightNum;
+	backUpNum = data.backUpNum;
+	blasterPieceNum = data.blasterPieceNum;
+	shotGunPieceNum = data.shotGunPieceNum;
+	bombGunPieceNum = data.bombGunPieceNum;
+	panelSize = data.panelSize;
+	panelMinX = data.panelMinX;
+	panelMaxX = data.panelMaxX;
+	panelMinY = data.panelMinY;
+	panelMaxY = data.panelMaxY;
+	adjustHeight = data.adjustHeight;
+	adjustLen = data.adjustLen;
+	onPieceUp = data.onPieceUp;
+	onPieceDown = data.onPieceDown;
+	onPieceLeft = data.onPieceLeft;
+	onPieceRight = data.onPieceRight;
+	onPieceTurnLeft = data.onPieceTurnLeft;
+	onPieceTurnRight = data.onPieceTurnRight;
+	onPieceDecision = data.onPieceDecision;
+	onPieceCancel = data.onPieceCancel;
+	onPieceSlotLeft = data.onPieceSlotLeft;
+	onPieceSlotRight = data.onPieceSlotRight;
+	onPieceOrigin = data.onPieceOrigin;
+	onVisible = data.onVisible;
+	onPieceInPiece = data.onPieceInPiece;
+	canPieceDecision = data.canPieceDecision;
+	didCreateGrid = data.didCreateGrid;
+	didPlacePiece = data.didPlacePiece;
+	didRemovePiece = data.didRemovePiece;
+	onPause = data.onPause;
+
+	FVector spawnLocation = GetLocation();
+
+	for (auto& slotPieceData : slotPieceDatas)
+	{
+		PieceShape shape = slotPieceData.shape;
+		PieceType type = slotPieceData.type;
+		APieceOrigin* piece = nullptr;
+
+		switch (shape)
+		{
+		case O:
+			piece = CreatePieceO(type, spawnLocation);
+			break;
+
+		case L:
+			piece = CreatePieceL(type, spawnLocation);
+			break;
+
+		case I:
+			piece = CreatePieceI(type, spawnLocation);
+			break;
+
+		case T:
+			piece = CreatePieceT(type, spawnLocation);
+			break;
+
+		default: break;
+		}
+
+		if (piece)
+		{
+			slotPieceData.slotPiece = piece;
+		}
+
+		visibilitySlotPiece.Add(false);
+	}
+
+	// ピース生成
+	bool addPiece = false;
+	{
+		FVector SpawnLocation = GetLocation();
+		int slotPieceNum = -1;
+
+		currentResourceIndex = 0;
+
+		UGameInstance* instance = GetWorld()->GetGameInstance();
+		resourceManager = instance->GetSubsystem<UPieceResourceManager>();
+
+		while (resourceManager->CanGetPieceResourceData(currentResourceIndex))
+		{
+			if (onDecisionPieces.Num() == pieces.Num()) onDecisionPieces.Add(false);
+
+			auto resoureData = resourceManager->GetPieceResourceData(currentResourceIndex);
+			CreatePiece(resoureData, SpawnLocation);
+
+			int cnt = 0;
+			for (auto& slotPieceData : slotPieceDatas)
+			{
+				if (slotPieceData.shape == resoureData.shape && slotPieceData.type == resoureData.type)
+				{
+					slotPieceData.slotPieceNums.Add(pieces.Num() - 1);
+					slotPieceNum = cnt;
+					break;
+				}
+
+				++cnt;
+			}
+
+			++currentResourceIndex;
+			addPiece = true;
+		}
+
+		int nextPieceNum = pieces.Num() - 1;
+		if (selectPieceNum == -1 && 0 < pieceDatas.Num() && !onDecisionPieces[nextPieceNum])
+		{
+			selectPieceNum = nextPieceNum;
+		}
+
+		if (selectSlotPieceNum == -1)
+		{
+			selectSlotPieceNum = slotPieceNum;
+		}
+
+		if (0 < pieces.Num() && addPiece)
+		{
+			SetPanelNumAtOriginPiece(panelPositions.Num() / 2);
+			SetVisiblePiece(selectPieceNum, true, pieces[selectPieceNum]->GetActorLocation());
+			if (!onVisible && puzzleType == PuzzleType::TypeWeaponPuzzle)
+			{
+				pieces[selectPieceNum]->GetRenderComponent()->SetVisibility(false);
+				for (int i = 0; i < slotPieceDatas.Num(); ++i)
+				{
+					slotPieceDatas[i].slotPiece->GetRenderComponent()->SetVisibility(false);
+				}
+				for (auto& outLine : pieceOutLines)
+				{
+					outLine.Value->GetRenderComponent()->SetVisibility(false);
+				}
+			}
+		}
+	}
+
+	// ピースセットアップ
+	{
+		if (0 < pieces.Num() && addPiece)
+		{
+			auto piece = pieces[selectPieceNum];
+			SetUpPiece(piece, pieceDatas[selectPieceNum].shape);
+		}
+	}
+
+	for (int i = 0; i < pieces.Num(); ++i)
+	{
+		auto piece = pieces[i];
+		auto pieceData = pieceDatas[i];
+		for (int j = 0; j < pieceData.turnCnt; ++j)
+		{
+			piece->TurnRight(false);
+		}
+	}
 }
 
 void AGrid::CreatePieceOrigin(FVector SpawnLocation)
@@ -2839,6 +3140,11 @@ FPlacedPieceData AGrid::GetPlacedPieceData()
 FRemovePieceData AGrid::GetRemovePieceData()
 {
 	return removePieceData;
+}
+
+FWeaponPuzzleGridData AGrid::GetBackUpData()
+{
+	return backUpData;
 }
 
 int AGrid::GetBlasterPieceNum()

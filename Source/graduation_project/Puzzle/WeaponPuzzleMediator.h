@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Grid.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "WeaponPuzzleMediator.generated.h"
 
@@ -26,7 +27,6 @@ enum WeaponType
 	NoneType
 };
 
-
 UCLASS()
 class GRADUATION_PROJECT_API UWeaponPuzzleMediator : public UGameInstanceSubsystem
 {
@@ -44,6 +44,17 @@ private:
 private:
 	WeaponType currentWeaponType = WeaponType::NoneType;
 
+	// レベル遷移時に保持しているか？
+	bool onBackUpData = false;
+
+	// レベル遷移時に保持するためのバックアップデータ
+	FWeaponPuzzleGridData gridBackUpData;
+
+public:
+	// ゲーム開始時の初期化
+	UFUNCTION(BlueprintCallable, Category = "Puzzle | WeaponPuzzleMediator")
+	void InitializeAtGameStart();
+
 public: // パズル呼び出し用
 	void ChangeWeapon(int blasterPieceNum, int shotGunPieceNum, int bombGunPieceNum);
 
@@ -54,6 +65,11 @@ public: // パズル呼び出し用
 	void SetRfBlasterBorderNum(int borderNum);
 	void SetRfShotGunBorderNum(int borderNum);
 	void SetRfBombGunBorderNum(int borderNum);
+
+	void SetBackUpData(FWeaponPuzzleGridData data);
+
+	bool GetOnBackUpData();
+	FWeaponPuzzleGridData GetBackUpData();
 
 public: // プレイヤー呼び出し用
 	UFUNCTION(BlueprintCallable, Category = "Puzzle | Weapon")

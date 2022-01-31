@@ -4,6 +4,12 @@
 #include "WeaponPuzzleMediator.h"
 
 
+void UWeaponPuzzleMediator::InitializeAtGameStart()
+{
+	currentWeaponType = WeaponType::NoneType;
+	onBackUpData = false;
+}
+
 void UWeaponPuzzleMediator::ChangeWeapon(int blasterPieceNum, int shotGunPieceNum, int bombGunPieceNum)
 {
 	bool clearRfBlaster = RfBlasterBorderNum <= blasterPieceNum;
@@ -73,6 +79,22 @@ void UWeaponPuzzleMediator::SetRfShotGunBorderNum(int borderNum)
 void UWeaponPuzzleMediator::SetRfBombGunBorderNum(int borderNum)
 {
 	RfBombGunBorderNum = borderNum;
+}
+
+void UWeaponPuzzleMediator::SetBackUpData(FWeaponPuzzleGridData data)
+{
+	onBackUpData = true;
+	gridBackUpData = data;
+}
+
+bool UWeaponPuzzleMediator::GetOnBackUpData()
+{
+	return onBackUpData;
+}
+
+FWeaponPuzzleGridData UWeaponPuzzleMediator::GetBackUpData()
+{
+	return gridBackUpData;
 }
 
 WeaponType UWeaponPuzzleMediator::GetWeaponType()

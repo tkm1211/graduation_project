@@ -37,6 +37,15 @@ void AWeaponPuzzle::BeginPlay()
 		weaponMediator->SetRfBombGunBorderNum(RfBombGunBorderNum);
 	}
 
+	if (weaponMediator->GetOnBackUpData())
+	{
+		grid->SetDataOfBackUp(weaponMediator->GetBackUpData());
+
+		// パズル画面で配置されたピースの情報を渡す
+		auto placedPieceData = grid->GetPlacedPieceData();
+		weaponMediator->ChangeWeapon(grid->GetBlasterPieceNum(), grid->GetShotGunPieceNum(), grid->GetBombGunPieceNum());
+	}
+
 	grid->VisibleGridMesh(false);
 
 	if (onPuzzle)
@@ -63,6 +72,11 @@ void AWeaponPuzzle::Tick(float DeltaTime)
 	{
 		NotifyMediatorOfPlacedPieces();
 	}
+
+	// グリッドのデータを武器用のMediator（仲介役）に渡す
+	{
+		NotifyMediatorOfGridBackUpData();
+	}
 }
 
 // グリッド移動
@@ -87,6 +101,12 @@ void AWeaponPuzzle::NotifyMediatorOfPlacedPieces()
 	// パズル画面で配置されたピースの情報を渡す
 	auto placedPieceData = grid->GetPlacedPieceData();
 	weaponMediator->ChangeWeapon(grid->GetBlasterPieceNum(), grid->GetShotGunPieceNum(), grid->GetBombGunPieceNum());
+}
+
+// グリッドのデータを武器用のMediator（仲介役）に渡す
+void AWeaponPuzzle::NotifyMediatorOfGridBackUpData()
+{
+	weaponMediator->SetBackUpData(grid->GetBackUpData());
 }
 
 void AWeaponPuzzle::DoBeginPuzzle()
