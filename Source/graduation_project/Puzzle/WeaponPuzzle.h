@@ -57,6 +57,9 @@ private:
 	// 配置したピース情報を武器用のMediator（仲介役）に渡す
 	void NotifyMediatorOfPlacedPieces();
 
+	// グリッドのデータを武器用のMediator（仲介役）に渡す
+	void NotifyMediatorOfGridBackUpData();
+
 	void DoBeginPuzzle() override;
 	void DoEndPuzzle() override;
 };

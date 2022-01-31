@@ -43,6 +43,7 @@ public:
 
 public:
 	// ゲーム開始時の初期化
+	UFUNCTION(BlueprintCallable, Category = "Puzzle | Resource")
 	void InitializeAtGameStart();
 
 	// ピースを取得した時に追加

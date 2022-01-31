@@ -129,24 +129,24 @@ void APieceOrigin::OnPieceTurnRight()
 	onPieceTurnRight = true;
 }
 
-void APieceOrigin::TurnLeft()
+void APieceOrigin::TurnLeft(bool onPlaySE)
 {
 	if (onTurnLock) return;
 
 	TurnPiece(-1);
 	DoTurnLeft();
 
-	UGameplayStatics::PlaySound2D(GetWorld(), RotateSE, 10.0f, 1.0f, 0.0f, nullptr, this);
+	if (onPlaySE) UGameplayStatics::PlaySound2D(GetWorld(), RotateSE, 10.0f, 1.0f, 0.0f, nullptr, this);
 }
 
-void APieceOrigin::TurnRight()
+void APieceOrigin::TurnRight(bool onPlaySE)
 {
 	if (onTurnLock) return;
 
 	TurnPiece(1);
 	DoTurnRight();
 
-	UGameplayStatics::PlaySound2D(GetWorld(), RotateSE, 10.0f, 1.0f, 0.0f, nullptr, this);
+	if (onPlaySE) UGameplayStatics::PlaySound2D(GetWorld(), RotateSE, 10.0f, 1.0f, 0.0f, nullptr, this);
 }
 
 void APieceOrigin::TurnLock(int turnCnt)

@@ -87,8 +87,8 @@ public:
 	void OnPieceRight();
 	void OnPieceTurnLeft();
 	void OnPieceTurnRight();
-	void TurnLeft();
-	void TurnRight();
+	void TurnLeft(bool onPlaySE = true);
+	void TurnRight(bool onPlaySE = true);
 	void TurnLock(int turnCnt);
 
 	int GetTurnCnt() { return mainData.turnCnt; }

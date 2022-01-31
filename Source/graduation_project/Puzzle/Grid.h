@@ -39,6 +39,9 @@ struct FPieceData
 	// 配置
 	//bool isPlacement = false;
 
+	// 回転数
+	int turnCnt = 0;
+
 	// 形
 	PieceShape shape = PieceShape::T;
 
@@ -95,6 +98,113 @@ struct FSlotNumbersData
 
 	// 3桁目
 	TArray<ANumbersOrigin*> thirdDigit;
+};
+
+USTRUCT(BlueprintType)
+struct FWeaponPuzzleGridData // レベル遷移時に初期化されるのでデータ保持のために急遽追加
+{
+	GENERATED_USTRUCT_BODY();
+
+	TArray<APieceOrigin*> pieces;
+	TArray<FSlotPieceData> slotPieceDatas;
+	TArray<FPieceData> pieceDatas;
+	TArray<bool> visibilityPiece;
+	TArray<bool> visibilitySlotPiece;
+	TArray<bool> onDecisionPieces;
+	TArray<FSlotNumbersData> slotNumbers;
+
+	TArray<APieceCntPanel*> pieceCntPanelBlue;
+	TArray<APieceCntPanel*> pieceCntPanelYellow;
+	TArray<APieceCntPanel*> pieceCntPanelPurple;
+
+	TMap<PieceShape, APieceOutLine*> pieceOutLines;
+	TArray<APieceDirection*> pieceDirections;
+
+	int currentResourceIndex;
+
+	TArray<bool> onPanel; // パネルが見えているか？
+	TArray<bool> onPiece; // ピースが置かれているか？
+	TArray<FVector> panelPositions;
+	TArray<APiecePanel*> panels;
+	TArray<FDecisionPiece> decisionPieces;
+
+	TArray<bool> visibilityPanel;
+
+	FVector originPiecePosAtBackUp;
+
+	FVector forwardVec;
+	FVector rightVec;
+	FVector upVec;
+
+	FVector panelMinXPos;
+	FVector panelMaxXPos;
+	FVector panelMinYPos;
+	FVector panelMaxYPos;
+	FVector originPiecePos;
+
+	FVector gridScale;
+
+	FString panelFilePath = "BackData03";
+
+	FGridData gridData;
+	FPlacedPieceData placedPieceData;
+	FRemovePieceData removePieceData;
+
+	UPieceResourceManager* resourceManager;
+
+	PuzzleType puzzleType;
+
+	int inputYAxisTimer = 0;
+	int inputXAxisTimer = 0;
+
+	int selectPieceNum = 0;
+	int selectSlotPieceNum = 0;
+	int panelNumAtOriginPiece = 0;
+	int panelNumAtBackUp = 0;
+	int slotLeftNum = 0;
+	int slotRightNum = 0;
+	int slotMostLeftNum = 0;
+	int slotMostRightNum = 0;
+	int widthNum = 0;
+	int heightNum = 0;
+
+	int backUpNum = 0;
+
+	int blasterPieceNum = 0;
+	int shotGunPieceNum = 0;
+	int bombGunPieceNum = 0;
+
+	float panelSize = 0.0f;
+
+	float panelMinX = 0.0f;
+	float panelMaxX = 0.0f;
+	float panelMinY = 0.0f;
+	float panelMaxY = 0.0f;
+
+	float adjustHeight = 0.0f;
+	float adjustLen = 0.0f;
+
+	bool onPuzzle = false;
+	bool onPieceUp = false;
+	bool onPieceDown = false;
+	bool onPieceLeft = false;
+	bool onPieceRight = false;
+	bool onPieceTurnLeft = false;
+	bool onPieceTurnRight = false;
+	bool onPieceDecision = false;
+	bool onPieceCancel = false;
+	bool onPieceSlotLeft = false;
+	bool onPieceSlotRight = false;
+	bool onPieceOrigin = false;
+
+	bool onVisible = false;
+	bool onPieceInPiece = false;
+	bool canPieceDecision = false;
+	bool didCreateGrid = false;
+	bool didPlacePiece = false;
+	bool didRemovePiece = false;
+
+	bool onPause = false;
 };
 
 UCLASS()
@@ -296,28 +406,8 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Piece Cnt Panel | Parameter", meta = (AllowPrivateAccess = "true"))
 	float pieceCntPanelHeightScale;
 
-
-	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
-	FVector panelMinXPos;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
-	FVector panelMaxXPos;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
-	FVector panelMinYPos;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
-	FVector panelMaxYPos;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
-	FVector originPiecePos;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Piece Type", meta = (AllowPrivateAccess = "true"))
-	bool onPieceOrigin = false;
-
 private:
 	TArray<APieceOrigin*> pieces;
-	//TArray<APieceOrigin*> slotPieces;
 	TArray<FSlotPieceData> slotPieceDatas;
 	TArray<FPieceData> pieceDatas;
 	TArray<bool> visibilityPiece;
@@ -350,6 +440,12 @@ private:
 	FVector rightVec;
 	FVector upVec;
 
+	FVector panelMinXPos;
+	FVector panelMaxXPos;
+	FVector panelMinYPos;
+	FVector panelMaxYPos;
+	FVector originPiecePos;
+
 	FVector gridScale;
 
 	FString panelFilePath = "BackData03";
@@ -357,6 +453,8 @@ private:
 	FGridData gridData;
 	FPlacedPieceData placedPieceData;
 	FRemovePieceData removePieceData;
+
+	FWeaponPuzzleGridData backUpData;
 
 	UPieceResourceManager* resourceManager;
 
@@ -405,6 +503,7 @@ private:
 	bool onPieceCancel = false;
 	bool onPieceSlotLeft = false;
 	bool onPieceSlotRight = false;
+	bool onPieceOrigin = false;
 
 	bool onVisible = false;
 	bool onPieceInPiece = false;
@@ -443,6 +542,9 @@ public:
 	FGridData GetGridData();
 	FPlacedPieceData GetPlacedPieceData();
 	FRemovePieceData GetRemovePieceData();
+	FWeaponPuzzleGridData GetBackUpData();
+
+	void SetDataOfBackUp(FWeaponPuzzleGridData data);
 
 	// WeaponPuzzle用
 	int GetBlasterPieceNum();
@@ -503,6 +605,7 @@ private:
 	void AdjustOriginPos(FVector& originPos, int panelNum, TArray<int> pieceNums, PieceShape type, int turnCnt);
 	void RangeLimit(APieceOrigin* piece);
 	void ResetFlags();
+	void SetBackUpData();
 
 	void UpdatePieceLocation();
 	bool UpdateSelectPieceNum(int& pieceNum, bool updateSelectPieceNum = true);
