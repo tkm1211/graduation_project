@@ -7,6 +7,12 @@
 #include "../graduation_projectCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
+
+UANS_UpdateLocation::UANS_UpdateLocation()
+{
+	bIsNativeBranchingPoint = false;
+}
+
 void UANS_UpdateLocation::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)
 {
 	boss = Cast<ABoss_RobotParts3>(MeshComp->GetOwner());
@@ -15,6 +21,15 @@ void UANS_UpdateLocation::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSeq
 		prev = boss->GetActorLocation();
 		boss->GetActorForwardVector().X;
 		goal = { boss->GetActorForwardVector().X * ForwardOffset, boss->GetActorForwardVector().Y * ForwardOffset, UpOffset };
+	}
+
+	if (UGameplayStatics::GetPlayerCharacter(MeshComp->GetWorld(), 0)->GetActorLocation().Z > 300.f)
+	{
+		goal.Z += 200.f;
+	}
+	else
+	{
+		goal.Z -= 100.f;
 	}
 
 	current_time = 0.f;
@@ -26,6 +41,8 @@ void UANS_UpdateLocation::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequ
 	if (!boss)return;
 
 	FVector NewVec = FMath::Lerp(prev, goal, current_time / total_time);
+
+
 
 	current_time += FrameDeltaTime;
 	boss->SetActorLocation(NewVec);
