@@ -13,6 +13,7 @@ UCLASS()
 class GRADUATION_PROJECT_API UANS_UpdateLocation : public UAnimNotifyState
 {
 	GENERATED_BODY()
+		UANS_UpdateLocation();
 
 		UPROPERTY(EditAnywhere, Category = "Goal")
 		float ForwardOffset;

@@ -67,7 +67,7 @@ void AENM_ChaFireball::BeginPlay()
 	FCollisionResponseContainer col_response;
 	col_response.SetAllChannels(ECollisionResponse::ECR_Overlap);
 	col_response.Camera = ECollisionResponse::ECR_Ignore;
-	//col_response.Visibility = ECollisionResponse::ECR_Ignore;
+	col_response.Visibility = ECollisionResponse::ECR_Ignore;
 
 	//col_response.WorldStatic = ECollisionResponse::ECR_Block;
 	CollisionComponent->SetCollisionResponseToChannels(col_response);
@@ -85,7 +85,7 @@ void AENM_ChaFireball::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	time += DeltaTime;
-	if (time > 15.f)
+	if (time > 30.f)
 	{
 		Destroy();
 	}
@@ -103,6 +103,7 @@ void AENM_ChaFireball::OnHit(class UPrimitiveComponent* HitComp, class AActor* O
 			//float hitDamage = 20.f;
 
 			_player->Damage(ATKPower, SweepResult.Location);
+
 		}
 	}
 }
