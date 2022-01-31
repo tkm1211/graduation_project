@@ -82,6 +82,7 @@ ABoss_RobotParts3::ABoss_RobotParts3()
 	LFireCapsuleComp->OnComponentBeginOverlap.AddDynamic(this, &ABoss_RobotParts3::OnHit);
 	RFireCapsuleComp->OnComponentBeginOverlap.AddDynamic(this, &ABoss_RobotParts3::OnHit);
 
+	healthpoint = MAX_HP = 3000.f;
 }
 
 void ABoss_RobotParts3::OnSeePlayer()
@@ -288,7 +289,7 @@ void ABoss_RobotParts3::BeginPlay()
 	//static ConstructorHelpers::FClassFinder<UClass> Floor01Asset(TEXT("/Game/AssetAtsuki/BossStage/Floor01/BP_BossFloorA.uasset"));
 	//static ConstructorHelpers::FClassFinder<UClass> Floor02Asset(TEXT("/Game/AssetAtsuki/BossStage/Floor02/BP_BossFloorB.uasset"));
 
-
+	Cast<ABoss_RP3AIController>(GetController())->enm = this;
 }
 
 // Called every frame
@@ -296,7 +297,7 @@ void ABoss_RobotParts3::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-
+	HP_rate = 100 * healthpoint / MAX_HP;
 
 	ModifyCollision();
 
@@ -404,13 +405,13 @@ void ABoss_RobotParts3::ModifyCollision()
 		RFireCapsuleComp->SetWorldRotation(CapRotator);
 		break;
 	case FLAME_FIRE:
-		NS_COL_BeemBlock(LFireCapsuleComp, nullptr, LEFT_HAND, 150.f);
+		NS_COL_BeemBlock(LFireCapsuleComp, nullptr, LEFT_HAND, 400.f);
 		break;
 	case MISSILE_FIRE:
 		break;
 	case WIDERANGEBEEM:
-		NS_COL_BeemBlock(LFireCapsuleComp, NS_LeftLaserHit, LEFT_HAND);
-		NS_COL_BeemBlock(RFireCapsuleComp, NS_RightLaserHit, RIGHT_HAND);
+		NS_COL_BeemBlock(LFireCapsuleComp, NS_LeftLaserHit, LEFT_HAND, 600.f);
+		NS_COL_BeemBlock(RFireCapsuleComp, NS_RightLaserHit, RIGHT_HAND, 600.f);
 		break;
 	default:
 		break;

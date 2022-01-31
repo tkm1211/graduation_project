@@ -58,6 +58,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ATK")
 		int ForceNextAtk = 0;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "ATK")
+		float HP_rate = 100.f;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ATK")
 		int WitchAtk = 0;
 	UPROPERTY(EditAnywhere, AdvancedDisplay, Category = "ATK")

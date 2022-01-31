@@ -171,14 +171,17 @@ void ARP3_Missile::OnHit(class UPrimitiveComponent* HitComp, class AActor* Other
 
 	if (!pl)
 	{
-
+		
+		if (UKismetMathLibrary::RandomIntegerInRange(0, 99) > 60)
+		{
+			pieceBlockDropper->SpawnDropPieces(DropPieceData, GetTransform());
+		}
 	}
 	else
 	{
 		pl->Damage(25.f, SweepResult.Location);
 	}
 
-	pieceBlockDropper->SpawnDropPieces(DropPieceData, GetTransform());
 
 	if (FX_MissileHitClass)
 	{

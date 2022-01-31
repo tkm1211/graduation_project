@@ -24,6 +24,7 @@ class GRADUATION_PROJECT_API ABoss_RP3AIController : public AAIController
 
     class UAISenseConfig_Sight* SightConfig;
 
+
     /* Called whenever the controller possesses a character bot */
     virtual void OnPossess(class APawn* InPawn) override;
 
@@ -37,6 +38,7 @@ public:
     void SetPlayerActorKey(APawn* Goal);
 
     class Agraduation_projectCharacter* GetPlayerActorKey();
+    class ABoss_RobotParts3* enm;
 
     FORCEINLINE UBehaviorTreeComponent* GetBehaviorComp() const { return BehaviorComp; }
 
@@ -44,6 +46,7 @@ public:
 
 protected:
     virtual void BeginPlay() override;
+    virtual void Tick(float DeltaTime) override;
 
     UPROPERTY(EditDefaultsOnly, Category = AI)
         class UBehaviorTree* BehaviorTree;

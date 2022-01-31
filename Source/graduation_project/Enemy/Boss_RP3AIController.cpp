@@ -2,6 +2,7 @@
 
 
 #include "Boss_RP3AIController.h"
+#include "Boss_RobotParts3.h"
 #include "UObject/ConstructorHelpers.h"
 #include "../graduation_projectCharacter.h"
 #include "BehaviorTree/BehaviorTree.h"
@@ -24,7 +25,7 @@ ABoss_RP3AIController::ABoss_RP3AIController() : Super()
 	SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
 	AISensorComp->ConfigureSense(*SightConfig);
 
-	ConstructorHelpers::FObjectFinder<UBehaviorTree> BTFinder(TEXT("/Game/Enemy/Boss/RP3/Blueprints/BT_RP3"));
+	ConstructorHelpers::FObjectFinder<UBehaviorTree> BTFinder(TEXT("/Game/Enemy/Boss/RP3/Blueprints/BT_BossRP3"));
 	BehaviorTree = BTFinder.Object;
 
 	PlayerActorKeyName = "PlayerActor";
@@ -37,6 +38,18 @@ void ABoss_RP3AIController::BeginPlay()
 {
 	Super::BeginPlay();
 
+
+}
+
+void ABoss_RP3AIController::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (BlackboardComp)
+	{
+		BlackboardComp->SetValueAsFloat("HP_rate", enm->HP_rate);
+	}
+
 }
 
 void ABoss_RP3AIController::OnPossess(class APawn* InPawn)
@@ -45,6 +58,7 @@ void ABoss_RP3AIController::OnPossess(class APawn* InPawn)
 	BlackboardComp->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
 
 	BehaviorComp->StartTree(*BehaviorTree);
+
 }
 
 
@@ -70,3 +84,4 @@ Agraduation_projectCharacter* ABoss_RP3AIController::GetPlayerActorKey()
 	}
 	return nullptr;
 }
+
