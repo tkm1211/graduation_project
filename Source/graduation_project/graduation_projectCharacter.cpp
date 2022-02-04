@@ -130,7 +130,7 @@ void Agraduation_projectCharacter::SetupPlayerInputComponent(class UInputCompone
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &Agraduation_projectCharacter::FireWepon).bConsumeInput = false;
 	PlayerInputComponent->BindAction("Fire", IE_Released, this, &Agraduation_projectCharacter::StopFireWepon).bConsumeInput = false;
 
-	PlayerInputComponent->BindAction("Pause", IE_Pressed, this, &Agraduation_projectCharacter::Option);
+	PlayerInputComponent->BindAction("Pause", IE_Pressed, this, &Agraduation_projectCharacter::PressOption);
 
 	PlayerInputComponent->BindAction("WeponPuzzle", IE_Pressed, this, &Agraduation_projectCharacter::WeponPuzzle);
 	PlayerInputComponent->BindAction("GimmickPuzzle", IE_Pressed, this, &Agraduation_projectCharacter::OnGimmick);
@@ -148,15 +148,9 @@ void Agraduation_projectCharacter::SetupPlayerInputComponent(class UInputCompone
 
 void Agraduation_projectCharacter::Option()
 {
-	if (changePlayerInput || isDead || stopPlayer) return;
+	if (changePlayerInput || isDead || stopPlayer || onOption) return;
 
-	FString path = "/Game/UI/Option/OptionBP.OptionBP_C"; // /Content 以下のパスが /Game 以下のパスに置き換わり、コンテントブラウザーで名前が test なら test.test_C を指定する。
-	TSubclassOf<class AActor> sc = TSoftClassPtr<AActor>(FSoftObjectPath(*path)).LoadSynchronous(); // 上記で設定したパスに該当するクラスを取得
-	if (sc != nullptr)
-	{
-		AActor* _actor = GetWorld()->SpawnActor<AActor>(sc); // スポーン処理
-	}
-
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.0f);
 	onOption = true;
 
 	Pause();
@@ -831,7 +825,7 @@ void Agraduation_projectCharacter::Respawn()
 	TArray<AActor*> _actors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), respawnActor, _actors);
 		
-	float _length = 1000;
+	float _length = 10000000;
 	int _index = 0;
 
 	for (int i = 0; i < _actors.Num(); i++)

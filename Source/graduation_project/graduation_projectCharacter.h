@@ -197,7 +197,6 @@ protected:
 
 	void ReleasePause();
 
-	void Option();
 
 	void Respawn();
 protected:
@@ -221,6 +220,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void ChangeWepon(ABaseWepon* nextWepon);
+	
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Vehicle")
+		void PressOption();
+
+	UFUNCTION(BlueprintCallable)
+	void Option();
 
 	UFUNCTION(BlueprintCallable)
 	void Damage(float giveDamage, FVector hitPosition);

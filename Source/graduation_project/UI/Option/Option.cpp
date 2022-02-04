@@ -34,6 +34,7 @@ void UOption::Init()
 {
 	onDestory = false;
 	onCameraSetting = false;
+	onOption = false;
 	mode = 0;
 	cursolMoveTimer = 0;
 	SetVisilityUI(mode);
@@ -52,6 +53,8 @@ void UOption::NativeTick(const FGeometry& g, float InDeltaTime)
 {
 	Super::NativeTick(g, InDeltaTime);
 
+	if (!onOption) return;
+
 	cursolMoveTimer -= InDeltaTime;
 	if (cursolMoveTimer < 0) cursolMoveTimer = 0.0f;
 	cameraRateTimer -= InDeltaTime;
@@ -60,6 +63,8 @@ void UOption::NativeTick(const FGeometry& g, float InDeltaTime)
 
 void UOption::CursolMove(float rate)
 {
+	if (!onOption) return;
+
 	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
 	if (!_playerCharacter->NowPlayerStop()) return;
@@ -94,6 +99,8 @@ void UOption::CursolMove(float rate)
 
 void UOption::Select()
 {
+	if (!onOption) return;
+
 	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
 	if (!_playerCharacter->NowPlayerStop()) return;
@@ -104,6 +111,8 @@ void UOption::Select()
 		switch (mode)
 		{
 		case 0:
+			UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
+
 			onDestory = true;
 
 			// プレイヤーを取得し、キャストする
@@ -116,6 +125,7 @@ void UOption::Select()
 			onCameraSetting = true;
 			break;
 		case 2:
+			  UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
 			onDestory = true;
 			UGameplayStatics::OpenLevel(GetWorld(), FName("TITLE"));
 			break;
@@ -134,6 +144,8 @@ void UOption::Select()
 
 void UOption::SetVisilityUI(int _mode)
 {
+	if (!onOption) return;
+
 	switch (_mode)
 	{
 	case 0:
@@ -158,6 +170,8 @@ void UOption::SetVisilityUI(int _mode)
 
 void UOption::CameraRate(float rate)
 {
+	if (!onOption) return;
+
 	if (!onCameraSetting) return;
 	if (cameraRateTimer > 0) return;
 	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
@@ -187,6 +201,8 @@ void UOption::CameraRate(float rate)
 
 void UOption::ReleaseSelect()
 {
+	if (!onOption) return;
+
 	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
 

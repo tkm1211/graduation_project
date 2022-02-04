@@ -33,7 +33,7 @@ public:
 		class UNiagaraComponent* NS_Fireball;
 
 	UPROPERTY(VisibleAnywhere, Category = "STATUS")
-		float ATKPower = 1.f;
+		float ATKPower = 10.0f;
 
 	UFUNCTION()
 		void OnHit(class UPrimitiveComponent* HitComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

@@ -61,7 +61,7 @@ void ACameraManager::SphereCastFrontCamera()
 
 
 	// レイのスタート位置取得(ホーミング用)
-	FVector _rayStart = GetActorLocation() + GetActorUpVector() * hormingCastRadius;
+	FVector _rayStart = GetActorLocation() + GetActorUpVector();
 	FVector _rayForward = GetActorForwardVector();
 
 	// レイのヒットしたアクター保存用
@@ -70,7 +70,7 @@ void ACameraManager::SphereCastFrontCamera()
 	TArray<FHitResult> HitRetArray;
 
 	// SphereCast
-	bool isHit = UKismetSystemLibrary::SphereTraceMultiByProfile(GetWorld(), _rayStart, _rayStart + (_rayForward * hormingCastRange), hormingCastRadius, TEXT("WorldDynamic"), false, IngoreActors, EDrawDebugTrace::Type::None, HitRetArray, true);
+	bool isHit = UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(), _rayStart, _rayStart + (_rayForward * hormingCastRange), hormingCastRadius, objectType, false, IngoreActors, EDrawDebugTrace::Type::None, HitRetArray, true, FLinearColor::Red, FLinearColor::Red);
 
 	if (isHit)
 	{

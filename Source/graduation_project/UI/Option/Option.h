@@ -41,6 +41,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
 		class USoundCue* move;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+		bool onOption;
+
 private:
 	int mode;
 	bool onCameraSetting;
@@ -51,8 +54,8 @@ public:
 	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry&, float) override;
 
-
-	void Init();
+	UFUNCTION(BlueprintCallable)
+		void Init();
 private:
 	void SetVisilityUI(int _mode);
 	void CursolMove(float rate);
