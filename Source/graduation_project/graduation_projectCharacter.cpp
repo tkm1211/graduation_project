@@ -688,6 +688,7 @@ void Agraduation_projectCharacter::OnGacha()
 	{
 		if (!useGacha) return;
 		gacha->BeginGacha();
+		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.0f);
 		onGacha = true;
 	}
 	else

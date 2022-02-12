@@ -14,6 +14,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "UObject/NameTypes.h"
 #include "Sound/SoundCue.h"
+#include "Kismet/KismetMathLibrary.h"
 
 ARfBlaster::ARfBlaster()
 {
@@ -105,9 +106,22 @@ void ARfBlaster::SpawnShot()
 	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
 
 	FRotator _newRotator;
-	if (_playerCharacter->isAim)  _newRotator = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
-	else  _newRotator = _playerCharacter->GetActorRotation();
 	FVector _fireLoc = firePoint->GetComponentLocation();
+	if (_playerCharacter->isAim)
+	{
+		if (_playerCharacter->hotmingTargetRockOn)
+		{
+			FVector _rayEnd = firePoint->GetComponentLocation() + firePoint->GetForwardVector() * FMath::RandRange(-randomVal.X, randomVal.X) + firePoint->GetRightVector() * randomVal.Y + firePoint->GetUpVector() * randomVal.Z;
+			_newRotator = UKismetMathLibrary::FindLookAtRotation(_fireLoc, _rayEnd);
+		}
+		else
+		{
+			_newRotator = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
+		}
+		
+
+	}
+	else  _newRotator = _playerCharacter->GetActorRotation();
 
 	if (!ammoClass) return;
 

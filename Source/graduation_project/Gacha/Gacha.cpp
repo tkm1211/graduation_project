@@ -113,6 +113,10 @@ void AGacha::CreateCamera()
 
 void AGacha::BeginGacha()
 {
+	bluePiece.Init();
+	pinkPiece.Init();
+	yellowPiece.Init();
+
 	APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
 	if (!playerController) return;
 
@@ -146,12 +150,12 @@ void AGacha::EndGacha()
 	bluePiece.Init();
 	pinkPiece.Init();
 	yellowPiece.Init();
-	gachaGage->Reset();
-	gachaGage->SetVisibility(ESlateVisibility::Collapsed);
 	startGacha = false;
 	gachaState = GachaProductionState::Select;
 	DropPieceData.FixedDropPieceDatas.Init(FFixedDropPieceData(), 0);
 	_playerCharacter->onGacha = false;
+	gachaGage->SetVisibility(ESlateVisibility::Collapsed);
+	gachaGage->Reset();
 }
 
 void AGacha::CameraUpdate()

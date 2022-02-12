@@ -7,7 +7,7 @@
 #include "Components/Image.h"
 #include "Sound/SoundCue.h"
 #include "../../graduation_projectCharacter.h"
-
+#include "../../PlayerSubSystem.h"
 void UContinue::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -47,6 +47,7 @@ void UContinue::CursolMove(float rate)
 
 	if (rate >= 0.8)
 	{
+		if (mode == 1) return;
 		yes_choise->SetVisibility(ESlateVisibility::Collapsed);
 		no_choise->SetVisibility(ESlateVisibility::Visible);
 		mode = 1;
@@ -54,6 +55,7 @@ void UContinue::CursolMove(float rate)
 	}
 	else if (rate <= -0.8)
 	{
+		if (mode == 0) return;
 		yes_choise->SetVisibility(ESlateVisibility::Visible);
 		no_choise->SetVisibility(ESlateVisibility::Collapsed);
 		mode = 0;
@@ -67,11 +69,21 @@ void UContinue::Select()
 	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
 	if (!_playerCharacter->NowPlayerStop()) return;
 
+	UGameInstance* instance = GetWorld()->GetGameInstance();
+	UPlayerSubSystem* _playerSub = instance->GetSubsystem<UPlayerSubSystem>();
+	if (_playerSub)
+	{
+		_playerSub->Init();
+	}
+
 	if (mode == 0)
 	{
+
 		onDestory = true;
 		UGameplayStatics::PlaySound2D(GetWorld(), select);
-		UGameplayStatics::OpenLevel(GetWorld(), FName("AtsukiWorld"));
+		FString _levelName = UGameplayStatics::GetCurrentLevelName(GetWorld(), true);
+		
+		UGameplayStatics::OpenLevel(GetWorld(), *_levelName);
 	}
 	else if (mode == 1)
 	{

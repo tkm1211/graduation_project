@@ -10,6 +10,7 @@
 #include "UObject/NameTypes.h"
 #include "Components/ArrowComponent.h"
 #include "../Enemy/Base/EnemyBase.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 ACameraManager::ACameraManager()
@@ -72,6 +73,14 @@ void ACameraManager::SphereCastFrontCamera()
 	// SphereCast
 	bool isHit = UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(), _rayStart, _rayStart + (_rayForward * hormingCastRange), hormingCastRadius, objectType, false, IngoreActors, EDrawDebugTrace::Type::None, HitRetArray, true, FLinearColor::Red, FLinearColor::Red);
 
+	TArray<AActor*> ammoFireIngoreActors;
+	IngoreActors.Add(this);
+	TArray<FHitResult> ammoHitRetArray;
+
+	_rayStart = _playerCharacter->GetFollowCamera()->GetSocketLocation(FName("None"));
+	_rayForward = _playerCharacter->GetFollowCamera()->GetForwardVector();
+	bool ammoHit = UKismetSystemLibrary::LineTraceMultiForObjects(GetWorld(), _rayStart, _rayStart + (_rayForward * hormingCastRange), objectType, false, ammoFireIngoreActors, EDrawDebugTrace::Type::ForOneFrame, ammoHitRetArray, true, FLinearColor::Red, FLinearColor::Red);
+
 	if (isHit)
 	{
 		// SphereCast‚ÉHit‚µ‚½Enemy‚Ì”
@@ -81,7 +90,8 @@ void ACameraManager::SphereCastFrontCamera()
 		{
 			// Player‚ÆTag‚ªEnemy‚¶‚á‚È‚¢‚Æ‚«‚ÍContinue
 			if (!Hit.Actor->ActorHasTag(FName("Enemy"))) continue;
-			_playerCharacter->hormingTarget = Hit.GetActor();
+			AEnemyBase* _enemy = Cast<AEnemyBase>(Hit.GetActor());
+			_playerCharacter->hormingTarget = _enemy->GetCapsuleComponent();
 			_rockOnEnemyCount++;
 
 			break;

@@ -14,7 +14,7 @@ class AGacha;
 class ABallistaOrigin;
 class UNiagaraSystem;
 class UNiagaraComponent;
-
+class UCapsuleComponent;
 UCLASS(config = Game)
 class Agraduation_projectCharacter : public ACharacter
 {
@@ -67,7 +67,7 @@ public:
 		FVector cameraPosition;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wepon")
-		AActor* hormingTarget;
+		UCapsuleComponent* hormingTarget;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Wepon")
 		ABaseWepon* useWepon;

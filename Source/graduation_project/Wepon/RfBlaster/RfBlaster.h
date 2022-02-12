@@ -18,6 +18,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
 		class USoundCue* Sound_Obj;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "RandomValue")
+		FVector randomVal;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
