@@ -30,9 +30,9 @@ AENM_Minimon::AENM_Minimon()
 
     GetMesh()->SetAnimClass(animclass);
     
-
-    GetCapsuleComponent()->SetCapsuleRadius(60.f);
-    GetCapsuleComponent()->SetCapsuleHalfHeight(70.f);
+    body = body;
+    body->SetCapsuleRadius(60.f);
+    body->SetCapsuleHalfHeight(70.f);
 
     GetCharacterMovement()->MaxWalkSpeed = 100.f;
 
@@ -94,16 +94,16 @@ void AENM_Minimon::BeginPlay()
     ATKSphere->SetCollisionResponseToChannels(col_response);
     //ATKSphere->UpdateCollisionProfile();
 
-    GetCapsuleComponent()->SetGenerateOverlapEvents(true);
-    GetCapsuleComponent()->SetCollisionProfileName(TEXT("Custom..."));
-    GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+    body->SetGenerateOverlapEvents(true);
+    body->SetCollisionProfileName(TEXT("Custom..."));
+    body->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
     col_response.SetAllChannels(ECollisionResponse::ECR_Block);
     col_response.Camera = ECollisionResponse::ECR_Ignore;
     col_response.Visibility = ECollisionResponse::ECR_Ignore;
 
-    GetCapsuleComponent()->SetCollisionResponseToChannels(col_response);
-    //GetCapsuleComponent()->UpdateCollisionProfile();
+    body->SetCollisionResponseToChannels(col_response);
+    //body->UpdateCollisionProfile();
 
 }
 
@@ -133,8 +133,8 @@ bool AENM_Minimon::Death(float DeltaTime)
 
     //Cap Scale�ŕύX
     //GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -100.f));
-    GetCapsuleComponent()->SetCapsuleRadius(35.f);
-    GetCapsuleComponent()->SetCapsuleHalfHeight(35.f);
+    body->SetCapsuleRadius(35.f);
+    body->SetCapsuleHalfHeight(35.f);
 
     return true;
 }

@@ -26,6 +26,7 @@ AEnemyBase::AEnemyBase()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	GetCapsuleComponent()->ComponentTags.Add(TEXT("Enemy"));
+	body = GetCapsuleComponent();
 	GetMesh()->ComponentTags.Add(TEXT("Enemy"));
 	//GetMesh()->SetCollisionProfileName("NoCollision");
 

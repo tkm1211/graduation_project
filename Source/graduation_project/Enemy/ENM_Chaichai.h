@@ -19,8 +19,6 @@ class GRADUATION_PROJECT_API AENM_Chaichai : public AEnemyBase
 		UFUNCTION()
 		void OnSeePlayer(APawn* Pawn);
 
-		UPROPERTY(EditAnywhere,  Category = "BodyCapsuleComp")
-			class UCapsuleComponent* body;
 
 		//UPROPERTY(EditAnywhere, Category = FX)
 		//	TSubclassOf<class AActor> FX_SpitClass;

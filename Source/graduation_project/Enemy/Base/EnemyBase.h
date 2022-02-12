@@ -69,6 +69,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "DropPiece", meta = (AllowPrivateAccess = "true"))
 		FDropPieceData DropPieceData;
 
+	UPROPERTY(EditAnywhere, Category = "BodyCapsuleComp")
+		class UCapsuleComponent* body;
+
 private:
 	class UPieceBlockDropper* pieceBlockDropper;
 

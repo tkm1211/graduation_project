@@ -6,6 +6,7 @@
 #include "Boss_RobotParts3.h"
 #include "../graduation_projectCharacter.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameFramework/Character.h"
 
 
 UANS_UpdateLocation::UANS_UpdateLocation()
@@ -23,13 +24,17 @@ void UANS_UpdateLocation::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSeq
 		goal = { boss->GetActorForwardVector().X * ForwardOffset, boss->GetActorForwardVector().Y * ForwardOffset, UpOffset };
 	}
 
-	if (UGameplayStatics::GetPlayerCharacter(MeshComp->GetWorld(), 0)->GetActorLocation().Z > 300.f)
+	ACharacter* player = UGameplayStatics::GetPlayerCharacter(MeshComp->GetWorld(), 0);
+	if (player)
 	{
-		goal.Z += 200.f;
-	}
-	else
-	{
-		goal.Z -= 100.f;
+		if (player->GetActorLocation().Z > 300.f)
+		{
+			goal.Z += 200.f;
+		}
+		else
+		{
+			goal.Z -= 100.f;
+		}
 	}
 
 	current_time = 0.f;

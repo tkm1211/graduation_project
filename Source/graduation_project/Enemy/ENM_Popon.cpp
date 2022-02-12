@@ -33,7 +33,7 @@ AENM_Popon::AENM_Popon()
 
 	GetMesh()->SetAnimClass(animclass);
 
-	UCapsuleComponent* body = GetCapsuleComponent();
+	body = GetCapsuleComponent();
 	body->SetCapsuleRadius(60.f);
 	body->SetCapsuleHalfHeight(70.f);
 	body->SetCollisionProfileName("Custom...");
@@ -60,7 +60,7 @@ void AENM_Popon::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UCapsuleComponent* body = GetCapsuleComponent();
+	body = GetCapsuleComponent();
 	body->SetCapsuleRadius(60.f);
 	body->SetCapsuleHalfHeight(70.f);
 	body->SetCollisionProfileName("Spectator");
