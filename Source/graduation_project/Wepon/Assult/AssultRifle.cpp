@@ -14,6 +14,8 @@
 #include "UObject/NameTypes.h"
 #include "NiagaraComponent.h"
 #include "Sound/SoundCue.h"
+#include "Kismet/KismetMathLibrary.h"
+
 AAssultRifle::AAssultRifle()
 {
 
@@ -105,10 +107,17 @@ void AAssultRifle::SpawnShot()
 	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
 
 	// プレイヤーの向きと発射位置取得
-	FRotator _newRotator;
-	if (_playerCharacter->isAim)  _newRotator = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
-	else  _newRotator = _playerCharacter->GetActorRotation();
 	FVector _fireLoc = firePoint->GetComponentLocation();
+	FRotator _newRotator;
+	
+	if (_playerCharacter->isAim)
+	{
+		_newRotator = UKismetMathLibrary::FindLookAtRotation(_fireLoc, _playerCharacter->ammoTarget);
+	}
+	else
+	{
+		_newRotator = _playerCharacter->GetActorRotation();
+	}
 
 	//　スポーンさせる
 	ABaseAmmo* _tempAmmoBase = GetWorld()->SpawnActor<ABaseAmmo>(ammoClass, _fireLoc, _newRotator);

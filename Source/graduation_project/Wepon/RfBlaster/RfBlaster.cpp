@@ -116,7 +116,7 @@ void ARfBlaster::SpawnShot()
 		}
 		else
 		{
-			_newRotator = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
+			_newRotator = UKismetMathLibrary::FindLookAtRotation(_fireLoc, _playerCharacter->ammoTarget);
 		}
 		
 

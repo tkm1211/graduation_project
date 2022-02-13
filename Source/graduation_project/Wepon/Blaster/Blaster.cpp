@@ -13,6 +13,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "UObject/NameTypes.h"
 #include "Sound/SoundCue.h"
+#include "Kismet/KismetMathLibrary.h"
+
 ABlaster::ABlaster()
 {
 }
@@ -102,11 +104,16 @@ void ABlaster::SpawnShot()
 	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
 
-	FRotator _newRotator;
-	if (_playerCharacter->isAim)  _newRotator = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
-	else  _newRotator = _playerCharacter->GetActorRotation();
 	FVector _fireLoc = firePoint->GetComponentLocation();
-
+	FRotator _newRotator;
+	if (_playerCharacter->isAim)
+	{
+		_newRotator = UKismetMathLibrary::FindLookAtRotation(_fireLoc, _playerCharacter->ammoTarget);
+	}
+	else
+	{
+		_newRotator = _playerCharacter->GetActorRotation();
+	}
 	if (!ammoClass) return;
 	//　スポーンさせる
 	ABaseAmmo* _tempAmmoBase = GetWorld()->SpawnActor<ABaseAmmo>(ammoClass, _fireLoc, _newRotator);

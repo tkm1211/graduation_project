@@ -155,6 +155,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
 		class USoundCue* Sound_Obj;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AmmoTarget")
+		FVector ammoTarget;
+
 private:
 	float haveTotalPiece;
 

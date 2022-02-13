@@ -100,7 +100,7 @@ void Agraduation_projectCharacter::BeginPlay()
 	UGameInstance* instance = GetWorld()->GetGameInstance();
 	UPlayerSubSystem* _playerSub = instance->GetSubsystem<UPlayerSubSystem>();
 	if (_playerSub)
-	{
+		{
 		hp = _playerSub->hp;
 		BaseTurnRate = _playerSub->cameraRate;
 		if (_playerSub->weaponIndex < 9)

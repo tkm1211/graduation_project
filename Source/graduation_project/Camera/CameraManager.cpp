@@ -1,5 +1,6 @@
 
 #include "CameraManager.h"
+#include "Camera/PlayerCameraManager.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -7,6 +8,7 @@
 #include "../graduation_projectCharacter.h"
 #include "TimerManager.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "UObject/NameTypes.h"
 #include "Components/ArrowComponent.h"
 #include "../Enemy/Base/EnemyBase.h"
@@ -41,7 +43,6 @@ void ACameraManager::Tick(float DeltaTime)
 
 	FVector newLocation = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetActorLocation();
 	FRotator newRotor = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetControlRotation();
-
 	SetActorLocation(newLocation);
 	SetActorRotation(newRotor);
 
@@ -60,6 +61,7 @@ void ACameraManager::SphereCastFrontCamera()
 	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
 
+	APlayerCameraManager* _cameraMan = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0);
 
 	// レイのスタート位置取得(ホーミング用)
 	FVector _rayStart = GetActorLocation() + GetActorUpVector();
@@ -73,14 +75,6 @@ void ACameraManager::SphereCastFrontCamera()
 	// SphereCast
 	bool isHit = UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(), _rayStart, _rayStart + (_rayForward * hormingCastRange), hormingCastRadius, objectType, false, IngoreActors, EDrawDebugTrace::Type::None, HitRetArray, true, FLinearColor::Red, FLinearColor::Red);
 
-	TArray<AActor*> ammoFireIngoreActors;
-	IngoreActors.Add(this);
-	TArray<FHitResult> ammoHitRetArray;
-
-	_rayStart = _playerCharacter->GetFollowCamera()->GetSocketLocation(FName("None"));
-	_rayForward = _playerCharacter->GetFollowCamera()->GetForwardVector();
-	bool ammoHit = UKismetSystemLibrary::LineTraceMultiForObjects(GetWorld(), _rayStart, _rayStart + (_rayForward * hormingCastRange), objectType, false, ammoFireIngoreActors, EDrawDebugTrace::Type::ForOneFrame, ammoHitRetArray, true, FLinearColor::Red, FLinearColor::Red);
-
 	if (isHit)
 	{
 		// SphereCastにHitしたEnemyの数
@@ -91,7 +85,7 @@ void ACameraManager::SphereCastFrontCamera()
 			// PlayerとTagがEnemyじゃないときはContinue
 			if (!Hit.Actor->ActorHasTag(FName("Enemy"))) continue;
 			AEnemyBase* _enemy = Cast<AEnemyBase>(Hit.GetActor());
-			_playerCharacter->hormingTarget = _enemy->GetCapsuleComponent();
+			_playerCharacter->hormingTarget = _enemy->body;
 			_rockOnEnemyCount++;
 
 			break;
@@ -101,4 +95,5 @@ void ACameraManager::SphereCastFrontCamera()
 		if (_rockOnEnemyCount > 0) _playerCharacter->hotmingTargetRockOn = true;
 		else _playerCharacter->hotmingTargetRockOn = false;
 	}
+
 }
