@@ -48,14 +48,7 @@ void AWeaponPuzzle::BeginPlay()
 
 	grid->VisibleGridMesh(false);
 
-	if (onPuzzle)
-	{
-		DoBeginPuzzle(); // Debug—p
-	}
-	else
-	{
-		DoEndPuzzle();
-	}
+	DoEndPuzzle();
 }
 
 // Called every frame

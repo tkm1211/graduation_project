@@ -14,9 +14,6 @@ class GRADUATION_PROJECT_API AWeaponPuzzle : public APuzzleOrigin
 	GENERATED_BODY()
 
 private:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle", meta = (AllowPrivateAccess = "true"))
-	bool onPuzzle = false;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Puzzle | Border", meta = (AllowPrivateAccess = "true"))
 	int BlasterBorderNum = 20;
 
