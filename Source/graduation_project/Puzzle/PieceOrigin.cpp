@@ -65,17 +65,17 @@ void APieceOrigin::PieceMove(FVector originPiecePos, FVector spawnGridPos, FVect
 	mainData.pieceMinY = (mainData.pieceMinYPos - spawnGridPos).Size();
 	mainData.pieceMaxY = (mainData.pieceMaxYPos - spawnGridPos).Size();
 
-	if (onPieceUp || onPieceDown || onPieceLeft || onPieceRight) UGameplayStatics::PlaySound2D(GetWorld(), MoveSE, 10.0f, 1.0f, 0.0f, nullptr, this);
+	if (onPieceUp || onPieceDown || onPieceLeft || onPieceRight) UGameplayStatics::PlaySound2D(GetWorld(), MoveSE, 1.0f, 1.0f, 0.0f, nullptr, this);
 }
 
 void APieceOrigin::PieceChoice()
 {
-	UGameplayStatics::PlaySound2D(GetWorld(), ChoiseSE, 10.0f, 1.0f, 0.0f, nullptr, this);
+	UGameplayStatics::PlaySound2D(GetWorld(), ChoiseSE, 1.0f, 1.0f, 0.0f, nullptr, this);
 }
 
 void APieceOrigin::PieceDecision()
 {
-	UGameplayStatics::PlaySound2D(GetWorld(), DecisionSE, 5.0f, 1.0f, 0.0f, nullptr, this);
+	UGameplayStatics::PlaySound2D(GetWorld(), DecisionSE, 1.0f, 1.0f, 0.0f, nullptr, this);
 }
 
 void APieceOrigin::UndoData()
@@ -136,7 +136,7 @@ void APieceOrigin::TurnLeft(bool onPlaySE)
 	TurnPiece(-1);
 	DoTurnLeft();
 
-	if (onPlaySE) UGameplayStatics::PlaySound2D(GetWorld(), RotateSE, 10.0f, 1.0f, 0.0f, nullptr, this);
+	if (onPlaySE) UGameplayStatics::PlaySound2D(GetWorld(), RotateSE, 1.0f, 1.0f, 0.0f, nullptr, this);
 }
 
 void APieceOrigin::TurnRight(bool onPlaySE)
@@ -146,7 +146,7 @@ void APieceOrigin::TurnRight(bool onPlaySE)
 	TurnPiece(1);
 	DoTurnRight();
 
-	if (onPlaySE) UGameplayStatics::PlaySound2D(GetWorld(), RotateSE, 10.0f, 1.0f, 0.0f, nullptr, this);
+	if (onPlaySE) UGameplayStatics::PlaySound2D(GetWorld(), RotateSE, 1.0f, 1.0f, 0.0f, nullptr, this);
 }
 
 void APieceOrigin::TurnLock(int turnCnt)

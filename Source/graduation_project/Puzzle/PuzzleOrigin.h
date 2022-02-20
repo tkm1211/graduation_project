@@ -52,6 +52,7 @@ protected:
 	PuzzleType puzzleType = PuzzleType::TypeWeaponPuzzle;
 
 private:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Puzzle", meta = (AllowPrivateAccess = "true"))
 	bool onPuzzle = false;
 
 public:	
