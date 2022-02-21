@@ -59,7 +59,7 @@ void AGacha::BeginPlay()
 	yellowPiece.Init();
 
 	DropPieceData.FixedDropPieceDatas.Init(FFixedDropPieceData(), 0);
-
+	gachaGage->nowGacha = this;
 	gachaGage->Reset();
 	gachaGage->SetVisibility(ESlateVisibility::Collapsed);
 }
@@ -113,6 +113,9 @@ void AGacha::CreateCamera()
 
 void AGacha::BeginGacha()
 {
+	CustomTimeDilation = 1.0f;
+	gachaGage->AddToViewport();
+
 	bluePiece.Init();
 	pinkPiece.Init();
 	yellowPiece.Init();
@@ -127,10 +130,15 @@ void AGacha::BeginGacha()
 	gachaState = GachaProductionState::Select;
 
 	CountPiece();
+
+	gachaGage->CountPiece(this, bluePiece, pinkPiece, yellowPiece);
 }
 
 void AGacha::EndGacha()
 {
+	CustomTimeDilation = 1.0f;
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
+
 	APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
 	if (!playerController) return;
 
@@ -156,6 +164,7 @@ void AGacha::EndGacha()
 	_playerCharacter->onGacha = false;
 	gachaGage->SetVisibility(ESlateVisibility::Collapsed);
 	gachaGage->Reset();
+	gachaGage->RemoveFromParent();
 }
 
 void AGacha::CameraUpdate()
@@ -246,6 +255,7 @@ void AGacha::ChoiseAxisX(float rate)
 {
 	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
+	if (!_playerCharacter) return;
 	if (!_playerCharacter->NowPlayerStop()) return;
 
 	if (!onGacha) return;
@@ -281,6 +291,7 @@ void AGacha::ChoiseAxisY(float rate)
 {
 	ACharacter* _character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	Agraduation_projectCharacter* _playerCharacter = Cast<Agraduation_projectCharacter>(_character);
+	if (!_playerCharacter) return;
 	if (!_playerCharacter->NowPlayerStop()) return;
 
 	if (!onGacha) return;
@@ -369,6 +380,7 @@ void AGacha::CalcProbability()
 		}
 		randomRange -= probability[i];
 	}
+
 }
 
 void AGacha::Select()
@@ -397,6 +409,7 @@ void AGacha::AddPiece()
 void AGacha::AddPieceRelease()
 {
 	pressAddPiece = false;
+	gachaGage->addPieceTime = 0;
 }
 
 void AGacha::TakePiece()
@@ -409,6 +422,7 @@ void AGacha::TakePiece()
 void AGacha::TakePieceRelease()
 {
 	pressTakePiece = false;
+	gachaGage->takePieceTime = 0;
 }
 
 void AGacha::CountPiece()

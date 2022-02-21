@@ -156,11 +156,16 @@ public:
 		class UImage* operation = nullptr;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 		class UImage* renda = nullptr;
+
+	class AGacha* nowGacha;
+
+	float addPieceTime;
+	float takePieceTime;
+
 private:
 	class UMaterialInstanceDynamic* dynmatGage;
 	class UMaterialInstanceDynamic* timerGage;
 
-	class AGacha* nowGacha;
 	float gageValue;
 	float roundDownValue;
 	bool changePlayMode;
@@ -175,18 +180,21 @@ private:
 	bool firstSelect;
 	int howColumn;
 
+
+	bool kyuin;
+
 	struct FGachaPieceCnt blue;
 	struct FGachaPieceCnt pink;
 	struct FGachaPieceCnt yellow;
 public:
 	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry&, float) override;
+	void CountPiece(class AGacha* nowGacha, struct FGachaPieceCnt b, struct FGachaPieceCnt p, struct FGachaPieceCnt y);
 
 	void Reset();
 private:
 	void SearchGacha();
 
-	void CountPiece();
 
 	void SelectProduction();
 	void MainProduction();

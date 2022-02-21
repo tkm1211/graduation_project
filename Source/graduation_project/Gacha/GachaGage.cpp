@@ -43,12 +43,13 @@ void UGachaGage::NativeConstruct()
 	blue.Init();
 	pink.Init();
 	yellow.Init();
-
+	kyuin = false;
+	addPieceTime = 0.0f;
+	takePieceTime = 0.0f;
 	onCountPiece = false;
 	totalBet = 0;
 	HideModeChoise();
 	HideMainMode();
-	Reset();
 }
 
 void UGachaGage::NativeTick(const FGeometry& g, float InDeltaTime)
@@ -67,7 +68,6 @@ void UGachaGage::NativeTick(const FGeometry& g, float InDeltaTime)
 		switch (productionState)
 		{
 		case GachaProductionState::Select:
-			CountPiece();
 			SelectProduction();
 			nowGacha->gachaState = GachaProductionState::Select;
 
@@ -141,30 +141,38 @@ void UGachaGage::NativeTick(const FGeometry& g, float InDeltaTime)
 
 			if (nowGacha->pressAddPiece)
 			{
-				nowGacha->pressAddPiece = false;
-				if (firstSelect)
+				if (addPieceTime <= 0)
 				{
-					int _indexX = nowGacha->choiseIndexX;
-					int _indexY = nowGacha->choiseIndexY;
-					
-					if (CanAddPiece(_indexY, _indexX))
+					if (firstSelect)
 					{
-						UGameplayStatics::PlaySound2D(GetWorld(), nowGacha->select);
-						AddPiece(_indexY, _indexX);
-						DisplayPieceNum();
+						int _indexX = nowGacha->choiseIndexX;
+						int _indexY = nowGacha->choiseIndexY;
+
+						if (CanAddPiece(_indexY, _indexX))
+						{
+							UGameplayStatics::PlaySound2D(GetWorld(), nowGacha->select);
+							AddPiece(_indexY, _indexX);
+							DisplayPieceNum();
+						}
 					}
+					addPieceTime = 0.5f;
 				}
+				addPieceTime -= InDeltaTime;
 			}
 			if (nowGacha->pressTakePiece)
 			{
-				nowGacha->pressTakePiece = false;
-				if (firstSelect)
+				if (takePieceTime <= 0)
 				{
-					int _indexX = nowGacha->choiseIndexX;
-					int _indexY = nowGacha->choiseIndexY;
-					TakePiece(_indexY, _indexX);
-					DisplayPieceNum();
+					if (firstSelect)
+					{
+						int _indexX = nowGacha->choiseIndexX;
+						int _indexY = nowGacha->choiseIndexY;
+						TakePiece(_indexY, _indexX);
+						DisplayPieceNum();
+					}
+					takePieceTime -= InDeltaTime;
 				}
+				takePieceTime = 0.5f;
 			}
 
 			BetPieceNum();
@@ -205,23 +213,23 @@ void UGachaGage::NativeTick(const FGeometry& g, float InDeltaTime)
 
 void UGachaGage::SearchGacha()
 {
-	TSubclassOf<AGacha> findClass;
-	findClass = AGacha::StaticClass();
-	TArray<AActor*> emitters;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), findClass, emitters);
+	//TSubclassOf<AGacha> findClass;
+	//findClass = AGacha::StaticClass();
+	//TArray<AActor*> emitters;
+	//UGameplayStatics::GetAllActorsOfClass(GetWorld(), findClass, emitters);
 
-	if (emitters.Num() > 0)
-	{
-		for (int i = 0; i < emitters.Num(); i++)
-		{
-			AGacha* gacha = Cast<AGacha>(emitters[i]);
-			if (gacha->GetOnGacha())
-			{
-				nowGacha = gacha;
-				break;
-			}
-		}
-	}
+	//if (emitters.Num() > 0)
+	//{
+	//	for (int i = 0; i < emitters.Num(); i++)
+	//	{
+	//		AGacha* gacha = Cast<AGacha>(emitters[i]);
+	//		if (gacha->GetOnGacha())
+	//		{
+	//			nowGacha = gacha;
+	//			break;
+	//		}
+	//	}
+	//}
 
 }
 
@@ -259,7 +267,11 @@ void UGachaGage::MainProduction()
 
 	if (nowGacha->gageValue >= 1.25f)
 	{
-		UGameplayStatics::PlaySound2D(GetWorld(), nowGacha->kyuin);
+		if (!kyuin)
+		{
+			UGameplayStatics::PlaySound2D(GetWorld(), nowGacha->kyuin);
+			kyuin = true;
+		}
 		rainbow->SetVisibility(ESlateVisibility::Visible);
 	}
 }
@@ -273,31 +285,32 @@ void UGachaGage::EmitProduction()
 	}
 }
 
-void UGachaGage::CountPiece()
+void UGachaGage::CountPiece(AGacha* _nowGacha, FGachaPieceCnt b, FGachaPieceCnt p, FGachaPieceCnt y)
 {
 	if (onCountPiece) return;
 	onCountPiece = true;
 
-	B_I_T_N->SetText(FText::FromString(FString::FromInt(nowGacha->bluePiece.ICnt)));
-	B_L_T_N->SetText(FText::FromString(FString::FromInt(nowGacha->bluePiece.LCnt)));
-	B_T_T_N->SetText(FText::FromString(FString::FromInt(nowGacha->bluePiece.TCnt)));
-	B_O_T_N->SetText(FText::FromString(FString::FromInt(nowGacha->bluePiece.OCnt)));
+	B_I_T_N->SetText(FText::FromString(FString::FromInt(_nowGacha->bluePiece.ICnt)));
+	B_L_T_N->SetText(FText::FromString(FString::FromInt(_nowGacha->bluePiece.LCnt)));
+	B_T_T_N->SetText(FText::FromString(FString::FromInt(_nowGacha->bluePiece.TCnt)));
+	B_O_T_N->SetText(FText::FromString(FString::FromInt(_nowGacha->bluePiece.OCnt)));
 
-	Y_I_T_N->SetText(FText::FromString(FString::FromInt(nowGacha->yellowPiece.ICnt)));
-	Y_L_T_N->SetText(FText::FromString(FString::FromInt(nowGacha->yellowPiece.LCnt)));
-	Y_T_T_N->SetText(FText::FromString(FString::FromInt(nowGacha->yellowPiece.TCnt)));
-	Y_O_T_N->SetText(FText::FromString(FString::FromInt(nowGacha->yellowPiece.OCnt)));
+	Y_I_T_N->SetText(FText::FromString(FString::FromInt(_nowGacha->yellowPiece.ICnt)));
+	Y_L_T_N->SetText(FText::FromString(FString::FromInt(_nowGacha->yellowPiece.LCnt)));
+	Y_T_T_N->SetText(FText::FromString(FString::FromInt(_nowGacha->yellowPiece.TCnt)));
+	Y_O_T_N->SetText(FText::FromString(FString::FromInt(_nowGacha->yellowPiece.OCnt)));
 
-	P_I_T_N->SetText(FText::FromString(FString::FromInt(nowGacha->pinkPiece.ICnt)));
-	P_L_T_N->SetText(FText::FromString(FString::FromInt(nowGacha->pinkPiece.LCnt)));
-	P_T_T_N->SetText(FText::FromString(FString::FromInt(nowGacha->pinkPiece.TCnt)));
-	P_O_T_N->SetText(FText::FromString(FString::FromInt(nowGacha->pinkPiece.OCnt)));
+	P_I_T_N->SetText(FText::FromString(FString::FromInt(_nowGacha->pinkPiece.ICnt)));
+	P_L_T_N->SetText(FText::FromString(FString::FromInt(_nowGacha->pinkPiece.LCnt)));
+	P_T_T_N->SetText(FText::FromString(FString::FromInt(_nowGacha->pinkPiece.TCnt)));
+	P_O_T_N->SetText(FText::FromString(FString::FromInt(_nowGacha->pinkPiece.OCnt)));
+
+	nowGacha = _nowGacha;
 }
 
 void UGachaGage::Reset()
 {
 	rainbow->SetVisibility(ESlateVisibility::Collapsed);
-	nowGacha = nullptr;
 	changePlayMode = true;
 	onCountPiece = false;
 	gageValue = 0.0f;
@@ -307,7 +320,11 @@ void UGachaGage::Reset()
 	howColumn = 0;
 	firstSelect = false;	
 	dynmatGage->SetScalarParameterValue("Param", gageValue);
-	if(nowGacha) timerGage->SetScalarParameterValue("Param", nowGacha->addGageTimer / 2.0f);
+	
+	if (IsValid(nowGacha))
+	{
+		timerGage->SetScalarParameterValue("Param", nowGacha->addGageTimer / 2.0f);
+	}
 	blue.Init();
 	pink.Init();
 	yellow.Init();

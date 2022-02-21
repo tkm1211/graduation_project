@@ -113,11 +113,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
 		class USoundCue* renda;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flag")
+		bool onGacha;
+
 private:
 	// ÉsÅ[ÉXälìæêî
 	AcquisitionPieces acquisitionPieces;
 
-	bool onGacha;
 	bool startGacha;
 	float limitGageValue;
 
