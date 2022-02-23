@@ -20,10 +20,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = Projectile)
 		TSubclassOf<class AENM_ChaFireball> FireballClass;
 
-	enum PROJECTILE
-	{
-		FIREBALL,
-	};
+	UPROPERTY(EditAnywhere, Category = "ATKCapsuleComp")
+		class UCapsuleComponent* ATKCapsuleComp;
 
 protected:
 	// Called when the game starts or when spawned
@@ -33,6 +31,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void OnHit(class UPrimitiveComponent* HitComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void OnHit(class UPrimitiveComponent* HitComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+
+	virtual bool Death(float DeltaTime);
 };

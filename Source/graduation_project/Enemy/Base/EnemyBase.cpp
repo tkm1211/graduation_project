@@ -135,7 +135,6 @@ bool AEnemyBase::Death(float DeltaTime)
 	deadtimer += DeltaTime;
 	if (MID)
 	{
-
 		float rate = 1.f - (deadtimer / LIFETIMER);
 		if (rate < 0.f)rate = 0.f;
 
@@ -170,6 +169,7 @@ void AEnemyBase::OnHit(class UPrimitiveComponent* HitComp, class AActor* OtherAc
 void AEnemyBase::Damage(float _indamage)
 {
 	healthpoint -= _indamage;
+	if (healthpoint <= 0.f)healthpoint = 0.f;
 
 	is_combat = true;
 	lost_time = 0.f;

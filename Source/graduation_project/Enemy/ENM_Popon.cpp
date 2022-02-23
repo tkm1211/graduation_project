@@ -54,11 +54,41 @@ AENM_Popon::AENM_Popon()
 	bFire.Emplace(false);
 
 	GetMesh()->ComponentTags.Add("Enemy");
+	
+	ATKCapsuleComp = CreateDefaultSubobject<UCapsuleComponent>(TEXT("ATKCapsuleComp"));
+
+	ATKCapsuleComp->SetGenerateOverlapEvents(true);
+	ATKCapsuleComp->SetCollisionProfileName(TEXT("Custom..."));
+	ATKCapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+
+	FCollisionResponseContainer col_response;
+	col_response.SetAllChannels(ECollisionResponse::ECR_Overlap);
+	col_response.Camera = ECollisionResponse::ECR_Ignore;
+	col_response.Visibility = ECollisionResponse::ECR_Ignore;
+
+	ATKCapsuleComp->SetCollisionResponseToChannels(col_response);
+
+
+	ATKCapsuleComp->OnComponentBeginOverlap.AddDynamic(this, &Super::OnHit);
 }
 
 void AENM_Popon::BeginPlay()
 {
 	Super::BeginPlay();
+
+	ATKCapsuleComp->SetGenerateOverlapEvents(true);
+	ATKCapsuleComp->SetCollisionProfileName(TEXT("Custom..."));
+	ATKCapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+
+	ATKCapsuleComp->SetCapsuleHalfHeight(200.f);
+	ATKCapsuleComp->SetCapsuleRadius(60.f);
+	FCollisionResponseContainer col_response;
+	col_response.SetAllChannels(ECollisionResponse::ECR_Overlap);
+	col_response.Camera = ECollisionResponse::ECR_Ignore;
+	col_response.Visibility = ECollisionResponse::ECR_Ignore;
+
+	ATKCapsuleComp->SetCollisionResponseToChannels(col_response);
+
 
 	body = GetCapsuleComponent();
 	body->SetCapsuleRadius(60.f);
@@ -73,11 +103,30 @@ void AENM_Popon::BeginPlay()
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
 	GetMesh()->SetGenerateOverlapEvents(true);
 
+
 }
 
 void AENM_Popon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (ATKCapsuleComp)
+	{
+		if (atk_collision_on)
+		{
+			ATKCapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		}
+		else
+		{
+			ATKCapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		}
+
+		FVector pos = GetMesh()->GetSocketLocation("SpitSocket");
+		FRotator rot = GetMesh()->GetSocketRotation("SpitSocket");
+		
+		ATKCapsuleComp->SetWorldLocation(pos);
+		ATKCapsuleComp->SetWorldRotation(rot);
+	}
 
 	FVector start = GetActorLocation();
 	FVector end = start + GetActorUpVector() * FVector(-500.f);
@@ -92,30 +141,46 @@ void AENM_Popon::Tick(float DeltaTime)
 		SetActorRotation(rot);
 	}
 
-	if (bFire[FIREBALL])
-	{
-		FVector pos = GetMesh()->GetSocketLocation("SpitSocket");
-		FRotator rot = GetMesh()->GetSocketRotation("SpitSocket");
-		if (pl)
-		{
-			rot = UKismetMathLibrary::FindLookAtRotation(pos, pl->GetActorLocation());
-		}
-		GetWorld()->SpawnActor<AENM_ChaFireball>(FireballClass, pos, rot);
+	//if (bFire[FIREBALL])
+	//{
+	//	FVector pos = GetMesh()->GetSocketLocation("SpitSocket");
+	//	FRotator rot = GetMesh()->GetSocketRotation("SpitSocket");
+	//	if (pl)
+	//	{
+	//		rot = UKismetMathLibrary::FindLookAtRotation(pos, pl->GetActorLocation());
+	//	}
+	//	GetWorld()->SpawnActor<AENM_ChaFireball>(FireballClass, pos, rot);
 
-		bFire[FIREBALL] = false;
-	}
+	//	bFire[FIREBALL] = false;
+	//}
 
 
 	Death(DeltaTime);
 }
 
+bool AENM_Popon::Death(float DeltaTime)
+{
+	if (!Super::Death(DeltaTime))return false;
+	if (!b_rigor)return false;
 
-void AENM_Popon::OnHit(UPrimitiveComponent* HitComp, 
-	AActor* OtherActor, UPrimitiveComponent* OtherComp, 
+	GetMesh()->SetVisibility(false);
+
+	return true;
+}
+
+void AENM_Popon::OnHit(UPrimitiveComponent* HitComp,
+	AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (OtherComp->ComponentTags.Num() != 0 && OtherComp->ComponentTags[0] == "Player")
+	{
+		Agraduation_projectCharacter* _player = Cast<Agraduation_projectCharacter>(OtherActor);
 
 
-	return Super::OnHit(HitComp, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
+		_player->Damage(ATK_POWER, SweepResult.Location);
+
+		ATKCapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	}
 }
 

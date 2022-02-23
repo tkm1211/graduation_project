@@ -68,6 +68,7 @@ void AENM_ChaFireball::BeginPlay()
 	col_response.SetAllChannels(ECollisionResponse::ECR_Overlap);
 	col_response.Camera = ECollisionResponse::ECR_Ignore;
 	col_response.Visibility = ECollisionResponse::ECR_Ignore;
+	col_response.WorldStatic = ECollisionResponse::ECR_Block;
 
 	//col_response.WorldStatic = ECollisionResponse::ECR_Block;
 	CollisionComponent->SetCollisionResponseToChannels(col_response);

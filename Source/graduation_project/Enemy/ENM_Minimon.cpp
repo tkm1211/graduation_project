@@ -152,7 +152,6 @@ void AENM_Minimon::OnHit(class UPrimitiveComponent* HitComp, class AActor* Other
 
         ATKSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-        //GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White, FString::Printf(TEXT("Hit : Player")), true, FVector2D(1.0f, 1.0f));
     }
 
 }
