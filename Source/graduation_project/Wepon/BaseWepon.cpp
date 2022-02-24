@@ -28,7 +28,6 @@ ABaseWepon::ABaseWepon()
 	firePoint = CreateDefaultSubobject<USceneComponent>(TEXT("firePoint"));
 	firePoint->SetupAttachment(mesh);
 
-
 	firstFireTimer = 0.0f;
 }
 

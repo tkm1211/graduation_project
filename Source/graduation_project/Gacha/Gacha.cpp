@@ -59,9 +59,13 @@ void AGacha::BeginPlay()
 	yellowPiece.Init();
 
 	DropPieceData.FixedDropPieceDatas.Init(FFixedDropPieceData(), 0);
-	gachaGage->nowGacha = this;
-	gachaGage->Reset();
-	gachaGage->SetVisibility(ESlateVisibility::Collapsed);
+	if (gachaGage)
+	{
+
+		gachaGage->nowGacha = this;
+		gachaGage->Reset();
+		gachaGage->SetVisibility(ESlateVisibility::Collapsed);
+	}
 }
 
 // Called every frame

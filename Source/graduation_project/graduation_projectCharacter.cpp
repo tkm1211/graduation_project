@@ -462,6 +462,7 @@ void Agraduation_projectCharacter::ChangeWepon(ABaseWepon* nextWepon)
 	else if (weponName == FString("RfShotgunBP_1_C_0")) weponNumber = 1;
 	else weponNumber = 0;
 
+	AttachWeapone();
 	//weponNumber = FCString::Atoi(*weponName);
 
 }

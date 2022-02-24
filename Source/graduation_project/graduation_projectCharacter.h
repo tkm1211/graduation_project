@@ -225,6 +225,8 @@ public:
 		void ChangeWepon(ABaseWepon* nextWepon);
 	
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Vehicle")
+		void AttachWeapone();
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Vehicle")
 		void PressOption();
 
 	UFUNCTION(BlueprintCallable)
