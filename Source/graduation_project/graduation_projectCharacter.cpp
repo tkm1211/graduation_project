@@ -706,7 +706,7 @@ void Agraduation_projectCharacter::OnBallista()
 	UGameInstance* instance = GetWorld()->GetGameInstance();
 	UGimmickMediator* _resource = instance->GetSubsystem<UGimmickMediator>();
 	{
-		if (_resource->GetOnWeaponGimmick(ballista->groupID))
+		if (!_resource->GetOnWeaponGimmick(ballista->groupID))
 		{
 			return;
 		}

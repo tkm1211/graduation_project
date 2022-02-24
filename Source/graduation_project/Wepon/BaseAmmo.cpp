@@ -82,12 +82,15 @@ void ABaseAmmo::BeginOverlap(
 
 
 	if (!OtherActor && OtherActor != this && OtherActor != GetOwner()) return;
-	float hitDamage;
-	if (effectiveRange > life)
+	float hitDamage = 0;
+	if (life > 0)
 	{
-		hitDamage = damage;
+		if (effectiveRange > life)
+		{
+			hitDamage = damage;
+		}
+		else hitDamage = damage - damage * ((rangeMag / effectiveRange) * (rangeMag / effectiveRange)) * life;
 	}
-	else hitDamage = damage - damage * ((rangeMag / effectiveRange) * (rangeMag / effectiveRange)) * life;
 
 	if (OtherComp->ComponentTags.Max() > 0)
 	{
