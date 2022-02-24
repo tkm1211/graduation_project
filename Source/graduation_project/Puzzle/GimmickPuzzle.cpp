@@ -65,6 +65,11 @@ void AGimmickPuzzle::Tick(float DeltaTime)
 		RemovePieceBlock();
 	}
 
+	// バリスタ用パズル
+	{
+		UpdateWeaponGimmickPuzzle();
+	}
+
 	// フラグ更新
 	{
 		UpdateFlag();
