@@ -96,6 +96,7 @@ private:
 private:
 	UGimmickMediator* gimmickMediator;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gimmick", meta = (AllowPrivateAccess = "true"))
 	TArray<FSpawnPieceBlockData> pieceBlocks;
 
 public:	

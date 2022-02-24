@@ -60,4 +60,8 @@ private:
 
 	void DoBeginPuzzle() override;
 	void DoEndPuzzle() override;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "Gimmick")
+	TArray<bool> GetOnPieces() { return grid->GetOnPiece(); }
 };

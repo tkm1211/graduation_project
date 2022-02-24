@@ -199,6 +199,8 @@ void AGimmickPuzzle::UpdateWeaponGimmickPuzzle()
 		if (!onPiece) hit = true;
 	}
 
+	grid->DidPlacePiece(); // Undo‚ð‚Å‚«‚é‚æ‚¤‚É‚·‚é‚½‚ß‚±‚±‚Å‰Šú‰»
+
 	if (!hit)
 	{
 		gimmickMediator->OnWeaponGimmck(GroupID);
