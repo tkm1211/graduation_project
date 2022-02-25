@@ -71,7 +71,6 @@ Agraduation_projectCharacter::Agraduation_projectCharacter()
 	isDead = false;
 	cameraChangeTimer = 0.0f;
 
-
 }
 
 void Agraduation_projectCharacter::BeginPlay()
@@ -302,15 +301,17 @@ void Agraduation_projectCharacter::Tick(float DeltaTime)
 
 	if (RespawnJudge(GetActorLocation())) Respawn();
 
-
-	UPlayerSubSystem* _playerSub = instance->GetSubsystem<UPlayerSubSystem>();
-	if (_playerSub)
+	if (!isDead)
 	{
-		_playerSub->hp = hp;
-		_playerSub->cameraRate= BaseTurnRate;
-		weaponMediator = instance->GetSubsystem<UWeaponPuzzleMediator>();
+		UPlayerSubSystem* _playerSub = instance->GetSubsystem<UPlayerSubSystem>();
+		if (_playerSub)
 		{
-			_playerSub->weaponIndex = weaponMediator->GetWeaponType();
+			_playerSub->hp = hp;
+			_playerSub->cameraRate = BaseTurnRate;
+			weaponMediator = instance->GetSubsystem<UWeaponPuzzleMediator>();
+			{
+				_playerSub->weaponIndex = weaponMediator->GetWeaponType();
+			}
 		}
 	}
 
