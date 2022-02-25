@@ -73,7 +73,11 @@ void UContinue::Select()
 	UPlayerSubSystem* _playerSub = instance->GetSubsystem<UPlayerSubSystem>();
 	if (_playerSub)
 	{
-		_playerSub->Init();
+		if(UGameplayStatics::GetCurrentLevelName(GetWorld(), true) == FString("AtsukiWorld")) _playerSub->Init();
+		else
+		{
+			_playerSub->hp = 100.0f;
+		}
 	}
 
 	if (mode == 0)
