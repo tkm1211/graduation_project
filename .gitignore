@@ -6,7 +6,12 @@ Intermediate/
 Saved/
 WindowsNoEditor/
 Tool/Data/Shader/
+Others/
 
 *.sln
 *.fbx
 *.zip
+*.psd
+*.png
+*.ini
+*.txt

@@ -12,7 +12,9 @@
 				"Engine",
 				"AIModule",
 				"NiagaraAnimNotifies",
-				"Niagara"
+				"UMG",
+				"CoreUObject",
+				"Paper2D"
 			]
 		}
 	]
